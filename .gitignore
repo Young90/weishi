@@ -1,3 +1,4 @@
 *.pyc
 .idea/**/*
 /weishi/libs/qiniu_key.py
+/weishi/conf.py

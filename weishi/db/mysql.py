@@ -1,15 +1,16 @@
 #coding:utf-8
 __author__ = 'young'
 
-from torndb import Connection
+from tornado.database import Connection
 from tornado.options import define, options
 from tornado.ioloop import PeriodicCallback
 from weishi.db import conn
+from weishi import conf
 
-define("host", default="localhost:3306", help="Main db url")
-define("database", default="weishi")
-define("user", default="root")
-define("password", default="root")
+define("host", default=conf.mysql_host, help="Main db url")
+define("database", default=conf.mysql_database)
+define("user", default=conf.mysql_user)
+define("password", default=conf.mysql_password)
 define("recycle", default=4 * 3600)
 
 

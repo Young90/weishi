@@ -5,11 +5,11 @@ import string
 from qiniu import conf, io, rs, rsf
 from const import Image
 
-from weishi.libs import qiniu_key
+import weishi.conf
 
 
-conf.ACCESS_KEY = qiniu_key.Key.ACCESS_KEY
-conf.SECRET_KEY = qiniu_key.Key.SECRET_KEY
+conf.ACCESS_KEY = weishi.conf.qiniu_access_key
+conf.SECRET_KEY = weishi.conf.qiniu_secret_key
 bucket_name = Image.BUCKET_NAME
 policy = rs.PutPolicy(bucket_name)
 extra = io.PutExtra()
