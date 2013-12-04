@@ -1,7 +1,10 @@
 #coding:utf-8
 #定义一些系统常量
 __author__ = 'young'
+import re
 
+
+EMAIL_REGEX = re.compile(r"[^@]+@[^@]+\.[^@]+")
 
 class Role(object):
     """
