@@ -1,7 +1,7 @@
 #coding:utf-8
 __author__ = 'young'
 
-from tornado.database import Connection
+from torndb import Connection
 from tornado.options import define, options
 from tornado.ioloop import PeriodicCallback
 from weishi.db import conn
@@ -20,7 +20,6 @@ def connect():
         database=options.database,
         user=options.user,
         password=options.password,
-
     )
 
     # 每隔一段时间ping数据库

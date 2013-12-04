@@ -1,9 +1,10 @@
 #coding:utf-8
 __author__ = 'young'
 
-import hashlib
-from zhuangxiutai.libs.const import Role
+import random
+import string
 
-m = hashlib.md5()
-m.update('123456' + Role.SALT)
-print m.hexdigest()
+
+lib = string.hexdigits
+
+print ''.join(random.choice(lib) for i in range(0, 9))
