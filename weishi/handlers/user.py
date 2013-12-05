@@ -63,7 +63,7 @@ class LoginHandler(AuthHandler):
         self.redirect("/")
 
 
-class SignUpHandler(BaseHandler):
+class SignUpHandler(AuthHandler):
     """
     sign up handler
     """
@@ -79,18 +79,21 @@ class SignUpHandler(BaseHandler):
         email = self.get_argument("email", None)
         mobile = self.get_argument("mobile", None)
         password = self.get_argument("password", None)
-        length = real_len(unicode(username, 'utf-8'))
+        length = real_len(username)
         if length < 4 or length > 20:
             self.render("signup.html", error="用户名字符数在4-20之间，中文为两个字符！")
+            return
+        if not EMAIL_REGEX.match(email):
+            self.render("signup.html", error="邮箱格式不符合要求！")
             return
         if not username or not email or not password:
             self.render("signup.html", error="数据填写不完整！")
             return
-        user = self.db.get("select * from t_user where username = %", username)
+        user = self.db.get("select * from t_user where username = %s", username)
         if user:
             self.render("signup.html", error="用户名被占用！")
             return
-        user = self.db.get("select * from t_user where email = %", email)
+        user = self.db.get("select * from t_user where email = %s", email)
         if user:
             self.render("signup.html", error="邮箱被占用！")
             return
@@ -98,14 +101,15 @@ class SignUpHandler(BaseHandler):
             self.render("signup.html", error="密码不能少于6位！")
             return
         m = hashlib.md5()
-        password = m.update(password + Role.SALT).hexdigest()
+        m.update(password + Role.SALT)
+        password = m.hexdigest()
         self._create_user(username, email, password, mobile)
         self.redirect("/")
 
 
 def real_len(username):
     length = len(username)
-    utf_len = len(username.encode("utf-8"))
+    utf_len = len(username.encode('utf-8'))
     length += (utf_len - length) / 2
     return length
 
@@ -131,7 +135,7 @@ class UserCheckHandler(AuthHandler):
     def post(self, *args, **kwargs):
         username = self.get_argument("username", None)
         email = self.get_argument("email", None)
-        r = {"a", 1}
+        r = {"a": 1}
         if username:
             user = self.db.get("select * from t_user where username = %s", username)
         elif email:
@@ -147,4 +151,5 @@ handlers = [
     (r'/login', LoginHandler),
     (r'/signup', SignUpHandler),
     (r'/logout', LogoutHandler),
+    (r'/user/check', UserCheckHandler),
 ]

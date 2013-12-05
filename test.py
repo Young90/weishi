@@ -1,10 +1,23 @@
 #coding:utf-8
 __author__ = 'young'
 
-import random
-import string
+import urllib
+import urllib2
+import hashlib
 
 
-lib = string.hexdigits
+m = hashlib.md5()
+m.update('123456' + 'SSSS')
+print m.hexdigest()
 
-print ''.join(random.choice(lib) for i in range(0, 9))
+url = 'http://127.0.0.1:8888/login'
+values = {
+    'user': '侯西阳',
+    'email': '123456@cc.cc',
+    'password': '123457'
+}
+
+data = urllib.urlencode(values)
+req = urllib2.Request(url, data)
+response = urllib2.urlopen(req)
+print response.read()
