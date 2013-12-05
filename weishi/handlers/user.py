@@ -4,6 +4,7 @@ __author__ = 'young'
 import hashlib
 from weishi.libs.handler import BaseHandler
 from weishi.libs.const import EMAIL_REGEX, Role
+from weishi.form.user_form import SignupForm
 
 
 class AuthHandler(BaseHandler):
@@ -75,30 +76,29 @@ class SignUpHandler(AuthHandler):
             self.render("signup.html")
 
     def post(self, *args, **kwargs):
-        username = self.get_argument("username", None)
-        email = self.get_argument("email", None)
-        mobile = self.get_argument("mobile", None)
-        password = self.get_argument("password", None)
-        length = real_len(username)
+        signup_form = SignupForm(self.request.arguments)
+        length = real_len(signup_form.data['username'])
         if length < 4 or length > 20:
-            self.render("signup.html", error="用户名字符数在4-20之间，中文为两个字符！")
+            self.render("signup.html", form=signup_form, error='用户名长度在4-20之间，中文为两个字符！')
             return
-        if not EMAIL_REGEX.match(email):
-            self.render("signup.html", error="邮箱格式不符合要求！")
+        if not signup_form.validate():
+            errors = signup_form.errors
+            error = ''.join(errors.values()[0][0])
+            self.render("signup.html", form=signup_form, error=error)
             return
-        if not username or not email or not password:
-            self.render("signup.html", error="数据填写不完整！")
-            return
+        username = signup_form.data['username']
+        email = signup_form.data['email']
+        password = signup_form.data['password']
+        mobile = signup_form.data['mobile']
         user = self.db.get("select * from t_user where username = %s", username)
         if user:
-            self.render("signup.html", error="用户名被占用！")
+            print u"用户名被注册！"
+            self.render("signup.html", form=signup_form, error="用户名被占用！")
             return
         user = self.db.get("select * from t_user where email = %s", email)
         if user:
-            self.render("signup.html", error="邮箱被占用！")
-            return
-        if len(password) < 6:
-            self.render("signup.html", error="密码不能少于6位！")
+            print u"邮箱被占用！"
+            self.render("signup.html", form=signup_form, error="邮箱被占用！")
             return
         m = hashlib.md5()
         m.update(password + Role.SALT)

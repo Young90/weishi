@@ -3,8 +3,10 @@
 __author__ = 'young'
 import re
 
-
+# TODO 完善domain name
+DOMAIN_NAME = ''
 EMAIL_REGEX = re.compile(r"[^@]+@[^@]+\.[^@]+")
+
 
 class Role(object):
     """

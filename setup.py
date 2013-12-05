@@ -7,10 +7,10 @@ except ImportError:
     from distutils.core import setup
 
 setup(
-    install_requires=["tornado>=3",
+    install_requires=["tornado>=3.0",
                       "torndb>=0.1",
                       "qiniu",
                       "wtforms>1.0",
-                      "wtforms-tornado>=0.0.1",
+                      "wtforms-tornado>0",
     ],
 )
