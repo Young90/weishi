@@ -1,4 +1,7 @@
 /* adjust new style by shenguan */
+body {
+    font-family: Helvetica Neue, Microsoft Yahei, Hiragino Sans GB, WenQuanYi Micro Hei, sans-serif;
+}
 
 /* adjust new radius */
 pre,
@@ -112,3 +115,19 @@ pre,
   border-bottom-left-radius: 1px;
 }
 /* adjust new radius end */
+
+.modal.fade .modal-dialog {
+  -webkit-transform: scale(0.7);
+      -ms-transform: scale(0.7);
+          transform: scale(0.7);
+}
+
+.modal.in .modal-dialog {
+  -webkit-transform: scale(1);
+      -ms-transform: scale(1);
+          transform: scale(1);
+}
+
+.modal-footer {
+  padding: 10px 20px 12px;
+}

@@ -1,15 +1,28 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>登录微世</title>
+        <title>登录 - 微世</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <link rel="shortcut icon" href="{{static_url('img/favicon.ico')}}">
         <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.css')}}">
         <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.adjust.css')}}">
+        <link rel="stylesheet" type="text/css" href="{{static_url('css/login.css')}}">
     </head>
     <body>
-        <div class="container">
-
+        <div class="aside-bar"></div>
+        <div class="login-content">
+            <div class="login-logo">微世</div>
+            <div class="form-area">
+                <form action="/login" method="post" role="form">
+                    <input type="email" class="form-control" placeholder="用户名 / 邮箱">
+                    <input type="password" class="form-control" placeholder="您的密码">
+                    <div class="action-wrapper">
+                        <button type="submit" class="btn btn-primary">登录</button>
+                        <a href="/signup" class="signup-link">注册</a>
+                    </div>
+                </form>
+            </div>
         </div>
         <script type="text/javascript" src="{{static_url('js/jquery-1.10.2.min.js')}}"></script>
         <script type="text/javascript" src="{{static_url('js/bootstrap.min.js')}}"></script>
