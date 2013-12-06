@@ -18,14 +18,15 @@ class APIHandler(APIBaseHandler):
     """
 
     def get(self, aid):
+        print aid
         account = self._get_account_by_aid(aid)
         if not account:
             self.write('invalid account id')
             return
-        signature = self.get_argument('signature')
-        timestamp = self.get_argument('timestamp')
-        nonce = self.get_argument('nonce')
-        echostr = self.get_argument('echostr')
+        signature = self.get_argument('signature', '')
+        timestamp = self.get_argument('timestamp', '')
+        nonce = self.get_argument('nonce', '')
+        echostr = self.get_argument('echostr', '')
         token = account.token
         tmp_list = [token, timestamp, nonce]
         tmp_list.sort()
@@ -37,5 +38,5 @@ class APIHandler(APIBaseHandler):
 
 
 handlers = [
-    (r'/api/([^/+]', APIHandler)
+    (r'/api/([^/]+)', APIHandler)
 ]

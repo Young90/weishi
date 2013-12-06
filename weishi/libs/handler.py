@@ -4,7 +4,7 @@ from weishi.libs import const
 
 __author__ = 'young'
 
-from tornado.web import RequestHandler, HTTPError
+from tornado.web import RequestHandler
 
 
 class BaseHandler(RequestHandler):
@@ -31,11 +31,3 @@ class BaseHandler(RequestHandler):
     @property
     def is_admin(self):
         return self.current_user.role >= const.Role.ADMIN
-
-
-class ErrorHandler(BaseHandler):
-    """Default 404: Not Found handler."""
-
-    def prepare(self):
-        super(ErrorHandler, self).prepare()
-        raise HTTPError(404)
