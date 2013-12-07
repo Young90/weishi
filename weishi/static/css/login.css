@@ -25,19 +25,59 @@ html, body {
     width: 210px;
     height: 30px;
     margin-bottom: 30px;
-    background: url(../img/login-logo.png) 0 0 no-repeat;
+    background: url(../img/login/logo.png) 0 0 no-repeat;
     text-indent: -99999px;
 }
 
+.form-group{
+    margin-bottom: 30px;
+}
+
+.form-group span{
+    line-height: 46px;
+    color: #999;
+}
+
+.form-group.checking span{
+    padding-left: 25px;
+    background: url(../img/login/input-checking.gif) 0 center no-repeat;
+}
+
+.form-group.has-success span{
+    color: #3c763d;
+}
+
+.form-group.has-error span{
+    color: #a94442;
+}
+
 .form-control{
+    float: left;
     width: 300px;
     height: 50px;
     padding: 15px 12px;
-    margin-bottom: 30px;
+    margin-right: 20px;
 }
 
 .btn{
     padding: 10px 15px;
+}
+
+#loginBtn{
+    width: 60px;
+    height: 42px;
+}
+
+#signupBtn{
+    width: 88px;
+    height: 42px;
+}
+
+.btn .loading{
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background: url(../img/login/btn-loading.gif) center center no-repeat;
 }
 
 .signup-link{
