@@ -38,8 +38,6 @@ response = urllib2.urlopen(req)
 print response.read()
 """
 
-tmp_list = ['123', '侯西阳', 'bhf', 'ilhil']
-tmp_list.sort()
+tmp_list = {'r': 0}
+
 print tmp_list
-print ''.join(tmp_list)
-print hashlib.sha1(''.join(tmp_list)).hexdigest()

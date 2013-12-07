@@ -15,7 +15,7 @@ class Application(web.Application):
             debug=True,
             template_path=os.path.join(os.path.dirname(__file__), "weishi/templates"),
             static_path=os.path.join(os.path.dirname(__file__), "weishi/static"),
-            xsrf_cookies=False,
+            xsrf_cookies=True,
             cookie_secret="my secret",
         )
         super(Application, self).__init__(handlers, **settings)

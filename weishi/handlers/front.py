@@ -11,10 +11,10 @@ from weishi.libs.const import DOMAIN_NAME
 
 class FrontBaseHandler(BaseHandler):
     # 保存微信账号
-    def _create_account(self, app_id, app_name, app_account, token, aid):
-        self.db.excute('insert into t_account (data, app_id, app_name, app_account, token, aid, user_id) '
-                       'values (NOW(), %s, %s, %s, %s, %s)',
-                       app_id, app_name, app_account, token, aid, self.current_user.id)
+    def _create_account(self, wei_id, wei_name, wei_account, app_id, app_secret, token, aid):
+        self.db.excute('insert into t_account (data, wei_id, wei_name, wei_account, app_id, app_secret,'
+                       ' token, aid, user_id) values (NOW(), %s, %s, %s, %s, %s, %s, %s)',
+                       wei_id, wei_name, wei_account, app_id, app_secret, token, aid, self.current_user.id)
 
     # 从aid获取account
     def _get_account_by_aid(self, aid):
@@ -30,7 +30,7 @@ class FrontIndexHandler(BaseHandler):
     def get(self):
         user_id = self.current_user.id
         accounts = self.db.get('select * from t_account where user_id = %s', user_id)
-        self.render("index.html", accounts=accounts)
+        self.render('index.html', accounts=accounts)
 
 
 class AccountsHandler(FrontBaseHandler):
@@ -44,7 +44,7 @@ class AccountsHandler(FrontBaseHandler):
 
     @authenticated
     def get(self):
-        self.render("add_account.html")
+        self.render('add_account.html')
 
     @authenticated
     def post(self, *args, **kwargs):
@@ -52,26 +52,28 @@ class AccountsHandler(FrontBaseHandler):
         if not account_form.validate():
             errors = account_form.errors
             error = ''.join(errors.values()[0][0])
-            r = {"r": 0, "error": error}
+            r = {'r': 0, 'error': error}
             self.write(r)
             return
+        wei_id = account_form.data['wei_id']
+        wei_name = account_form.data['wei_name']
+        wei_account = account_form.data['wei_account']
         app_id = account_form.data['app_id']
-        app_name = account_form.data['app_name']
-        app_account = account_form.data['app_account']
+        app_secret = account_form.data['app_secret']
         aid = id_gen(9, string.ascii_lowercase)
         token = id_gen(6, string.digits)
-        self._create_account(app_id, app_name, app_account, token, aid)
+        self._create_account(wei_id, wei_name, wei_account, app_id, app_secret, token, aid)
         account = self._get_account_by_aid(aid)
 
         while account:
             aid = id_gen(9, string.ascii_lowercase)
             account = self._get_account_by_aid(aid)
 
-        r = {"r": 1, "token": token, "url": DOMAIN_NAME + "/api/" + aid}
+        r = {'r': 1, 'token': token, 'url': DOMAIN_NAME + '/api/' + aid}
         self.write(r)
 
 
 handlers = [
-    (r"/", FrontIndexHandler),
-    (r"/accounts", AccountsHandler),
+    (r'/', FrontIndexHandler),
+    (r'/accounts', AccountsHandler),
 ]

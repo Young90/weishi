@@ -42,9 +42,10 @@ class LoginHandler(AuthHandler):
     def post(self, *args, **kwargs):
         u = self.get_argument("user", None)
         p = self.get_argument("password", None)
-        self.db
+        result = {'r': 0}
         if not u or not p:
-            self.render("login.html", error="填写的数据不正确")
+            result['error'] = '填写的数据不正确'
+            self.write(result)
             return
         if EMAIL_REGEX.match(u):
             # 邮箱登录
@@ -53,15 +54,18 @@ class LoginHandler(AuthHandler):
             # 用户名登录
             user = self.db.get("select * from t_user where username = %s", u)
         if not user:
-            self.render("login.html", error="账号不存在或密码错误")
+            result['error'] = '账号不存在或密码错误'
+            self.write(result)
             return
         m = hashlib.md5()
         m.update(p + Role.SALT)
         if m.hexdigest() != user.password:
-            self.render("login.html", error="账号不存在或密码错误")
+            result['error'] = '账号不存在或密码错误'
+            self.write(result)
             return
         self._login(user)
-        self.redirect("/")
+        result['r'] = 1
+        self.write(result)
 
 
 class SignUpHandler(AuthHandler):
@@ -78,13 +82,16 @@ class SignUpHandler(AuthHandler):
     def post(self, *args, **kwargs):
         signup_form = SignupForm(self.request.arguments)
         length = real_len(signup_form.data['username'])
-        if length < 4 or length > 20:
-            self.render("signup.html", form=signup_form, error='用户名长度在4-20之间，中文为两个字符！')
-            return
+        result = {'r': 0}
         if not signup_form.validate():
             errors = signup_form.errors
             error = ''.join(errors.values()[0][0])
-            self.render("signup.html", form=signup_form, error=error)
+            result['error'] = error
+            self.write(result)
+            return
+        if length < 4 or length > 20:
+            result['error'] = '用户名长度在4-20之间，中文为两个字符！'
+            self.write(result)
             return
         username = signup_form.data['username']
         email = signup_form.data['email']
@@ -92,19 +99,20 @@ class SignUpHandler(AuthHandler):
         mobile = signup_form.data['mobile']
         user = self.db.get("select * from t_user where username = %s", username)
         if user:
-            print u"用户名被注册！"
-            self.render("signup.html", form=signup_form, error="用户名被占用！")
+            result['error'] = '用户名被占用'
+            self.write(result)
             return
         user = self.db.get("select * from t_user where email = %s", email)
         if user:
-            print u"邮箱被占用！"
-            self.render("signup.html", form=signup_form, error="邮箱被占用！")
+            result['error'] = '邮箱被占用'
+            self.write(result)
             return
         m = hashlib.md5()
         m.update(password + Role.SALT)
         password = m.hexdigest()
         self._create_user(username, email, password, mobile)
-        self.redirect("/")
+        result['r'] = 1
+        self.write(result)
 
 
 def real_len(username):

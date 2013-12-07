@@ -13,6 +13,7 @@ def authenticated(method):
     def wrapper(self, *args, **kwargs):
         if not self.current_user:
             self.redirect("/login")
+            return
         return method(self, *args, **kwargs)
 
     return wrapper
