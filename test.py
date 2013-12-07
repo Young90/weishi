@@ -3,6 +3,9 @@ __author__ = 'young'
 
 import urllib
 import urllib2
+import hashlib
+import xmltodict
+from weishi.libs.const import DOMAIN_NAME
 
 """
 m = hashlib.md5()
@@ -21,19 +24,17 @@ req = urllib2.Request(url, data)
 response = urllib2.urlopen(req)
 print response.read()
 """
-url = 'http://127.0.0.1:8888/api/Xsajk4Ml'
-values = '<xml>' \
-         '<ToUserName><![CDATA[toUser]]></ToUserName>' \
-         '<FromUserName><![CDATA[fromUser]]></FromUserName>' \
-         '<CreateTime>1348831860</CreateTime>' \
-         '<MsgType><![CDATA[text]]></MsgType>' \
-         '<Content><![CDATA[this is a test]]></Content>' \
-         '<MsgId>1234567890123456</MsgId>' \
-         '</xml>'
+url = 'http://127.0.0.1:8888/signup'
+values = {
+    'username': '侯西阳',
+    'email': '123456@cc.cc',
+    'password': '123457',
+    'mobile': '13524712918',
+}
 
-req = urllib2.Request(url, data=values, headers={'Content-Type': 'application/xml'})
+data = urllib.urlencode(values)
+req = urllib2.Request(url, data)
 response = urllib2.urlopen(req)
-print response.code()
 print response.read()
 """
 tmp_list = {'r': 0}
@@ -50,7 +51,7 @@ xml = '<xml>' \
       '<MsgId>1234567890123456</MsgId>' \
       '</xml>'
 
-message = xmltodict.parse(xml)['aa']
+message = xmltodict.parse(xml)['xml']
 
 print message['MsgType']
 """

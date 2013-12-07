@@ -59,8 +59,8 @@ class AccountsHandler(FrontBaseHandler):
             r = {'r': 0, 'error': error}
             self.write(r)
             return
-        aid = id_gen(9, string.ascii_lowercase)
-        token = id_gen(6, string.digits)
+        aid = id_gen(9, string.ascii_letters)
+        token = id_gen(6, string.ascii_lowercase)
         self._create_account(f.data['wei_id'], f.data['wei_name'], f.data['wei_account'],
                              f.data['app_id'], f.data['app_secret'], token, aid)
         account = self._get_account_by_aid(aid)

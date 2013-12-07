@@ -10,16 +10,16 @@ from weishi.form.user_form import SignupForm
 class AuthHandler(BaseHandler):
     # user login, update info
     def _login(self, user):
-        self.db.execute("update t_user set login_ip = %s, login_date = NOW(), login_count = %s "
-                        "where id = %s", self.request.remote_ip, user.login_count + 1, user.id)
-        self.set_secure_cookie("user", user.username, expires_days=15)
+        self.db.execute('update t_user set login_ip = %s, login_date = NOW(), login_count = %s '
+                        'where id = %s', self.request.remote_ip, user.login_count + 1, user.id)
+        self.set_secure_cookie('user', user.username, expires_days=15)
 
     # create user
     def _create_user(self, username, email, password, mobile):
-        self.db.execute("insert into t_user (date, username, email, password, mobile, signup_ip, login_ip, login_date)"
-                        " values (NOW(), %s, %s, %s, %s, %s, %s, NOW())", username, email, password, mobile,
+        self.db.execute('insert into t_user (date, username, email, password, mobile, signup_ip, login_ip, login_date)'
+                        ' values (NOW(), %s, %s, %s, %s, %s, %s, NOW())', username, email, password, mobile,
                         self.request.remote_ip, self.request.remote_ip)
-        self.set_secure_cookie("user", username, expires_days=15)
+        self.set_secure_cookie('user', username, expires_days=15)
 
 
 class LoginHandler(AuthHandler):
@@ -35,13 +35,13 @@ class LoginHandler(AuthHandler):
 
     def get(self):
         if self.current_user:
-            self.redirect("/")
+            self.redirect('/')
             return
-        self.render("login.html")
+        self.render('login.html')
 
     def post(self, *args, **kwargs):
-        u = self.get_argument("user", None)
-        p = self.get_argument("password", None)
+        u = self.get_argument('user', None)
+        p = self.get_argument('password', None)
         result = {'r': 0}
         if not u or not p:
             result['error'] = '填写的数据不正确'
@@ -49,18 +49,18 @@ class LoginHandler(AuthHandler):
             return
         if EMAIL_REGEX.match(u):
             # 邮箱登录
-            user = self.db.get("select * from t_user where email = %s", u)
+            user = self.db.get('select * from t_user where email = %s', u)
         else:
             # 用户名登录
-            user = self.db.get("select * from t_user where username = %s", u)
+            user = self.db.get('select * from t_user where username = %s', u)
         if not user:
-            result['error'] = '账号不存在或密码错误'
+            result['error'] = u'账号不存在或密码错误'
             self.write(result)
             return
         m = hashlib.md5()
         m.update(p + Role.SALT)
         if m.hexdigest() != user.password:
-            result['error'] = '账号不存在或密码错误'
+            result['error'] = u'账号不存在或密码错误'
             self.write(result)
             return
         self._login(user)
@@ -75,51 +75,38 @@ class SignUpHandler(AuthHandler):
 
     def get(self):
         if self.current_user:
-            self.redirect("/")
+            self.redirect('/')
         else:
-            self.render("signup.html")
+            self.render('signup.html')
 
     def post(self, *args, **kwargs):
-        signup_form = SignupForm(self.request.arguments)
-        length = real_len(signup_form.data['username'])
-        result = {'r': 0}
-        if not signup_form.validate():
-            errors = signup_form.errors
-            error = ''.join(errors.values()[0][0])
-            result['error'] = error
-            self.write(result)
+        f = SignupForm(self.request.arguments)
+        r = {'r': 0}
+        if not f.validate():
+            errors = f.errors
+            r['errors'] = errors
+            self.write(r)
             return
-        if length < 4 or length > 20:
-            result['error'] = '用户名长度在4-20之间，中文为两个字符！'
-            self.write(result)
-            return
-        username = signup_form.data['username']
-        email = signup_form.data['email']
-        password = signup_form.data['password']
-        mobile = signup_form.data['mobile']
-        user = self.db.get("select * from t_user where username = %s", username)
+        username = f.data['username']
+        email = f.data['email']
+        password = f.data['password']
+        mobile = f.data['mobile']
+        user = self.db.get('select * from t_user where username = %s', username)
         if user:
-            result['error'] = '用户名被占用'
-            self.write(result)
+            r['errors'] = {'username': [u'用户名被占用']}
+            self.write(r)
             return
-        user = self.db.get("select * from t_user where email = %s", email)
+        user = self.db.get('select * from t_user where email = %s', email)
         if user:
-            result['error'] = '邮箱被占用'
-            self.write(result)
+            r['error'] = {'email': [u'邮箱被占用']}
+            self.write(r)
             return
         m = hashlib.md5()
         m.update(password + Role.SALT)
         password = m.hexdigest()
         self._create_user(username, email, password, mobile)
-        result['r'] = 1
-        self.write(result)
-
-
-def real_len(username):
-    length = len(username)
-    utf_len = len(username.encode('utf-8'))
-    length += (utf_len - length) / 2
-    return length
+        r['r'] = 1
+        self.write(r)
 
 
 class LogoutHandler(AuthHandler):
@@ -128,8 +115,8 @@ class LogoutHandler(AuthHandler):
     """
 
     def get(self):
-        self.clear_cookie("user")
-        self.redirect("/")
+        self.clear_cookie('user')
+        self.redirect('/')
 
 
 class UserCheckHandler(AuthHandler):
@@ -141,13 +128,13 @@ class UserCheckHandler(AuthHandler):
     """
 
     def post(self, *args, **kwargs):
-        username = self.get_argument("username", None)
-        email = self.get_argument("email", None)
-        r = {"a": 1}
+        username = self.get_argument('username', None)
+        email = self.get_argument('email', None)
+        r = {'a': 1}
         if username:
-            user = self.db.get("select * from t_user where username = %s", username)
+            user = self.db.get('select * from t_user where username = %s', username)
         elif email:
-            user = self.db.get("select * from t_user where email = %s", email)
+            user = self.db.get('select * from t_user where email = %s', email)
         if user:
             r['a'] = 0
         else:
