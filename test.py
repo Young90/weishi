@@ -4,6 +4,7 @@ __author__ = 'young'
 import urllib
 import urllib2
 import hashlib
+import xmltodict
 from weishi.libs.const import DOMAIN_NAME
 
 """
@@ -23,11 +24,10 @@ req = urllib2.Request(url, data)
 response = urllib2.urlopen(req)
 print response.read()
 """
-"""
 url = 'http://127.0.0.1:8888/signup'
 values = {
     'username': '侯西阳',
-    'email': '123456@cc',
+    'email': '123456@cc.cc',
     'password': '123457',
     'mobile': '13524712918',
 }
@@ -37,9 +37,21 @@ req = urllib2.Request(url, data)
 response = urllib2.urlopen(req)
 print response.read()
 """
+tmp_list = {'r': 0}
 
-tmp_list = ['123', '侯西阳', 'bhf', 'ilhil']
-tmp_list.sort()
 print tmp_list
-print ''.join(tmp_list)
-print hashlib.sha1(''.join(tmp_list)).hexdigest()
+"""
+"""
+xml = '<xml>' \
+      '<ToUserName><![CDATA[toUser]]></ToUserName>' \
+      '<FromUserName><![CDATA[fromUser]]></FromUserName>' \
+      '<CreateTime>1348831860</CreateTime>' \
+      '<MsgType><![CDATA[text]]></MsgType>' \
+      '<Content><![CDATA[this is a test]]></Content>' \
+      '<MsgId>1234567890123456</MsgId>' \
+      '</xml>'
+
+message = xmltodict.parse(xml)['xml']
+
+print message['MsgType']
+"""
