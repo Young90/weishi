@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>添加公众账号 - 微世</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <link rel="shortcut icon" href="{{static_url('img/favicon.ico')}}">
+        <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.css')}}">
+        <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.adjust.css')}}">
+        <link rel="stylesheet" type="text/css" href="{{static_url('css/index.css')}}">
+    </head>
+    <body>
+        <div class="index-top-nav">
+            <a href="/" class="top-left-logo">weishi 微世</a>
+            <p class="rt">Cupid&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;<a href="/logout">退出</a></p>
+        </div>
+        <div class="wx-account-container">
+            <form action="/accounts"  method="post" id="addAccountForm" role="form">
+                <div class="head">
+                    <h1>添加微信公众账号</h1>
+                    <a href="/" class="btn btn-default btn-lg">« 返回</a>
+                    <button class="btn btn-primary btn-lg" type="submit" id="addAccountBtn">添加</button>
+                </div>
+                <div class="alert alert-danger" style="display: none;"></div>
+                <div class="add-account clearfix">
+                    <div class="form-group">
+                        <label class="control-label" for="weiAccount"><b>*</b>公众微信号</label>
+                        <input type="text" name="wei_account" class="form-control input-lg" id="weiAccount">
+                        <p class="help-block error-words">公众微信号没有填写</p>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label" for="weiName"><b>*</b>公众号名称</label>
+                        <input type="text" name="wei_name" class="form-control input-lg" id="weiName">
+                        <p class="help-block error-words">公众号名称没有填写</p>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label" for="weiId"><b>*</b>公众号id</label>
+                        <input type="text" name="wei_id" class="form-control input-lg" id="weiId">
+                        <p class="help-block error-words">公众号id没有填写</p>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">头像</label>
+                        <div class="avatar-group">
+                            <img src="{{static_url('img/default-logo-200.png')}}" alt="Default Avatar" class="df-avatar"/>
+                            <input type="file" name="avatar">
+                        </div>
+                        <p class="help-block">该头像仅显示在微世后台，并不会真正影响到微信上的头像。最好是大于200px×200px正方形的图片，不然会被拉伸或变形</p>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label" for="appId"><b>*</b>开发者模式appId</label>
+                        <input type="text" name="app_id" class="form-control input-lg" id="appId">
+                        <p class="help-block error-words">AppId没有填写</p>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label" for="appSecret"><b>*</b>开发者模式appSecret</label>
+                        <input type="text" name="app_secret" class="form-control input-lg" id="appSecret">
+                        <p class="help-block error-words">AppSecret没有填写</p>
+                    </div>
+                    <p class="help-block help-warning">请仔细核对 AppId 和 AppSecret，一经提交，不可修改。</p>
+                </div>
+            </form>
+        </div>
+        <script type="text/javascript" src="{{static_url('js/jquery-1.10.2.min.js')}}"></script>
+        <script type="text/javascript" src="{{static_url('js/bootstrap.min.js')}}"></script>
+        <script type="text/javascript" src="{{static_url('js/jquery.form.min.js')}}"></script>
+        <script type="text/javascript" src="{{static_url('js/accounts.js')}}"></script>
+    </body>
+</html>

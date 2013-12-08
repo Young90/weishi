@@ -1,15 +1,32 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>首页</title>
+        <title>选择公众账号 - 微世</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <link rel="shortcut icon" href="{{static_url('img/favicon.ico')}}">
         <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.css')}}">
         <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.adjust.css')}}">
+        <link rel="stylesheet" type="text/css" href="{{static_url('css/index.css')}}">
     </head>
     <body>
-        <div class="container">
-
+        <div class="index-top-nav">
+            <a href="/" class="top-left-logo">weishi 微世</a>
+            <p class="rt">Cupid&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;<a href="/logout">退出</a></p>
+        </div>
+        <div class="wx-account-container">
+            <div class="head">
+                <h1>选择公众账号</h1>
+            </div>
+            <div class="wx-accounts clearfix">
+                <a class="wx-account" href="">
+                    <img class="img-circle" src="{{static_url('img/default-logo-200.png')}}" alt="微世公众号"/>
+                    <p class="ofh">微世公众号</p>
+                </a>
+                <a class="wx-account" href="/accounts">
+                    <div class="add">添加微信公众账号</div>
+                </a>
+            </div>
         </div>
         <script type="text/javascript" src="{{static_url('js/jquery-1.10.2.min.js')}}"></script>
         <script type="text/javascript" src="{{static_url('js/bootstrap.min.js')}}"></script>

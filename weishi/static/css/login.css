@@ -73,13 +73,6 @@ html, body {
     height: 42px;
 }
 
-.btn .loading{
-    display: inline-block;
-    width: 20px;
-    height: 20px;
-    background: url(../img/login/btn-loading.gif) center center no-repeat;
-}
-
 .signup-link{
     color: #aaa;
     margin-left: 20px;
