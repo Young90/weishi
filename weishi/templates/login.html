@@ -15,6 +15,7 @@
             <div class="login-logo">微世</div>
             <div class="form-area">
                 <form action="/login" method="post" id="loginForm" role="form">
+                    {% raw xsrf_form_html() %}
                     <div class="form-group clearfix">
                         <input name="user" type="text" class="form-control" placeholder="用户名 / 邮箱">
                     </div>
