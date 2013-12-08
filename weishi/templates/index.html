@@ -22,7 +22,11 @@
                 {% if accounts %}
                 {% for account in accounts %}
                 <a class="wx-account" href="/account/{{ account.aid }}">
+                    {% if account.avatar %}
+                    <img class="img-circle" src="{{account.avatar}}?imageView/1/w/200/h/200" alt="{{ account.wei_name }}"/>
+                    {% else %}
                     <img class="img-circle" src="{{static_url('img/default-logo-200.png')}}" alt="{{ account.wei_name }}"/>
+                    {% end %}
                     <p class="ofh">{{ account.wei_name }}</p>
                 </a>
                 {% end %}

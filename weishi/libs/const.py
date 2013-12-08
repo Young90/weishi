@@ -21,8 +21,9 @@ class Image(object):
     """
     更图片相关的常量
     """
-    BUCKET_NAME = "zhuangxiutai"
-    URL_PREFIX = "http://zhuangxiutai.u.qiniudn.com/%s"
-    URL_PREFIX_NO_HTTP = "zhuangxiutai.u.qiniudn.com/%s"
+    BUCKET_NAME = "weishi"
+    URL_PREFIX = "http://weishi.u.qiniudn.com/%s"
+    URL_PREFIX_NO_HTTP = "weishi.u.qiniudn.com/%s"
     FOLDER_ARTICLE = "article"
+    FOLDER_AVATAR = "avatar"
     MIME_TYPE_JPG = "image/jpeg"

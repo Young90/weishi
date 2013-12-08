@@ -7,14 +7,16 @@ from weishi.libs.decorators import authenticated
 from weishi.form.front_from import AccountForm
 from weishi.libs.id_generator import id_gen
 from weishi.libs.const import DOMAIN_NAME
+from weishi.libs.image import upload
+from weishi.libs.const import Image
 
 
 class FrontBaseHandler(BaseHandler):
-    def _create_account(self, wei_id, wei_name, wei_account, app_id, app_secret, token, aid):
+    def _create_account(self, wei_id, wei_name, wei_account, app_id, app_secret, token, aid, avatar):
         """创建微信账号记录"""
         self.db.execute("insert into t_account (date, wei_id, wei_name, wei_account, app_id, app_secret,"
-                        " token, aid, user_id) values (NOW(), %s, %s, %s, %s, %s, %s, %s, %s)",
-                        wei_id, wei_name, wei_account, app_id, app_secret, token, aid, self.current_user.id)
+                        " token, aid, avatar, user_id) values (NOW(), %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                        wei_id, wei_name, wei_account, app_id, app_secret, token, aid, avatar, self.current_user.id)
 
     def _delete_account(self, aid, user_id):
         """删除账号记录"""
@@ -33,7 +35,9 @@ class FrontIndexHandler(BaseHandler):
     @authenticated
     def get(self):
         user_id = self.current_user.id
-        accounts = self.db.get('select * from t_account where user_id = %s', user_id)
+        accounts = self.db.query('select * from t_account where user_id = %s', user_id)
+        for account in accounts:
+            print account.wei_name
         self.render('index.html', accounts=accounts)
 
 
@@ -59,6 +63,13 @@ class AccountsHandler(FrontBaseHandler):
             r = {'r': 0, 'error': error}
             self.write(r)
             return
+        try:
+            if self.request.files['avatar']:
+                file_body = self.request.files['avatar'][0]['body']
+                url = upload(file_body, Image.FOLDER_AVATAR)
+        except KeyError:
+            url = None
+        print url
         aid = id_gen(9, string.ascii_letters)
         token = id_gen(6, string.ascii_lowercase)
         account = self._get_account_by_aid(aid)
@@ -68,7 +79,7 @@ class AccountsHandler(FrontBaseHandler):
             account = self._get_account_by_aid(aid)
 
         self._create_account(f.data['wei_id'], f.data['wei_name'], f.data['wei_account'],
-                             f.data['app_id'], f.data['app_secret'], token, aid)
+                             f.data['app_id'], f.data['app_secret'], token, aid, url)
 
         r = {'r': 1, 'token': token, 'url': DOMAIN_NAME + '/api/' + aid}
         self.write(r)
