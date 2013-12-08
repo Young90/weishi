@@ -15,7 +15,7 @@ class AccountForm(Form):
     ])
     wei_id = StringField('wei_id', validators=[
         validators.input_required(message=u'公众账号id不能为空'),
-        validators.length(min=10, max=20, message=u'公众账号id长度不正确'),
+        validators.length(max=20, message=u'公众账号id长度过长'),
     ])
     wei_account = StringField('wei_account', validators=[
         validators.input_required(message=u'微信号不能为空'),
