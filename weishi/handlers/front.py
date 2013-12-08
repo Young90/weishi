@@ -12,9 +12,9 @@ from weishi.libs.const import DOMAIN_NAME
 class FrontBaseHandler(BaseHandler):
     def _create_account(self, wei_id, wei_name, wei_account, app_id, app_secret, token, aid):
         """创建微信账号记录"""
-        self.db.excute('insert into t_account (data, wei_id, wei_name, wei_account, app_id, app_secret,'
-                       ' token, aid, user_id) values (NOW(), %s, %s, %s, %s, %s, %s, %s)',
-                       wei_id, wei_name, wei_account, app_id, app_secret, token, aid, self.current_user.id)
+        self.db.execute("insert into t_account (date, wei_id, wei_name, wei_account, app_id, app_secret,"
+                        " token, aid, user_id) values (NOW(), %s, %s, %s, %s, %s, %s, %s, %s)",
+                        wei_id, wei_name, wei_account, app_id, app_secret, token, aid, self.current_user.id)
 
     def _delete_account(self, aid, user_id):
         """删除账号记录"""
@@ -61,13 +61,14 @@ class AccountsHandler(FrontBaseHandler):
             return
         aid = id_gen(9, string.ascii_letters)
         token = id_gen(6, string.ascii_lowercase)
-        self._create_account(f.data['wei_id'], f.data['wei_name'], f.data['wei_account'],
-                             f.data['app_id'], f.data['app_secret'], token, aid)
         account = self._get_account_by_aid(aid)
 
         while account:
             aid = id_gen(9, string.ascii_lowercase)
             account = self._get_account_by_aid(aid)
+
+        self._create_account(f.data['wei_id'], f.data['wei_name'], f.data['wei_account'],
+                             f.data['app_id'], f.data['app_secret'], token, aid)
 
         r = {'r': 1, 'token': token, 'url': DOMAIN_NAME + '/api/' + aid}
         self.write(r)
