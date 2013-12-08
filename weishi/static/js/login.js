@@ -3,8 +3,24 @@
 // bind submit handler to #loginForm
 $('#loginForm').on('submit', function(e) {
     e.preventDefault(); // prevent native submit
+    var submitBtn = $('#loginBtn'),
+        btnText = '登录';
     $(this).ajaxSubmit({
-        target: 'myResultsDiv'
+        dataType: 'json',
+        beforeSubmit: function(){
+            changeBtnStatus(submitBtn,'loading');
+        },
+        success: function(data){
+            if(data.r == 1){
+                window.location.href = '/';
+            }else{
+                $('.login-error-words').text(data.error);
+                changeBtnStatus(submitBtn,'normal',btnText);
+            }
+        },
+        error: function(){
+            changeBtnStatus(submitBtn,'normal',btnText);
+        }
     })
 });
 
@@ -38,8 +54,23 @@ $('#signupForm').on('submit', function(e) {
             changeBtnStatus(submitBtn,'loading');
         },
         success: function(data){
-            alert(data);
-            console.log(data);
+            if(data.r == 1){
+                window.location.href = '/';
+            }else{
+                if(data.errors.username){
+                    setInputStatus($('#usernameInput').parent(),'has-error',data.errors.username[0]);
+                }
+                if(data.errors.email){
+                    setInputStatus($('#emailInput').parent(),'has-error',data.errors.email[0]);
+                }
+                if(data.errors.password){
+                    setInputStatus($('#passwordInput').parent(),'has-error',data.errors.password[0]);
+                }
+                if(data.errors.mobile){
+                    setInputStatus($('#mobileInput').parent(),'has-error',data.errors.mobile[0]);
+                }
+                changeBtnStatus(submitBtn,'normal',btnText);
+            }
         },
         error: function(){
             changeBtnStatus(submitBtn,'normal',btnText);
@@ -117,7 +148,7 @@ function checkUsername(tg,ac){
         }
         if(nameLen >=4 && nameLen<=20){
             var params = {"username" : username};
-            checkInputValue(params, formGroup, '用户名已经被占用!');
+            checkInputValue(params, formGroup, '用户名被占用!');
         }
     }
     if(ac == 'submit' && nameLen == 0){
@@ -145,7 +176,7 @@ function checkEmail(tg,ac){
     }
     if(re.test(email) && ac == 'blur'){
         var params = {"email" : email};
-        checkInputValue(params, formGroup, '用户名已经被占用!');
+        checkInputValue(params, formGroup, '邮箱被占用!');
     }
     return true;
 }

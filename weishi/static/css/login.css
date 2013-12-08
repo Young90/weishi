@@ -85,3 +85,8 @@ html, body {
     margin-left: 20px;
     font-size: 14px;
 }
+
+.login-error-words{
+    color: #a94442;
+    margin-left: 20px;
+}
