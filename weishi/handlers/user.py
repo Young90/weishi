@@ -98,7 +98,7 @@ class SignUpHandler(AuthHandler):
             return
         user = self.db.get('select * from t_user where email = %s', email)
         if user:
-            r['error'] = {'email': [u'邮箱被占用']}
+            r['errors'] = {'email': [u'邮箱被占用']}
             self.write(r)
             return
         m = hashlib.md5()

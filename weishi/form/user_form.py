@@ -14,6 +14,12 @@ def username_check(form, field):
         raise ValidationError(u'用户名长度在4-20之间，中文长度为2')
 
 
+def mobile_check(form, field):
+    if field.data and field.data != '':
+        if len(field.data) != 11:
+            raise ValidationError(u'手机号码不正确')
+
+
 class SignupForm(Form):
     username = StringField(u'username', validators=[
         validators.input_required(message=u'用户名不能为空！'),
@@ -28,6 +34,4 @@ class SignupForm(Form):
         validators.input_required(message=u'密码不能为空！'),
         validators.length(min=6, max=20, message=u'密码长度在6-20之间！')
     ])
-    mobile = StringField(u'mobile', validators=[
-        validators.length(min=11, max=11, message=u'手机号不正确！')
-    ])
+    mobile = StringField(u'mobile', validators=[mobile_check])
