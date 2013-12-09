@@ -24,6 +24,7 @@ req = urllib2.Request(url, data)
 response = urllib2.urlopen(req)
 print response.read()
 """
+"""
 url = 'http://127.0.0.1:8888/signup'
 values = {
     'username': '侯西阳',
@@ -36,6 +37,7 @@ data = urllib.urlencode(values)
 req = urllib2.Request(url, data)
 response = urllib2.urlopen(req)
 print response.read()
+"""
 """
 tmp_list = {'r': 0}
 
@@ -55,3 +57,7 @@ message = xmltodict.parse(xml)['xml']
 
 print message['MsgType']
 """
+
+from weishi.libs.wei_api import get_access_token
+
+print get_access_token('wxd9b153fd2a25e52f', 'c430cc9ae3891ba936750c320a0789fd')
