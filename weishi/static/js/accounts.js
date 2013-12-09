@@ -15,7 +15,10 @@ $('#addAccountForm').on('submit', function(e) {
         },
         success: function(data){
             if(data.r == 1){
-                //window.location.href = '/';
+                changeBtnStatus(submitBtn,'disabled','完成');
+                $('#weishiToken').text(data.token);
+                $('#weishiUrl').text(data.url);
+                $('#myModal').modal('show');
             }else{
                 $('.alert-danger').text(data.error).fadeIn();
                 changeBtnStatus(submitBtn,'normal',btnText);
@@ -34,6 +37,8 @@ var changeBtnStatus = function(btn,status,text){
         btn.attr('disabled','disabled').html(btnLoading);
     }else if(status == 'normal'){
         btn.removeAttr('disabled').html(text);
+    }else if(status == 'disabled'){
+        btn.attr('disabled','disabled').html(text);
     }
 }
 

@@ -61,6 +61,31 @@
                 </div>
             </form>
         </div>
+        <!-- Modal -->
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="myModalLabel" style="text-align: center;">添加成功</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>微信公众账号添加成功，请打开微信后台，在【高级功能】-【开发模式】里面填写下面由微世提供的token和url。</p>
+                        <div class="form-group">
+                            <label class="control-label">token</label>
+                            <p class="callout-info" id="weishiToken"></p>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">url</label>
+                            <p class="callout-info" id="weishiUrl"></p>
+                        </div>
+                        <p class="help-block">（请不要在任何地方泄露你的token和url，如需截图，请记得抹掉）</p>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="/" class="btn btn-primary">完成</a>
+                    </div>
+                </div>
+            </div>
+        </div>
         <script type="text/javascript" src="{{static_url('js/jquery-1.10.2.min.js')}}"></script>
         <script type="text/javascript" src="{{static_url('js/bootstrap.min.js')}}"></script>
         <script type="text/javascript" src="{{static_url('js/jquery.form.min.js')}}"></script>
