@@ -3,8 +3,7 @@
 __author__ = 'young'
 import re
 
-# TODO 完善domain name
-DOMAIN_NAME = ''
+DOMAIN_NAME = 'http://wsmt.sinaapp.com'
 EMAIL_REGEX = re.compile(r"[^@]+@[^@]+\.[^@]+")
 
 
