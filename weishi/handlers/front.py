@@ -36,8 +36,6 @@ class FrontIndexHandler(BaseHandler):
     def get(self):
         user_id = self.current_user.id
         accounts = self.db.query('select * from t_account where user_id = %s', user_id)
-        for account in accounts:
-            print account.wei_name
         self.render('index.html', accounts=accounts)
 
 

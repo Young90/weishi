@@ -20,6 +20,7 @@ def connect():
         database=options.database,
         user=options.user,
         password=options.password,
+        max_idle_time=25
     )
 
     # 每隔一段时间ping数据库
