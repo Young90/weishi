@@ -5,6 +5,8 @@ import urllib2
 import ast
 
 ACCESS_TOKEN_URL = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s'
+FANS_LIST_URL = 'https://api.weixin.qq.com/cgi-bin/user/get?access_token=%s'
+FANS_LIST_URL_CONTINUE = 'https://api.weixin.qq.com/cgi-bin/user/get?access_token=%s&next_openid=%s'
 
 
 def get_access_token(app_id, app_secret):
@@ -16,7 +18,6 @@ def get_access_token(app_id, app_secret):
 
 def read_url(url):
     """从url中读取信息"""
-    print url
     request = urllib2.Request(url)
     response = urllib2.urlopen(request)
     return response.read()
