@@ -72,7 +72,7 @@ class APIHandler(APIBaseHandler):
         if not account:
             raise HTTPError(404)
         echostr = self.get_argument('echostr', '')
-        if not self._validate_signature(account):
+        if self._validate_signature(account):
             self._check_account(aid)
             wei_api.get_access_token(account, wei_api.sync_fans_list, self._add_fans)
             print 'api.py get end...'
