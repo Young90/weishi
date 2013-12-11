@@ -8,12 +8,14 @@ import tornado.gen
 from tornado.httpclient import AsyncHTTPClient
 from weishi.libs.decorators import authenticated
 from weishi.libs.handler import BaseHandler
-from weishi.libs.wei_api import ACCESS_TOKEN_URL, FANS_LIST_URL
+from weishi.libs.wei_api import WeiAPI
+from weishi.libs.wei_api import FANS_LIST_URL
 
 
-class AccountBaseHandler(BaseHandler):
+class AccountBaseHandler(BaseHandler, WeiAPI):
     """
     用户管理微信号的base handler
+    用户进入/account/{aid}/*的页面，保证获取的access_token可用
     """
 
     account = None
@@ -33,24 +35,18 @@ class AccountBaseHandler(BaseHandler):
             raise HTTPError(403)
             return
         if not account.expires or account.expires < datetime.datetime.now():
-            url = ACCESS_TOKEN_URL % (account.app_id, account.app_secret)
-            client = AsyncHTTPClient()
-            client.fetch(url, self._get_access_token)
+            self.get_access_token(account, self._update_account_token)
         AccountBaseHandler.account = account
 
-    def _get_access_token(self, response):
+    def _update_account_token(self, a):
         """当access_token过期后，获取微信的access_token"""
-        body = json.loads(response.body)
-        if body['access_token']:
-            access_token = body['access_token']
-            time = datetime.datetime.now() + datetime.timedelta(seconds=7000)
-            self.account.access_token = access_token
-            self.account.expires = time
-            self.db.execute('update t_account set access_token = %s, expires = %s where aid = %s',
-                            access_token, time, self.account.aid)
-        else:
-            raise HTTPError(404)
-        self.finish()
+        access_token = a.access_token
+        time = a.expires
+        print access_token
+        self.account.access_token = access_token
+        self.account.expires = time
+        self.db.execute('update t_account set access_token = %s, expires = %s where aid = %s',
+                        access_token, time, self.account.aid)
 
 
 class AccountIndexHandler(AccountBaseHandler):
@@ -59,6 +55,7 @@ class AccountIndexHandler(AccountBaseHandler):
     """
 
     def get(self, aid):
+        print 'get method ...'
         self.render('account/index.html', account=self.account)
 
 
