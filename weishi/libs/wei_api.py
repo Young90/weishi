@@ -49,6 +49,8 @@ class WeiAPI(object):
         print body
         try:
             total = body['total']
+            count = body['count']
+
         except KeyError:
             print body
         if callback:
