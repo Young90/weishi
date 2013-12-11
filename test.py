@@ -62,7 +62,12 @@ from weishi.libs.wei_api import get_access_token
 
 print get_access_token('wxd9b153fd2a25e52f', 'c430cc9ae3891ba936750c320a0789fd')
 """
+"""
 import datetime
 
 now = datetime.datetime.now()
 print now < now + datetime.timedelta(seconds=1000)
+"""
+
+for i in range(10):
+    print i

@@ -1,18 +1,15 @@
 #coding:utf-8
 __author__ = 'young'
 
-import json
 import datetime
 from tornado.web import HTTPError, asynchronous
 import tornado.gen
-from tornado.httpclient import AsyncHTTPClient
 from weishi.libs.decorators import authenticated
 from weishi.libs.handler import BaseHandler
-from weishi.libs.wei_api import WeiAPI
-from weishi.libs.wei_api import FANS_LIST_URL
+from weishi.libs import wei_api
 
 
-class AccountBaseHandler(BaseHandler, WeiAPI):
+class AccountBaseHandler(BaseHandler):
     """
     用户管理微信号的base handler
     用户进入/account/{aid}/*的页面，保证获取的access_token可用
@@ -35,18 +32,21 @@ class AccountBaseHandler(BaseHandler, WeiAPI):
             raise HTTPError(403)
             return
         if not account.expires or account.expires < datetime.datetime.now():
-            self.get_access_token(account, self._update_account_token)
+            wei_api.get_access_token(account, self._update_account_token)
         AccountBaseHandler.account = account
 
-    def _update_account_token(self, a):
+    def _update_account_token(self, account):
         """当access_token过期后，获取微信的access_token"""
-        access_token = a.access_token
-        time = a.expires
-        print access_token
-        self.account.access_token = access_token
-        self.account.expires = time
+        print 'account.py _update_account_token start...'
+        self.account['access_token'] = account.access_token
+        self.account['expires'] = account.expires
         self.db.execute('update t_account set access_token = %s, expires = %s where aid = %s',
-                        access_token, time, self.account.aid)
+                        self.account.access_token, self.account.expires, self.account.aid)
+        print 'account.py _update_account_token end...'
+
+    def _get_fans(self):
+        """获取账号的所有粉丝"""
+        return self.db.query('select * from t_fans where aid = %s', self.account.aid)
 
 
 class AccountIndexHandler(AccountBaseHandler):
@@ -55,30 +55,22 @@ class AccountIndexHandler(AccountBaseHandler):
     """
 
     def get(self, aid):
-        print 'get method ...'
+        print 'account.py index start...'
         self.render('account/index.html', account=self.account)
+        print 'account.py index end...'
 
 
 class AccountFansHandler(AccountBaseHandler):
     """
-    异步从微信服务器获取粉丝数量
-    显示已经同步的列表
+    查看公共账号的所有粉丝
     """
 
     @tornado.gen.coroutine
     def get(self, aid):
-        access_token = self.account.access_token
-        url = FANS_LIST_URL % access_token
-        client = AsyncHTTPClient()
-        response = yield tornado.gen.Task(client.fetch, url)
-        body = json.loads(response.body)
-        print body
-        try:
-            total = body['total']
-        except KeyError:
-            total = 0
-        self.write(str(total))
-        self.finish()
+        print 'account.py fans_list start...'
+        fans = self._get_fans()
+        print 'account.py fans_list end...'
+        self.render('account/index.html', fans=fans, account=self.account)
 
 
 handlers = [
