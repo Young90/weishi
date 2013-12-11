@@ -28,12 +28,20 @@ class APIBaseHandler(BaseHandler):
         """将粉丝插入数据库"""
         print 'apy.py _add_fans start...'
         for user in users:
-            self.db.execute('insert into t_fans (date, openid, nickname, sex, country, province, '
-                            'city, avatar, subscribe_time, aid) values (NOW(), %s, %s, %s, %s, %s, %s, '
-                            '%s, %s, %s)', user['openid'], user['nickname'], user['sex'],
-                            user['country'], user['province'], user['city'],
-                            user['headimgurl'], user['subscribe_time'], aid)
+            print user
+            self._add_single_fan(user, aid)
         print 'apy.py _add_fans end...'
+
+    def _add_single_fan(self, user, aid):
+        """添加单个粉丝用户信息"""
+        self.db.execute('insert into t_fans (date, openid, nickname, sex, country, province, city, avatar, '
+                        'subscribe_time, language, aid) values (NOW(), %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
+                        user['openid'], user['nickname'], user['sex'], user['country'], user['province'],
+                        user['city'], user['headimgurl'], user['subscribe_time'], user['language'], aid)
+
+    def _remove_fans(self, openid):
+        """取消关注，移除粉丝"""
+        self.db.execute('delete from t_fans where openid = %s', openid)
 
     def _validate_signature(self, account):
         """
@@ -57,6 +65,11 @@ class APIBaseHandler(BaseHandler):
         except KeyError:
             return None
 
+    def _update_account_token(self, account):
+        """需要access_token的操作，获取access_token后保存"""
+        self.db.execute('update t_account set access_token = %s, expires = %s',
+                        account.access_token, account.expires)
+
 
 class APIHandler(APIBaseHandler):
     """
@@ -72,7 +85,7 @@ class APIHandler(APIBaseHandler):
         if not account:
             raise HTTPError(404)
         echostr = self.get_argument('echostr', '')
-        if self._validate_signature(account):
+        if not self._validate_signature(account):
             self._check_account(aid)
             wei_api.get_access_token(account, wei_api.sync_fans_list, self._add_fans)
             print 'api.py get end...'
@@ -82,14 +95,27 @@ class APIHandler(APIBaseHandler):
 
     def post(self, aid, *args, **kwargs):
         """POST请求为微信服务器针对用户操作做出的响应"""
-        # TODO 后续需要完善各种信息类型的处理
         account = self._get_account_by_aid(aid)
         if not account:
             raise HTTPError(404)
+        if not wei_api.access_token_available(account):
+            wei_api.get_access_token(account, self._update_account_token)
         message = self._get_message()
-        print message
         if not message:
             raise HTTPError(404)
+        print message
+        if message['MsgType'] == 'event' and message['event'] == 'subscribe':
+            """用户关注该账号"""
+            openid = message['FromUserName']
+            print openid
+            wei_api.get_user_info(account, openid, self._add_single_fan)
+            return
+        if message['MsgType'] == 'event' and message['event'] == 'unsubscribe':
+            """用户取消关注账号"""
+            openid = message['FromUserName']
+            print openid
+            self._remove_fans(openid)
+            return
 
 
 handlers = [

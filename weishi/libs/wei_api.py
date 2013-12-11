@@ -13,6 +13,17 @@ FANS_LIST_URL_CONTINUE = 'https://api.weixin.qq.com/cgi-bin/user/get?access_toke
 FANS_INFO_URL = 'https://api.weixin.qq.com/cgi-bin/user/info?access_token=%s&openid=%s'
 
 
+def access_token_available(account):
+    """验证access_token是否可用"""
+    if not account.access_token:
+        return False
+    if not account.expires:
+        return False
+    if datetime.datetime.now() > account.expires:
+        return False
+    return True
+
+
 @gen.coroutine
 def get_access_token(account, callback, *args):
     """如果access_token过期或为空则获取access_token"""
@@ -30,9 +41,9 @@ def get_access_token(account, callback, *args):
             account['expires'] = time
     except KeyError:
         print body
+    print 'wei_api.py get_access_token end...'
     if callback:
         callback(account, *args)
-    print 'wei_api.py get_access_token end...'
 
 
 @gen.coroutine
@@ -74,7 +85,27 @@ def sync_fans_list(account, *callback):
                     users.append(body)
             except KeyError:
                 continue
+    print 'wei_api.py sync_fans_list end...'
     if callback:
         method = callback[0]
         method(users, account.aid)
-    print 'wei_api.py sync_fans_list end...'
+
+
+@gen.coroutine
+def get_user_info(account, openid, *callback):
+    """获取用户信息"""
+    print 'wei_api.py get_user_info start...'
+    client = AsyncHTTPClient(max_clients=20)
+    url = FANS_INFO_URL % (account.access_token, openid)
+    response = yield gen.Task(client.fetch, url)
+    body = json.loads(response.body)
+    try:
+        subscribe = body['subscribe']
+        if subscribe:
+            user = body
+    except KeyError:
+        print body
+    print 'wei_api.py get_user_info end...'
+    if callback:
+        method = callback[0]
+        method(user, account.aid)

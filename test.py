@@ -1,12 +1,6 @@
 #coding:utf-8
 __author__ = 'young'
 
-import urllib
-import urllib2
-import hashlib
-import xmltodict
-from weishi.libs.const import DOMAIN_NAME
-
 """
 m = hashlib.md5()
 m.update('123456' + 'SSSS')
@@ -69,5 +63,6 @@ now = datetime.datetime.now()
 print now < now + datetime.timedelta(seconds=1000)
 """
 
-for i in range(10):
-    print i
+import math
+
+print int(math.ceil(10 / 3))

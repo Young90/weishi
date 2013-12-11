@@ -1,9 +1,8 @@
 #coding:utf-8
 __author__ = 'young'
 
-import datetime
+import math
 from tornado.web import HTTPError, asynchronous
-import tornado.gen
 from weishi.libs.decorators import authenticated
 from weishi.libs.handler import BaseHandler
 from weishi.libs import wei_api
@@ -31,7 +30,7 @@ class AccountBaseHandler(BaseHandler):
         if account.user_id != self.current_user.id:
             raise HTTPError(403)
             return
-        if not account.expires or account.expires < datetime.datetime.now():
+        if not wei_api.access_token_available(account):
             wei_api.get_access_token(account, self._update_account_token)
         AccountBaseHandler.account = account
 
@@ -44,9 +43,10 @@ class AccountBaseHandler(BaseHandler):
                         self.account.access_token, self.account.expires, self.account.aid)
         print 'account.py _update_account_token end...'
 
-    def _get_fans(self):
+    def _get_fans(self, start, end):
         """获取账号的所有粉丝"""
-        return self.db.query('select * from t_fans where aid = %s', self.account.aid)
+        return self.db.query('select * from t_fans where aid = %s limit %s, %s',
+                             self.account.aid, start, end)
 
 
 class AccountIndexHandler(AccountBaseHandler):
@@ -65,12 +65,16 @@ class AccountFansHandler(AccountBaseHandler):
     查看公共账号的所有粉丝
     """
 
-    @tornado.gen.coroutine
     def get(self, aid):
         print 'account.py fans_list start...'
-        fans = self._get_fans()
+        start = self.get_argument('start', 0)
+        page_size = 10
+        fans = self.db.query('select * from t_fans where aid = %s limit %s, %s', aid, start + page_size, page_size)
+        total = self.db.get('select count(*) from t_fans where aid = %s', aid)
+        total_page = int(math.ceil(float(total) / page_size))
+        self.render('account/index.html', fans=fans, account=self.account, total=total,
+                    start=start, total_page=total_page, page_size=page_size)
         print 'account.py fans_list end...'
-        self.render('account/index.html', fans=fans, account=self.account)
 
 
 handlers = [
