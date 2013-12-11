@@ -3,6 +3,7 @@ __author__ = 'young'
 
 import hashlib
 import xmltodict
+import datetime
 from tornado.web import HTTPError
 
 from weishi.libs.handler import BaseHandler
@@ -37,7 +38,8 @@ class APIBaseHandler(BaseHandler):
         self.db.execute('insert into t_fans (date, openid, nickname, sex, country, province, city, avatar, '
                         'subscribe_time, language, aid) values (NOW(), %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
                         user['openid'], user['nickname'], user['sex'], user['country'], user['province'],
-                        user['city'], user['headimgurl'], user['subscribe_time'], user['language'], aid)
+                        user['city'], user['headimgurl'], datetime.datetime.fromtimestamp(int(user['subscribe_time'])),
+                        user['language'], aid)
 
     def _remove_fans(self, openid):
         """取消关注，移除粉丝"""
