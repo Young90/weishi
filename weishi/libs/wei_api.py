@@ -20,18 +20,36 @@ class WeiAPI(object):
 
     @gen.coroutine
     def get_access_token(self, account, callback):
-        """获取access_token"""
+        """如果access_token过期或为空则获取access_token"""
         WeiAPI.a = account
         client = AsyncHTTPClient(max_clients=20)
         url = ACCESS_TOKEN_URL % (account.app_id, account.app_secret)
         response = yield gen.Task(client.fetch, url)
         body = json.loads(response.body)
-        print body
-        if body['access_token']:
-            access_token = body['access_token']
-            # 计算access_token过期时间，为了保证可用，比官方时间少200s
-            time = datetime.datetime.now() + datetime.timedelta(seconds=7000)
-            self.a.access_token = access_token
-            self.a.expires = time
+        try:
+            if body['access_token']:
+                access_token = body['access_token']
+                # 计算access_token过期时间，为了保证可用，比官方时间少200s
+                time = datetime.datetime.now() + datetime.timedelta(seconds=7000)
+                self.a.access_token = access_token
+                self.a.expires = time
+        except KeyError:
+            self.a.error = 'app_id app_secret可能不正确'
         if callback:
             callback(self.a)
+
+    @gen.coroutine
+    def sync_fans_list(self, account, callback):
+        """同步账号的粉丝列表"""
+        WeiAPI.a = account
+        client = AsyncHTTPClient(max_clients=20)
+        url = FANS_LIST_URL % account.access_token
+        response = yield gen.Task(client.fetch, url)
+        body = json.loads(response.body)
+        print body
+        try:
+            total = body['total']
+        except KeyError:
+            print body
+        if callback:
+            client(self.a)

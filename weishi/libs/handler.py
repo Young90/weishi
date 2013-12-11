@@ -18,7 +18,8 @@ class BaseHandler(RequestHandler):
 
         super(BaseHandler, self).__init__(application, request, **kwargs)
 
-    def _after_prefork(self):
+    @staticmethod
+    def _after_prefork():
         db.connect()
         BaseHandler.db = db.conn.mysql
 
