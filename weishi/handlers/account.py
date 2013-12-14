@@ -69,9 +69,9 @@ class AccountFansHandler(AccountBaseHandler):
         print 'account.py fans_list start...'
         start = self.get_argument('start', 0)
         page_size = 10
-        fans = self.db.query('select * from t_fans where aid = %s limit %s, %s', aid, start + page_size, page_size)
-        total = self.db.get('select count(*) from t_fans where aid = %s', aid)
-        total_page = int(math.ceil(float(total) / page_size))
+        fans = self.db.query('select * from t_fans where aid = %s limit %s, %s', aid, start, page_size)
+        total = self.db.execute_rowcount('select count(*) from t_fans where aid = %s', aid)
+        total_page = math.ceil(float(total) / page_size)
         self.render('account/index.html', fans=fans, account=self.account, total=total,
                     start=start, total_page=total_page, page_size=page_size)
         print 'account.py fans_list end...'
