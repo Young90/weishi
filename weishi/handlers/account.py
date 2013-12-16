@@ -2,6 +2,7 @@
 __author__ = 'young'
 
 import math
+import time
 from tornado.web import HTTPError, asynchronous
 from weishi.libs.decorators import authenticated
 from weishi.libs.handler import BaseHandler
@@ -57,6 +58,15 @@ class AccountBaseHandler(BaseHandler):
         return self.db.query('select * from t_message where openid = %s and aid = %s limit %s, %s',
                              openid, self.account.aid, start, end)
 
+    def _save_text_message_to_db(self, openid, content):
+        """将已经发送的消息保存到数据库"""
+        print '_save_message_to_db......'
+        print 'openid : %s' % openid
+        print 'content : %s' % content
+        print 'create_time : %s' % int(time.time())
+        self.db.execute('insert into t_message (type, create_time, outgoing, content, openid, aid) '
+                        'values (1, %s, 1, %s, %s, %s)', int(time.time()), content, openid, self.account.aid)
+
 
 class AccountIndexHandler(AccountBaseHandler):
     """
@@ -81,7 +91,7 @@ class AccountFansHandler(AccountBaseHandler):
         fans = self.db.query('select * from t_fans where aid = %s limit %s, %s', aid, start, page_size)
         total = self.db.execute_rowcount('select count(*) from t_fans where aid = %s', aid)
         total_page = math.ceil(float(total) / page_size)
-        self.render('account/index.html', fans=fans, account=self.account, total=total,
+        self.render('account/fans.html', fans=fans, account=self.account, total=total,
                     start=start, total_page=total_page, page_size=page_size)
         print 'account.py fans_list end...'
 
@@ -91,9 +101,9 @@ class MessageHandler(AccountBaseHandler):
     与某个用户之间的消息列表.发送消息
     """
 
-    def get(self, fans_id):
+    def get(self, aid, fans_id):
         """与某个用户之间的消息列表"""
-        fans = self._get_fans(fans_id)
+        fans = self._get_fans_by_id(fans_id)
         if not fans or fans.aid != self.account.aid:
             raise HTTPError(404).message('粉丝不存在')
             return
@@ -115,13 +125,18 @@ class MessageHandler(AccountBaseHandler):
             result['error'] = '无效的粉丝id'
             self.write(result)
             return
-        content = self.get_argument('content', 'hello wei xin')
+        content = self.get_argument('content', None)
+        if not content:
+            result['error'] = '内容不能为空'
+            self.write(result)
         message = {'msgtype': 'text', 'touser': fans.openid, 'text': {'content': content}}
         wei_api.send_text_message(self.account, message, self._callback)
 
-    def _callback(self, result):
+    def _callback(self, result, content, openid):
         self.write(result)
         self.finish()
+        if result['r']:
+            self._save_text_message_to_db(openid, content)
 
 
 handlers = [

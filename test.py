@@ -88,7 +88,7 @@ wei_api.send_text_message(account, message, _callback)
 import urllib2
 import urllib
 
-url = 'http://127.0.0.1:8888/account/oqdWRpYOP/message/fans/10'
+url = 'http://127.0.0.1:8888/account/oqdWRpYOP/message/fans/1'
 values = {
     'content': '你好世界！',
     'fans_id': 1,
@@ -98,7 +98,7 @@ opener = urllib2.build_opener()
 data = urllib.urlencode(values)
 req = urllib2.Request(url, data=data,
                       headers={
-                          'Cookie': 'user="MTIzNA==|1386677023|3ecb3ce6858a02fb7500a42e4e454ce127063922"'
+                          'Cookie': 'user="MTIzNA==|1387196454|e25533fc4066848b2c6396569ba0f9c86f5a20b3"'
                       })
 response = urllib2.urlopen(req)
 print response.read()

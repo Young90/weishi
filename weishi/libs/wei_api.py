@@ -13,6 +13,7 @@ FANS_LIST_URL = 'https://api.weixin.qq.com/cgi-bin/user/get?access_token=%s'
 FANS_LIST_URL_CONTINUE = 'https://api.weixin.qq.com/cgi-bin/user/get?access_token=%s&next_openid=%s'
 FANS_INFO_URL = 'https://api.weixin.qq.com/cgi-bin/user/info?access_token=%s&openid=%s'
 SEND_MESSAGE = 'https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=%s'
+CUSTOM_MENU = 'https://api.weixin.qq.com/cgi-bin/menu/create?access_token=%s'
 
 
 def access_token_available(account):
@@ -118,12 +119,11 @@ def send_text_message(account, message, *callback):
     """发送文字消息"""
     print "send text message : %s" % simplejson.dumps(message)
     client = AsyncHTTPClient(max_clients=20)
+    print 'access_token : %s' % account.access_token
     url = SEND_MESSAGE % account.access_token
     response = yield gen.Task(client.fetch, url, method='POST',
                               body=simplejson.dumps(message, encoding='utf-8', ensure_ascii=False))
-    print 'response : %s' % response
     body = json.loads(response.body)
-    print 'body : %s' % body
     result = {'r': 1}
     try:
         errcode = body['errcode']
@@ -133,6 +133,7 @@ def send_text_message(account, message, *callback):
             result['r'] = 0
     except KeyError:
         print body
+        result['r'] = 0
     if callback:
         method = callback[0]
-        method(result)
+        method(result, message['text']['content'], message['touser'])
