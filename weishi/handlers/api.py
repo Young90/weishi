@@ -2,10 +2,12 @@
 __author__ = 'young'
 
 import hashlib
-import xmltodict
 import datetime
-from tornado.web import HTTPError
+import time
 
+import xmltodict
+from tornado.web import HTTPError
+from tornado.template import Loader
 from weishi.libs.handler import BaseHandler
 from weishi.libs import wei_api
 
@@ -72,6 +74,10 @@ class APIBaseHandler(BaseHandler):
         self.db.execute('update t_account set access_token = %s, expires = %s',
                         account.access_token, account.expires)
 
+    def _get_auto_response(self, account):
+        """获取公众账号设置的自动回复消息"""
+        return self.db.get('select * from t_article where aid = %s and auto_response = 1', account.aid)
+
 
 class APIHandler(APIBaseHandler):
     """
@@ -111,6 +117,9 @@ class APIHandler(APIBaseHandler):
             openid = message['FromUserName']
             print openid
             wei_api.get_user_info(account, openid, self._add_single_fan)
+            result = self._subscribe_response(account, openid)
+            if result:
+                self.write(result)
             return
         if message['MsgType'] == 'event' and message['event'] == 'unsubscribe':
             """用户取消关注账号"""
@@ -118,6 +127,22 @@ class APIHandler(APIBaseHandler):
             print openid
             self._remove_fans(openid)
             return
+
+    def _subscribe_response(self, account, openid):
+        """获取设置的自动回复消息"""
+        article = self._get_auto_response(account)
+        if not article:
+            return None
+        result = {'ToUserName': openid, 'FromUserName': account.weishi_account, 'CreateTime': int(time.time())}
+        if article.type == 'text':
+            result['MsgType'] = 'text'
+            result['Content'] = article.content
+            return Loader(self.get_template_path())\
+                .load('text_message.xml', parent_path='message').generate(result=response)
+        else:
+            # TODO 完善图文消息的发送
+            return None
+        return None
 
 
 handlers = [

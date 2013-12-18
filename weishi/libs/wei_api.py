@@ -117,9 +117,7 @@ def get_user_info(account, openid, *callback):
 @gen.coroutine
 def send_text_message(account, message, *callback):
     """发送文字消息"""
-    print "send text message : %s" % simplejson.dumps(message)
     client = AsyncHTTPClient(max_clients=20)
-    print 'access_token : %s' % account.access_token
     url = SEND_MESSAGE % account.access_token
     response = yield gen.Task(client.fetch, url, method='POST',
                               body=simplejson.dumps(message, encoding='utf-8', ensure_ascii=False))

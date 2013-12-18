@@ -3,10 +3,12 @@ __author__ = 'young'
 
 import math
 import time
+import string
 from tornado.web import HTTPError, asynchronous
 from weishi.libs.decorators import authenticated
 from weishi.libs.handler import BaseHandler
 from weishi.libs import wei_api
+from weishi.libs import id_generator
 
 
 class AccountBaseHandler(BaseHandler):
@@ -60,12 +62,21 @@ class AccountBaseHandler(BaseHandler):
 
     def _save_text_message_to_db(self, openid, content):
         """将已经发送的消息保存到数据库"""
-        print '_save_message_to_db......'
-        print 'openid : %s' % openid
-        print 'content : %s' % content
-        print 'create_time : %s' % int(time.time())
         self.db.execute('insert into t_message (type, create_time, outgoing, content, openid, aid) '
                         'values (1, %s, 1, %s, %s, %s)', int(time.time()), content, openid, self.account.aid)
+
+    def _get_auto_response(self):
+        """获取公众账号的关注时的回复信息"""
+        return self.db.get('select * from t_article where aid = %s and auto_response = 1', self.account.aid)
+
+    def _save_auto_response(self, _slug, _content, _type):
+        """保存自动回复信息"""
+        self.db.execute('insert into t_article (slug, content, aid, auto_response, type) values '
+                        '(%s, %s, %s, %s, %s)', _slug, _content, self.account.aid, 1, _type)
+
+    def _exists_article(self, slug):
+        """查询slug是否被占用"""
+        return self.db.execute_rowcount('select count(*) from t_article where slug = %s', slug)
 
 
 class AccountIndexHandler(AccountBaseHandler):
@@ -139,8 +150,34 @@ class MessageHandler(AccountBaseHandler):
             self._save_text_message_to_db(openid, content)
 
 
+class AutoResponseHandler(AccountBaseHandler):
+    """自动回复设置"""
+
+    def get(self, aid):
+        """查看已经设置的自动回复信息"""
+        article = self._get_auto_response()
+        self.render('account/auto_response.html', account=self.account, article=article)
+
+    def post(self, *args, **kwargs):
+        """修改自动回复信息"""
+        result = {'r': 0}
+        _content = self.get_argument('content', None)
+        if not _content:
+            result['error'] = '内容不能为空'
+            self.write(result)
+        _type = self.get_argument('type', 'text')
+        _slug = id_generator.id_gen(9, string.ascii_letters)
+        while self._exists_article(_slug):
+            _slug = id_generator.id_gen(9, string.ascii_letters)
+        self._save_auto_response(_slug, _content, _type)
+        result['r'] = 1
+        self.write(result)
+
+
 handlers = [
     (r'/account/([^/]+)', AccountIndexHandler),
     (r'/account/([^/]+)/fans', AccountFansHandler),
     (r'/account/([^/]+)/message/fans/([^/]+)', MessageHandler),
+    (r'/account/([^/]+)/auto', AutoResponseHandler),
 ]
+

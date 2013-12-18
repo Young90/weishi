@@ -85,6 +85,7 @@ account = 'qAgMwCZHKTzqADChc_8a8p5_eb5gIXY3GWkRedNy3gHtkOR21IKetLovl67VSg7YAiiWf
 message = {'msgtype': 'text', 'touser': 'ovuOEjhEt6UD6B4XvT3kxvC3WjGA', 'text': {'content': 'hello wei xin'}}
 wei_api.send_text_message(account, message, _callback)
 """
+"""
 import urllib2
 import urllib
 
@@ -102,3 +103,12 @@ req = urllib2.Request(url, data=data,
                       })
 response = urllib2.urlopen(req)
 print response.read()
+"""
+import time
+from weishi.libs import dicttoxml
+
+response = {'ToUserName': 'toUser', 'FromUserName': 'developer', 'CreateTime': int(time.time()), 'Articles': [{}, {}],
+            'MsgType': 'text', 'Content': u'欢迎关注'}
+
+print dicttoxml.dicttoxml(response, root='xml')
+print isinstance(u'侯西阳', basestring)
