@@ -119,6 +119,7 @@ class APIHandler(APIBaseHandler):
             wei_api.get_user_info(account, openid, self._add_single_fan)
             result = self._subscribe_response(account, openid)
             if result:
+                self.set_header('Content-type', 'text/xml')
                 self.write(result)
             return
         if message['MsgType'] == 'event' and message['event'] == 'unsubscribe':
@@ -137,8 +138,7 @@ class APIHandler(APIBaseHandler):
         if article.type == 'text':
             result['MsgType'] = 'text'
             result['Content'] = article.content
-            return Loader(self.get_template_path())\
-                .load('text_message.xml', parent_path='message').generate(result=response)
+            return Loader(self.get_template_path()).load('message/text_message.xml').generate(result=result)
         else:
             # TODO 完善图文消息的发送
             return None

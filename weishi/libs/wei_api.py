@@ -135,3 +135,25 @@ def send_text_message(account, message, *callback):
     if callback:
         method = callback[0]
         method(result, message['text']['content'], message['touser'])
+
+@gen.coroutine
+def set_menu(account, menu, *callback):
+    """自定义菜单"""
+    client = AsyncHTTPClient(max_clients=20)
+    url = CUSTOM_MENU % account.access_token
+    response = yield gen.Task(client.fetch, url, method='POST',
+                              body=simplejson.dumps(menu, encoding='utf-8', ensure_ascii=False))
+    body = json.loads(response.body)
+    result = {'r': 1}
+    try:
+        errcode = body['errcode']
+        if errcode:
+            print body
+            result['error'] = '发送失败'
+            result['r'] = 0
+    except KeyError:
+        print body
+        result['r'] = 0
+    if callback:
+        method = callback[0]
+        method(result, menu)

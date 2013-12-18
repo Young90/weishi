@@ -8,5 +8,10 @@
 </head>
 <body>
 <h1>{{account.wei_name}}</h1>
+{%if article%}
+<div>已经保存的自动回复内容：{{article.content}}</div>
+{%else%}
+<div>未设置</div>
+{%end%}
 </body>
 </html>

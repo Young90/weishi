@@ -44,7 +44,7 @@ class LoginHandler(AuthHandler):
         p = self.get_argument('password', None)
         result = {'r': 0}
         if not u or not p:
-            result['error'] = '填写的数据不正确'
+            result['error'] = u'填写的数据不正确'
             self.write(result)
             return
         if EMAIL_REGEX.match(u):

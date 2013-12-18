@@ -8,5 +8,18 @@
 </head>
 <body>
 <h1>{{account.wei_name}}</h1>
+{%if fans%}
+    {%for fan in fans%}
+    <div>昵称：{{fan.nickname}}</div>
+    <div>头像：{{fan.avatar}}</div>
+    <div>国家：{{fan.country}}</div>
+    <div>省份：{{fan.province}}</div>
+    <div>城市：{{fan.city}}</div>
+    <div>性别：{{fan.sex}}</div>
+    <div>关注时间：{{fan.subscribe_time}}</div>
+    {%end%}
+{%else%}
+    <div>还没有粉丝</div>
+{%end%}
 </body>
 </html>

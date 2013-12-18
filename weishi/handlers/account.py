@@ -60,11 +60,6 @@ class AccountBaseHandler(BaseHandler):
         return self.db.query('select * from t_message where openid = %s and aid = %s limit %s, %s',
                              openid, self.account.aid, start, end)
 
-    def _save_text_message_to_db(self, openid, content):
-        """将已经发送的消息保存到数据库"""
-        self.db.execute('insert into t_message (type, create_time, outgoing, content, openid, aid) '
-                        'values (1, %s, 1, %s, %s, %s)', int(time.time()), content, openid, self.account.aid)
-
     def _get_auto_response(self):
         """获取公众账号的关注时的回复信息"""
         return self.db.get('select * from t_article where aid = %s and auto_response = 1', self.account.aid)
@@ -116,7 +111,7 @@ class MessageHandler(AccountBaseHandler):
         """与某个用户之间的消息列表"""
         fans = self._get_fans_by_id(fans_id)
         if not fans or fans.aid != self.account.aid:
-            raise HTTPError(404).message('粉丝不存在')
+            raise HTTPError(404).message(u'粉丝不存在')
             return
         start = self.get_argument('start', 0)
         page_size = 10
@@ -124,7 +119,7 @@ class MessageHandler(AccountBaseHandler):
         total = self.db.execute_rowcount('select count(*) from t_message where aid = %s and openid = %s',
                                          self.account.aid, fans.openid)
         total_page = math.ceil(float(total) / page_size)
-        self.render('account/fans_message.html', messages=messages, account=self.account, total=total,
+        self.render('account/fans_message.html', fan=fans, messages=messages, account=self.account, total=total,
                     start=start, total_page=total_page, page_size=page_size)
 
     def post(self, *args, **kwargs):
@@ -133,12 +128,12 @@ class MessageHandler(AccountBaseHandler):
         fans = self._get_fans_by_id(fans_id)
         result = {'r': 0}
         if not fans or fans.aid != self.account.aid:
-            result['error'] = '无效的粉丝id'
+            result['error'] = u'无效的粉丝id'
             self.write(result)
             return
         content = self.get_argument('content', None)
         if not content:
-            result['error'] = '内容不能为空'
+            result['error'] = u'内容不能为空'
             self.write(result)
         message = {'msgtype': 'text', 'touser': fans.openid, 'text': {'content': content}}
         wei_api.send_text_message(self.account, message, self._callback)
@@ -147,7 +142,35 @@ class MessageHandler(AccountBaseHandler):
         self.write(result)
         self.finish()
         if result['r']:
-            self._save_text_message_to_db(openid, content)
+            self.db.execute('insert into t_message (type, create_time, outgoing, content, openid, aid) '
+                            'values (1, %s, 1, %s, %s, %s)', int(time.time()), content, openid, self.account.aid)
+
+
+class MenuHandler(AccountBaseHandler):
+    """自定义菜单"""
+
+    def get(self, aid):
+        """设置自定义菜单的页面"""
+        menu = self.db.get('select * from t_menu where aid = %s', self.account.aid)
+        self.render('account/menu.html', menu=menu, account=self.account)
+
+    def post(self, *args, **kwargs):
+        """设置自定义菜单"""
+        menu = self.get_argument('menu', None)
+        result = {'r': 0}
+        if not menu:
+            result['error'] = u'自定义菜单不能为空'
+            self.write(result)
+            return
+        wei_api.set_menu(self.account, menu, self._call_back)
+        self.write(result)
+
+    def _call_back(self, result, menu):
+        self.write(result)
+        self.finish()
+        if result['r']:
+            self.db.execute('delete from t_menu where aid = %s', self.account.aid)
+            self.db.execute('insert into t_menu (aid, menu) values (%s, %s)', self.account.aid, menu)
 
 
 class AutoResponseHandler(AccountBaseHandler):
@@ -163,7 +186,7 @@ class AutoResponseHandler(AccountBaseHandler):
         result = {'r': 0}
         _content = self.get_argument('content', None)
         if not _content:
-            result['error'] = '内容不能为空'
+            result['error'] = u'内容不能为空'
             self.write(result)
         _type = self.get_argument('type', 'text')
         _slug = id_generator.id_gen(9, string.ascii_letters)
@@ -179,5 +202,6 @@ handlers = [
     (r'/account/([^/]+)/fans', AccountFansHandler),
     (r'/account/([^/]+)/message/fans/([^/]+)', MessageHandler),
     (r'/account/([^/]+)/auto', AutoResponseHandler),
+    (r'/account/([^/]+)/menu', MenuHandler),
 ]
 

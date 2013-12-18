@@ -8,5 +8,25 @@
 </head>
 <body>
 <h1>{{account.wei_name}}</h1>
+<div>会话对象：{{fan.nickname}}</div>
+<div>头像：{{fan.avatar}}</div>
+<div>总条数：{{total}}</div>
+<div>起始条数：{{start}}</div>
+<div>总页数：{{total_page}}</div>
+{%for message in messages%}
+    <div>内容：{{message.content}}</div>
+    {% if message.outgoing %}
+        <div>这条消息是公众账号发出的消息</div>
+        <div>发出的消息没有阅读状态</div>
+    {%else%}
+        <div>这条消息是收到的消息</div>
+        {%if message.status %}
+        <div>收到的消息已读</div>
+        {%else%}
+        <div>收到的消息未读</div>
+        {%end%}
+    {%end%}
+
+{%end%}
 </body>
 </html>
