@@ -223,12 +223,10 @@ class ImageListHandler(AccountBaseHandler):
     """图片列表接口，返回图片url列表"""
 
     def get(self, *args, **kwargs):
-        print self.account.aid
         urls = image_util.list_all(self.account.aid)
-        print len(urls)
         results = {'r': 1, 'count': len(urls), 'urls': urls}
         self.write(results)
-        return
+        self.finish()
 
 
 handlers = [
@@ -238,6 +236,7 @@ handlers = [
     (r'/account/([^/]+)/auto', AutoResponseHandler),
     (r'/account/([^/]+)/menu', MenuHandler),
     (r'/account/([^/]+)/image/upload', UploadImageHandler),
-    (r'/account/([^/]+)/image/list', ImageListHandler)
+    (r'/account/([^/]+)/image/list', ImageListHandler),
+    (r'/account/([^/]+)/roll', ImageListHandler),
 ]
 

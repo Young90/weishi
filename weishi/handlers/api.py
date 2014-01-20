@@ -45,7 +45,7 @@ class APIBaseHandler(BaseHandler):
 
     def _remove_fans(self, openid):
         """取消关注，移除粉丝"""
-        self.db.execute('delete from t_fans where openid = %s', openid)
+        self.db.execute('update t_fans where openid = %s set status = 0', openid)
 
     def _validate_signature(self, account):
         """
@@ -128,6 +128,12 @@ class APIHandler(APIBaseHandler):
             print openid
             self._remove_fans(openid)
             return
+        if message['MsgType'] == 'text':
+            """用户发送文本消息"""
+            openid = message['FromUserName']
+            print openid
+
+
 
     def _subscribe_response(self, account, openid):
         """获取设置的自动回复消息"""
