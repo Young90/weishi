@@ -7,6 +7,7 @@ import string
 from tornado.web import HTTPError, asynchronous
 from weishi.libs.decorators import authenticated
 from weishi.libs.handler import BaseHandler
+import weishi.libs.image as image_util
 from weishi.libs import wei_api
 from weishi.libs import id_generator
 
@@ -197,11 +198,46 @@ class AutoResponseHandler(AccountBaseHandler):
         self.write(result)
 
 
+class UploadImageHandler(AccountBaseHandler):
+    """上传图片接口，返回图片的url"""
+
+    def post(self, *args, **kwargs):
+        result = {'r': 0}
+        try:
+            file_body = self.request.files['file'][0]['body']
+            url = image_util.upload(file_body, self.account.aid)
+            if not url:
+                result['error'] = u'上传出错'
+                self.write(result)
+                return
+            result['r'] = 1
+            self.write(result)
+            return
+        except KeyError:
+            result['error'] = u'参数不正确或上传图片出错'
+            self.write(result)
+            return
+
+
+class ImageListHandler(AccountBaseHandler):
+    """图片列表接口，返回图片url列表"""
+
+    def get(self, *args, **kwargs):
+        print self.account.aid
+        urls = image_util.list_all(self.account.aid)
+        print len(urls)
+        results = {'r': 1, 'count': len(urls), 'urls': urls}
+        self.write(results)
+        return
+
+
 handlers = [
     (r'/account/([^/]+)', AccountIndexHandler),
     (r'/account/([^/]+)/fans', AccountFansHandler),
     (r'/account/([^/]+)/message/fans/([^/]+)', MessageHandler),
     (r'/account/([^/]+)/auto', AutoResponseHandler),
     (r'/account/([^/]+)/menu', MenuHandler),
+    (r'/account/([^/]+)/image/upload', UploadImageHandler),
+    (r'/account/([^/]+)/image/list', ImageListHandler)
 ]
 

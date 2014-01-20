@@ -50,7 +50,7 @@ class AccountsHandler(FrontBaseHandler):
 
     @authenticated
     def get(self):
-        self.render('add_account.html')
+        self.render('add_account.html', user=self.get_current_user())
 
     @authenticated
     def post(self, *args, **kwargs):
