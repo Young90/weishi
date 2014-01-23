@@ -121,7 +121,7 @@ def send_text_message(account, message, *callback):
     url = SEND_MESSAGE % account.access_token
     response = yield gen.Task(client.fetch, url, method='POST',
                               body=simplejson.dumps(message, encoding='utf-8', ensure_ascii=False))
-    body = json.loads(response.body)
+    body = json.loads(response.body, encoding='UTF-8', ensure_ascii=False)
     result = {'r': 1}
     try:
         errcode = body['errcode']
@@ -144,7 +144,7 @@ def set_menu(account, menu, *callback):
     url = CUSTOM_MENU % account.access_token
     response = yield gen.Task(client.fetch, url, method='POST',
                               body=simplejson.dumps(menu, encoding='utf-8', ensure_ascii=False))
-    body = json.loads(response.body)
+    body = json.loads(response.body, encoding='UTF-8', ensure_ascii=False)
     result = {'r': 1}
     try:
         errcode = body['errcode']
