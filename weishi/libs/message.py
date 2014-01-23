@@ -2,6 +2,9 @@
 __author__ = 'Young'
 
 import datetime
+import time
+
+from tornado.template import Loader
 
 from weishi import db
 from weishi.libs import wei_api
@@ -11,9 +14,8 @@ db.connect()
 db = db.conn.mysql
 
 
-def process_message(account, message):
+def process_message(account, message, path):
     msg_type = message['MsgType'].lower()
-    print msg_type
     if msg_type == 'text':
         return _process_text_message(account.aid, message)
     if msg_type == 'image':
@@ -26,18 +28,22 @@ def process_message(account, message):
         return _process_location_message(account.aid, message)
     if msg_type == 'link':
         return _process_link_message(account.aid, message)
+    if msg_type == 'event':
+        event = message['Event'].lower()
+        if event == 'subscribe':
+            return _process_subscribe_event(account, message, path)
 
 
 def _add_single_fan(user, aid):
     """将关注的用户保存到数据库"""
     db.execute('insert into t_fans (date, openid, nickname, sex, country, province, city, avatar, '
-                    'subscribe_time, language, aid) values (NOW(), %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
-                    user['openid'], user['nickname'], user['sex'], user['country'], user['province'],
-                    user['city'], user['headimgurl'], datetime.datetime.fromtimestamp(int(user['subscribe_time'])),
-                    user['language'], aid)
+               'subscribe_time, language, aid) values (NOW(), %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
+               user['openid'], user['nickname'], user['sex'], user['country'], user['province'],
+               user['city'], user['headimgurl'], datetime.datetime.fromtimestamp(int(user['subscribe_time'])),
+               user['language'], aid)
+
 
 def _process_text_message(aid, message):
-
     """接受用户发送的文本消息"""
     openid = message['FromUserName']
     content = message['Content']
@@ -104,7 +110,7 @@ def _process_link_message(aid, message):
               'values (%s, %s, %s, %s, %s, %s, %s)', 'video', create_time, msg_id, url, 0, openid, aid)
 
 
-def _process_subscribe_event(account, message):
+def _process_subscribe_event(account, message, path):
     """
     处理用户关注账号的事件
         1. 将用户信息保存到数据库
@@ -112,3 +118,6 @@ def _process_subscribe_event(account, message):
     """
     openid = message['FromUserName']
     wei_api.get_user_info(account, openid, _add_single_fan)
+    result = {'ToUserName': message['FromUserName'], 'FromUserName': account.wei_account,
+              'CreateTime': int(time.time()), 'MsgType': 'text', 'Content': '欢迎关注~'}
+    return Loader(path).load('message/text_message.xml').generate(result=result)

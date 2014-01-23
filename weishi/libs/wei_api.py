@@ -136,6 +136,7 @@ def send_text_message(account, message, *callback):
         method = callback[0]
         method(result, message['text']['content'], message['touser'])
 
+
 @gen.coroutine
 def set_menu(account, menu, *callback):
     """自定义菜单"""

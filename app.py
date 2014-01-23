@@ -27,7 +27,7 @@ class Application(web.Application):
 
 def main():
     http_server = HTTPServer(Application())
-    port = 80
+    port = 8888
     http_server.bind(port)
     http_server.start()
     IOLoop.instance().start()

@@ -10,6 +10,7 @@ from tornado.web import HTTPError
 from tornado.template import Loader
 from weishi.libs.handler import BaseHandler
 from weishi.libs import wei_api
+from weishi.libs import message as message_util
 
 
 class APIBaseHandler(BaseHandler):
@@ -111,44 +112,9 @@ class APIHandler(APIBaseHandler):
         message = self._get_message()
         if not message:
             raise HTTPError(404)
-        print message
-        if message['MsgType'] == 'event' and message['event'] == 'subscribe':
-            """用户关注该账号"""
-            openid = message['FromUserName']
-            print openid
-            wei_api.get_user_info(account, openid, self._add_single_fan)
-            result = self._subscribe_response(account, openid)
-            if result:
-                self.set_header('Content-type', 'text/xml')
-                self.write(result)
-            return
-        if message['MsgType'] == 'event' and message['event'] == 'unsubscribe':
-            """用户取消关注账号"""
-            openid = message['FromUserName']
-            print openid
-            self._remove_fans(openid)
-            return
-        if message['MsgType'] == 'text':
-            """用户发送文本消息"""
-            openid = message['FromUserName']
-            print openid
-
-
-
-    def _subscribe_response(self, account, openid):
-        """获取设置的自动回复消息"""
-        article = self._get_auto_response(account)
-        if not article:
-            return None
-        result = {'ToUserName': openid, 'FromUserName': account.weishi_account, 'CreateTime': int(time.time())}
-        if article.type == 'text':
-            result['MsgType'] = 'text'
-            result['Content'] = article.content
-            return Loader(self.get_template_path()).load('message/text_message.xml').generate(result=result)
-        else:
-            # TODO 完善图文消息的发送
-            return None
-        return None
+        result = message_util.process_message(account, message, self.get_template_path())
+        if result:
+            self.write(result)
 
 
 handlers = [

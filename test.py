@@ -114,7 +114,7 @@ response = {'ToUserName': 'toUser', 'FromUserName': 'developer', 'CreateTime': i
 print dicttoxml.dicttoxml(response, root='xml')
 print isinstance(u'侯西阳', basestring)
 """
-
+"""
 result = {"button": [
     {
         "type": "click",
@@ -148,3 +148,16 @@ result = {"button": [
 }
 
 print str(result)
+"""
+
+import urllib
+import urllib2
+
+xml = '<xml><ToUserName><![CDATA[程序员]]></ToUserName><FromUserName><![CDATA[123456456]]></FromUserName>' \
+      '<CreateTime>1348831860</CreateTime><MsgType><![CDATA[event]]></MsgType><Event><![CDATA[subscribe]]></Event></xml>'
+
+url = 'http://127.0.0.1:8888/api/oqdWRpYOP'
+
+req = urllib2.Request(url, xml)
+response = urllib2.urlopen(req)
+print response.read()
