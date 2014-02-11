@@ -2,15 +2,13 @@
 __author__ = 'young'
 
 import hashlib
-import datetime
-import time
 
 import xmltodict
 from tornado.web import HTTPError
-from tornado.template import Loader
 from weishi.libs.handler import BaseHandler
 from weishi.libs import wei_api
 from weishi.libs import message as message_util
+from weishi.libs.service import AccountManager, FansManager
 
 
 class APIBaseHandler(BaseHandler):
@@ -18,31 +16,13 @@ class APIBaseHandler(BaseHandler):
     与微信服务器通讯的base handler
     """
 
-    def _get_account_by_aid(self, aid):
-        """
-        根据url中的aid获取account
-        """
-        return self.db.get('select * from t_account where aid = %s', aid)
+    account_manager = None
+    fans_manager = None
+    article_manager = None
 
-    def _check_account(self, aid):
-        """经过微信服务器验证的，将checked设为1"""
-        self.db.execute('update t_account set checked = 1 where aid = %s', aid)
-
-    def _add_fans(self, users, aid):
-        """将粉丝插入数据库"""
-        print 'apy.py _add_fans start...'
-        for user in users:
-            print user
-            self._add_single_fan(user, aid)
-        print 'apy.py _add_fans end...'
-
-    def _add_single_fan(self, user, aid):
-        """添加单个粉丝用户信息"""
-        self.db.execute('insert into t_fans (date, openid, nickname, sex, country, province, city, avatar, '
-                        'subscribe_time, language, aid) values (NOW(), %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
-                        user['openid'], user['nickname'], user['sex'], user['country'], user['province'],
-                        user['city'], user['headimgurl'], datetime.datetime.fromtimestamp(int(user['subscribe_time'])),
-                        user['language'], aid)
+    def prepare(self):
+        self.account_manager = AccountManager(self.db)
+        self.fans_manager = FansManager(self.db)
 
     def _remove_fans(self, openid):
         """取消关注，移除粉丝"""
@@ -70,15 +50,6 @@ class APIBaseHandler(BaseHandler):
         except KeyError:
             return None
 
-    def _update_account_token(self, account):
-        """需要access_token的操作，获取access_token后保存"""
-        self.db.execute('update t_account set access_token = %s, expires = %s',
-                        account.access_token, account.expires)
-
-    def _get_auto_response(self, account):
-        """获取公众账号设置的自动回复消息"""
-        return self.db.get('select * from t_article where aid = %s and auto_response = 1', account.aid)
-
 
 class APIHandler(APIBaseHandler):
     """
@@ -90,13 +61,13 @@ class APIHandler(APIBaseHandler):
     def get(self, aid):
         """GET请求为微信服务器验证url和token的准确性"""
         print 'api.py get start...'
-        account = self._get_account_by_aid(aid)
+        account = self.account_manager.get_account_by_aid(aid)
         if not account:
             raise HTTPError(404)
         echostr = self.get_argument('echostr', '')
         if not self._validate_signature(account):
-            self._check_account(aid)
-            wei_api.get_access_token(account, wei_api.sync_fans_list, self._add_fans)
+            self.account_manager.check_account(aid)
+            wei_api.get_access_token(account, wei_api.sync_fans_list, self.fans_manager.add_fans)
             print 'api.py get end...'
             self.write(echostr)
             return
@@ -104,11 +75,13 @@ class APIHandler(APIBaseHandler):
 
     def post(self, aid, *args, **kwargs):
         """POST请求为微信服务器针对用户操作做出的响应"""
-        account = self._get_account_by_aid(aid)
+        account = self.account_manager.get_account_by_aid(aid)
         if not account:
             raise HTTPError(404)
         if not wei_api.access_token_available(account):
-            wei_api.get_access_token(account, self._update_account_token)
+            self.account['access_token'] = account.access_token
+            self.account['expires'] = account.expires
+            wei_api.get_access_token(account, self.account_manager.update_account_token(account))
         message = self._get_message()
         if not message:
             raise HTTPError(404)

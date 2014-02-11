@@ -149,7 +149,7 @@ result = {"button": [
 
 print str(result)
 """
-
+"""
 import urllib
 import urllib2
 
@@ -161,3 +161,13 @@ url = 'http://127.0.0.1:8888/api/oqdWRpYOP'
 req = urllib2.Request(url, xml)
 response = urllib2.urlopen(req)
 print response.read()
+"""
+import hashlib
+
+password = '900717'
+
+m = hashlib.md5()
+m.update(password + 'this is salt')
+p = m.hexdigest()
+
+print p

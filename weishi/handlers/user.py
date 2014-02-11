@@ -1,25 +1,17 @@
 #coding:utf-8
 __author__ = 'young'
 
-import hashlib
 from weishi.libs.handler import BaseHandler
-from weishi.libs.const import EMAIL_REGEX, Role
+from weishi.libs.const import EMAIL_REGEX
 from weishi.form.user_form import SignupForm
+from weishi.libs.service import UserManager
 
 
 class AuthHandler(BaseHandler):
-    # user login, update info
-    def _login(self, user):
-        self.db.execute('update t_user set login_ip = %s, login_date = NOW(), login_count = %s '
-                        'where id = %s', self.request.remote_ip, user.login_count + 1, user.id)
-        self.set_secure_cookie('user', user.username, expires_days=15)
+    user_manager = None
 
-    # create user
-    def _create_user(self, username, email, password, mobile):
-        self.db.execute('insert into t_user (date, username, email, password, mobile, signup_ip, login_ip, login_date)'
-                        ' values (NOW(), %s, %s, %s, %s, %s, %s, NOW())', username, email, password, mobile,
-                        self.request.remote_ip, self.request.remote_ip)
-        self.set_secure_cookie('user', username, expires_days=15)
+    def prepare(self):
+        self.user_manager = UserManager(self.db)
 
 
 class LoginHandler(AuthHandler):
@@ -49,21 +41,19 @@ class LoginHandler(AuthHandler):
             return
         if EMAIL_REGEX.match(u):
             # 邮箱登录
-            user = self.db.get('select * from t_user where email = %s', u)
+            user = self.user_manager.get_user_by_email(u)
         else:
             # 用户名登录
-            user = self.db.get('select * from t_user where username = %s', u)
+            user = self.user_manager.get_user_by_username(u)
         if not user:
             result['error'] = u'账号不存在或密码错误'
             self.write(result)
             return
-        m = hashlib.md5()
-        m.update(p + Role.SALT)
-        if m.hexdigest() != user.password:
+        if not self.user_manager.login(user, p, self.request.remote_ip):
             result['error'] = u'账号不存在或密码错误'
             self.write(result)
             return
-        self._login(user)
+        self.set_secure_cookie('user', user.username, expires_days=15)
         result['r'] = 1
         self.write(result)
 
@@ -91,20 +81,18 @@ class SignUpHandler(AuthHandler):
         email = f.data['email']
         password = f.data['password']
         mobile = f.data['mobile']
-        user = self.db.get('select * from t_user where username = %s', username)
+        user = self.user_manager.get_user_by_username(username)
         if user:
             r['errors'] = {'username': [u'用户名被占用']}
             self.write(r)
             return
-        user = self.db.get('select * from t_user where email = %s', email)
+        user = self.user_manager.get_user_by_email(email)
         if user:
             r['errors'] = {'email': [u'邮箱被占用']}
             self.write(r)
             return
-        m = hashlib.md5()
-        m.update(password + Role.SALT)
-        password = m.hexdigest()
-        self._create_user(username, email, password, mobile)
+        self.user_manager.create_user(username, email, password, mobile, self.request.remote_ip)
+        self.set_secure_cookie('user', username, expires_days=15)
         r['r'] = 1
         self.write(r)
 
@@ -132,9 +120,9 @@ class UserCheckHandler(AuthHandler):
         email = self.get_argument('email', None)
         r = {'a': 1}
         if username:
-            user = self.db.get('select * from t_user where username = %s', username)
+            user = self.user_manager.get_user_by_username(username)
         elif email:
-            user = self.db.get('select * from t_user where email = %s', email)
+            user = self.user_manager.get_user_by_email(email)
         if user:
             r['a'] = 0
         else:

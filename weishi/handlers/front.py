@@ -9,22 +9,14 @@ from weishi.libs.id_generator import id_gen
 from weishi.libs.const import DOMAIN_NAME
 from weishi.libs.image import upload
 from weishi.libs.const import Image
+from weishi.libs.service import AccountManager
 
 
 class FrontBaseHandler(BaseHandler):
-    def _create_account(self, wei_id, wei_name, wei_account, app_id, app_secret, token, aid, avatar):
-        """创建微信账号记录"""
-        self.db.execute("insert into t_account (date, wei_id, wei_name, wei_account, app_id, app_secret,"
-                        " token, aid, avatar, user_id) values (NOW(), %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-                        wei_id, wei_name, wei_account, app_id, app_secret, token, aid, avatar, self.current_user.id)
+    account_manager = None
 
-    def _delete_account(self, aid, user_id):
-        """删除账号记录"""
-        self.db.excute('delete from t_account where aid = %s and user_id = %s', aid, user_id)
-
-    def _get_account_by_aid(self, aid):
-        """根据aid获取账号记录"""
-        return self.db.get('select * from t_account where aid = %s', aid)
+    def prepare(self):
+        self.account_manager = AccountManager(self.db)
 
 
 class FrontIndexHandler(BaseHandler):
@@ -70,14 +62,15 @@ class AccountsHandler(FrontBaseHandler):
         print url
         aid = id_gen(9, string.ascii_letters)
         token = id_gen(6, string.ascii_lowercase)
-        account = self._get_account_by_aid(aid)
+        account = self.account_manager.get_account_by_aid(aid)
 
         while account:
             aid = id_gen(9, string.ascii_lowercase)
-            account = self._get_account_by_aid(aid)
+            account = self.account_manager.get_account_by_aid(aid)
 
-        self._create_account(f.data['wei_id'], f.data['wei_name'], f.data['wei_account'],
-                             f.data['app_id'], f.data['app_secret'], token, aid, url)
+        self.account_manager.create_account(f.data['wei_id'], f.data['wei_name'], f.data['wei_account'],
+                                            f.data['app_id'], f.data['app_secret'], token, aid, url,
+                                            self.current_user.id)
 
         r = {'r': 1, 'token': token, 'url': DOMAIN_NAME + '/api/' + aid}
         self.write(r)
@@ -86,7 +79,7 @@ class AccountsHandler(FrontBaseHandler):
     def delete(self, *args, **kwargs):
         """删除已经绑定的微信账号"""
         aid = self.get_argument('aid', '')
-        account = self._get_account_by_aid(aid)
+        account = self.account_manager.get_account_by_aid(aid)
         r = {'r': 0}
         if not account:
             r['error'] = '要删除的账号不存在！'
@@ -96,7 +89,7 @@ class AccountsHandler(FrontBaseHandler):
             r['error'] = '没有权限操作！'
             self.write(r)
             return
-        self._delete_account(aid, self.current_user.id)
+        self.account_manager.delete_account(aid, self.current_user.id)
         r['r'] = 1
         self.write(r)
 
