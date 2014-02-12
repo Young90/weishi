@@ -1,25 +1,58 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title></title>
+    <title>粉丝 - {{account.wei_name}}</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="description" content="">
-    <meta name="keywords" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="shortcut icon" href="{{static_url('img/favicon.ico')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.adjust.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/index.css')}}">
 </head>
 <body>
-<h1>{{account.wei_name}}</h1>
-{%if fans%}
-    {%for fan in fans%}
-    <div>昵称：{{fan.nickname}}</div>
-    <div>头像：{{fan.avatar}}</div>
-    <div>国家：{{fan.country}}</div>
-    <div>省份：{{fan.province}}</div>
-    <div>城市：{{fan.city}}</div>
-    <div>性别：{{fan.sex}}</div>
-    <div>关注时间：{{fan.subscribe_time}}</div>
-    {%end%}
-{%else%}
-    <div>还没有粉丝</div>
-{%end%}
+{% include nav.html %}
+<div class="container">
+    <div class="content">
+        <div class="main">
+            <div class="main-inner">
+                <h1 class="page-header">粉丝</h1>
+
+                <div class="fans">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">粉丝列表</div>
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th></th>
+                                <th>昵称</th>
+                                <th>性别</th>
+                                <th>国家</th>
+                                <th>省份</th>
+                                <th>城市</th>
+                                <th>关注时间</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for fan in fans %}
+                            <tr>
+                                <td><img src="{{fan.avatar}}" width="50" height="50"></td>
+                                <td>{{fan.nickname}}</td>
+                                <td>{% if fan.sex %}男{% else %}女{% end %}</td>
+                                <td>{{fan.country}}</td>
+                                <td>{{fan.province}}</td>
+                                <td>{{fan.city}}</td>
+                                <td>{{fan.subscribe_time}}</td>
+                            </tr>
+                            {% end %}
+                            </tbody>
+                        </table>
+                        {% include pagination.html %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% include left_nav.html %}
+    </div>
+</div>
 </body>
 </html>

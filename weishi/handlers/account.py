@@ -46,9 +46,8 @@ class AccountBaseHandler(BaseHandler):
             raise HTTPError(403)
             return
         if not wei_api.access_token_available(account):
-            self.account['access_token'] = account.access_token
-            self.account['expires'] = account.expires
-            wei_api.get_access_token(account, self.account_manager.update_account_token(account))
+            wei_api.get_access_token(account, self.account_manager.update_account_token)
+            self.account = self.account_manager.get_account_by_aid(aid)
         AccountBaseHandler.account = account
 
 
@@ -58,9 +57,7 @@ class AccountIndexHandler(AccountBaseHandler):
     """
 
     def get(self, aid):
-        print 'account.py index start...'
-        self.render('account/index.html', account=self.account)
-        print 'account.py index end...'
+        self.render('account/index.html', account=self.account, index='index')
 
 
 class AccountFansHandler(AccountBaseHandler):
@@ -69,15 +66,17 @@ class AccountFansHandler(AccountBaseHandler):
     """
 
     def get(self, aid):
-        print 'account.py fans_list start...'
         start = self.get_argument('start', 0)
         page_size = 10
         fans = self.fans_manager.get_fans(aid, start, page_size)
         total = self.fans_manager.get_fans_count(aid)
+        print 'total : %s' % total
         total_page = math.ceil(float(total) / page_size)
+        print 'start : %s' % start
+        print 'total_page : %s' % total_page
         self.render('account/fans.html', fans=fans, account=self.account, total=total,
-                    start=start, total_page=total_page, page_size=page_size)
-        print 'account.py fans_list end...'
+                    start=int(start), total_page=total_page, page_size=page_size, prefix='/account/%s/fans' % aid,
+                    index='fans')
 
 
 class MessageHandler(AccountBaseHandler):
@@ -97,7 +96,7 @@ class MessageHandler(AccountBaseHandler):
         total = self.message_manager.get_message_count_by_aid_openid(aid, fans.openid)
         total_page = math.ceil(float(total) / page_size)
         self.render('account/fans_message.html', fan=fans, messages=messages, account=self.account, total=total,
-                    start=start, total_page=total_page, page_size=page_size)
+                    start=start, total_page=total_page, page_size=page_size, index='message')
 
     def post(self, *args, **kwargs):
         """给某个用户发送消息"""
@@ -128,7 +127,7 @@ class MenuHandler(AccountBaseHandler):
     def get(self, aid):
         """设置自定义菜单的页面"""
         menu = self.menu_manager.get_menu(self.account.aid)
-        self.render('account/menu.html', menu=menu, account=self.account)
+        self.render('account/menu.html', menu=menu, account=self.account, index='menu')
 
     def post(self, *args, **kwargs):
         """设置自定义菜单"""
@@ -155,7 +154,7 @@ class AutoResponseHandler(AccountBaseHandler):
     def get(self, aid):
         """查看已经设置的自动回复信息"""
         article = self.article_manager.get_auto_response(aid)
-        self.render('account/auto_response.html', account=self.account, article=article)
+        self.render('account/auto_response.html', account=self.account, article=article, index='auto')
 
     def post(self, *args, **kwargs):
         """修改自动回复信息"""

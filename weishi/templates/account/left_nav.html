@@ -1,0 +1,34 @@
+<div class="sidebar">
+    <ul class="nav nav-sidebar">
+        {% if index=='index' %}
+        <li class="active"><a href="/account/{{account.aid}}">账号概况</a></li>
+        {% else %}
+        <li><a href="/account/{{account.aid}}">账号概况</a></li>
+        {% end %}
+        {% if index=='material' %}
+        <li class="active"><a href="#">图文素材</a></li>
+        {% else %}
+        <li><a href="#">图文素材</a></li>
+        {% end %}
+        {% if index=='auto' %}
+        <li class="active"><a href="#">自动回复</a></li>
+        {% else %}
+        <li><a href="#">自动回复</a></li>
+        {% end %}
+        {% if index=='menu' %}
+        <li class="active"><a href="/account/{{account.aid}}/menu">自定义菜单</a></li>
+        {% else %}
+        <li><a href="/account/{{account.aid}}/menu">自定义菜单</a></li>
+        {% end %}
+        {% if index=='fans' %}
+        <li class="active"><a href="/account/{{account.aid}}/fans">粉丝</a></li>
+        {% else %}
+        <li><a href="/account/{{account.aid}}/fans">粉丝</a></li>
+        {% end %}
+        {% if index=='message' %}
+        <li class="active"><a href="#">历史消息</a></li>
+        {% else %}
+        <li><a href="#">历史消息</a></li>
+        {% end %}
+    </ul>
+</div>

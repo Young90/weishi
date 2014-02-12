@@ -80,8 +80,8 @@ class AccountManager(Base):
 class FansManager(Base):
     def get_fans(self, aid, start, end):
         """获取账号的粉丝"""
-        return self.db.query('select * from t_fans where aid = %s limit %s, %s',
-                             aid, start, end)
+        return self.db.query('select * from t_fans where aid = %s order by id desc limit %s, %s', aid, int(start),
+                             int(end))
 
     def get_fans_by_id(self, fans_id):
         """根据id获取粉丝对象"""
@@ -89,7 +89,7 @@ class FansManager(Base):
 
     def get_fans_count(self, aid):
         """获取粉丝数量"""
-        return self.db.execute_rowcount('select count(*) from t_fans where aid = %s', aid)
+        return self.db.get('select count(*) as count from t_fans where aid = %s', aid)['count']
 
     def save_single_fans(self, user, aid):
         """添加单个粉丝用户信息"""
@@ -116,8 +116,8 @@ class MessageManager(Base):
 
     def get_message_count_by_aid_openid(self, aid, openid):
         """获取公众号跟某个粉丝之间的消息数量"""
-        return self.db.execute_rowcount('select count(*) from t_message where aid = %s and openid = %s',
-                                        aid, openid)
+        return self.db.get('select count(*) as count from t_message where aid = %s and openid = %s',
+                           aid, openid)['count']
 
     def save_message(self, content, openid, aid):
         """发送消息后保存到数据库"""
@@ -137,7 +137,7 @@ class ArticleManager(Base):
 
     def exists_article(self, slug):
         """查询slug是否被占用"""
-        return self.db.execute_rowcount('select count(*) from t_article where slug = %s', slug)
+        return self.db.get('select count(*) as count from t_article where slug = %s', slug)['count']
 
 
 class MenuManager(Base):

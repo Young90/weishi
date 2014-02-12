@@ -1,12 +1,47 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title></title>
+    <title>账号概况 - {{account.wei_name}}</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="description" content="">
-    <meta name="keywords" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="shortcut icon" href="{{static_url('img/favicon.ico')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.adjust.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/index.css')}}">
 </head>
 <body>
-<h1>{{account.wei_name}}</h1>
+{% include nav.html %}
+<div class="container">
+    <div class="content">
+        <div class="main">
+            <div class="main-inner">
+                <h1 class="page-header">账号概况</h1>
+                <div class="statics">
+                    <div class="btn btn-primary block">
+                        <span class="glyphicon glyphicon-user icon"></span>
+                        <span class="total"> 23</span>
+                        <span class="name">新增粉丝</span>
+                    </div>
+                    <div class="btn btn-primary block">
+                        <span class="glyphicon glyphicon-comment icon"></span>
+                        <span class="total"> 10</span>
+                        <span class="name">新消息</span>
+                    </div>
+                    <div class="btn btn-primary block">
+                        <span class="glyphicon glyphicon-user icon"></span>
+                        <span class="total"> 1024</span>
+                        <span class="name">总粉丝</span>
+                    </div>
+                    <div class="btn btn-primary block">
+                        <span class="glyphicon glyphicon-comment icon"></span>
+                        <span class="total"> 526</span>
+                        <span class="name">总消息</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% include left_nav.html %}
+    </div>
+</div>
 </body>
 </html>
