@@ -1,5 +1,5 @@
 #coding:utf-8
-from weishi.handlers import admin, front, user, api, account, index, article
+from weishi.handlers import admin, front, user, api, account, index, article, material
 
 __author__ = 'young'
 
@@ -12,3 +12,4 @@ handlers.extend(api.handlers)
 handlers.extend(account.handlers)
 handlers.extend(index.handlers)
 handlers.extend(article.handlers)
+handlers.extend(material.handlers)

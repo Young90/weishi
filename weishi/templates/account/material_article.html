@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>图文消息 - {{account.wei_name}}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="shortcut icon" href="{{static_url('img/favicon.ico')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.adjust.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/index.css')}}">
+</head>
+<body>
+{% include nav.html %}
+<div class="container">
+    <div class="content">
+        <div class="main">
+            <div class="main-inner">
+                <h1 class="page-header">素材管理</h1>
+                {% include material_top.html %}
+            </div>
+        </div>
+        {% include left_nav.html %}
+    </div>
+</div>
+</body>
+</html>

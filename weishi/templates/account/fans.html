@@ -20,28 +20,30 @@
                 <div class="fans">
                     <div class="panel panel-default">
                         <div class="panel-heading">粉丝列表</div>
-                        <table class="table">
+                        <table class="table fans">
                             <thead>
                             <tr>
-                                <th></th>
+                                <th>头像</th>
                                 <th>昵称</th>
                                 <th>性别</th>
                                 <th>国家</th>
                                 <th>省份</th>
                                 <th>城市</th>
                                 <th>关注时间</th>
+                                <th>消息</th>
                             </tr>
                             </thead>
                             <tbody>
                             {% for fan in fans %}
                             <tr>
-                                <td><img src="{{fan.avatar}}" width="50" height="50"></td>
-                                <td>{{fan.nickname}}</td>
-                                <td>{% if fan.sex %}男{% else %}女{% end %}</td>
-                                <td>{{fan.country}}</td>
-                                <td>{{fan.province}}</td>
-                                <td>{{fan.city}}</td>
-                                <td>{{fan.subscribe_time}}</td>
+                                <td class="avatar"><img src="{{fan.avatar}}" width="50" height="50"></td>
+                                <td class="nickname">{{fan.nickname}}</td>
+                                <td class="sex">{% if fan.sex %}男{% else %}女{% end %}</td>
+                                <td class="country">{{fan.country}}</td>
+                                <td class="province">{{fan.province}}</td>
+                                <td class="city">{{fan.city}}</td>
+                                <td class="time">{{fan.subscribe_time}}</td>
+                                <td class="op"><a href="/account/{{account.aid}}/message/fans/{{fan.id}}">消息</a></td>
                             </tr>
                             {% end %}
                             </tbody>

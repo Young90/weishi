@@ -1,3 +1,4 @@
+{% if total > 10 %}
 <ul class="pagination">
     {% if start==0 %}
     <li class="disabled"><a href="#">&laquo;</a></li>
@@ -29,3 +30,4 @@
     <li class="disabled"><a href="#">&raquo;</a></li>
     {% end %}
 </ul>
+{% end %}

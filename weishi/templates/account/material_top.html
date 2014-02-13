@@ -1,0 +1,12 @@
+<ul class="nav nav-tabs">
+    {% if top=='image_article' %}
+    <li class="active"><a href="/account/{{account.aid}}/image_article">图文消息</a></li>
+    {% else %}
+    <li><a href="/account/{{account.aid}}/image_article">图文消息</a></li>
+    {% end %}
+    {% if top=='article' %}
+    <li class="active"><a href="/account/{{account.aid}}/article">文章</a></li>
+    {% else %}
+    <li><a href="/account/{{account.aid}}/article">文章</a></li>
+    {% end %}
+</ul>

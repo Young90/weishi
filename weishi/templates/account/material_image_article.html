@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>所有图文消息 - {{account.wei_name}}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="shortcut icon" href="{{static_url('img/favicon.ico')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.adjust.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/index.css')}}">
+</head>
+<body>
+{% include nav.html %}
+<div class="container">
+    <div class="content">
+        <div class="main">
+            <div class="main-inner">
+                <h1 class="page-header">素材管理</h1>
+                {% include material_top.html %}
+                <ul class="nav nav-pills">
+                    <li class="disabled"><a href="/account/{{account.aid}}/image_article">所有图文</a></li>
+                    <li><a href="/account/{{account.aid}}/image_article/new/single">+新建单条图文</a></li>
+                    <li><a href="/account/{{account.aid}}/image_article/new/multi">+新建多条图文</a></li>
+                </ul>
+                <div class="panel panel-default">
+                        <table class="table image-article">
+                            <thead>
+                            <tr>
+                                <th>标题</th>
+                                <th>创建时间</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td class="title"><a href="http://baidu.com" target="_blank">图文消息标题图文消息标题图文消息标题图文消息标题图文消息标题</a></td>
+                                <td class="date">2014-02-13 22：13</td>
+                                <td class="op">
+                                    <a href="#">编辑</a>
+                                    <a href="#">群发</a>
+                                    <a href="#">删除</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="title"><a href="http://baidu.com" target="_blank">图文消息标题</a></td>
+                                <td class="date">2014-02-13 22：13</td>
+                                <td class="op">
+                                    <a href="#">编辑</a>
+                                    <a href="#">群发</a>
+                                    <a href="#">删除</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="title"><a href="http://baidu.com" target="_blank">图文消息标题</a></td>
+                                <td class="date">2014-02-13 22：13</td>
+                                <td class="op">
+                                    <a href="#">编辑</a>
+                                    <a href="#">群发</a>
+                                    <a href="#">删除</a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        {% include pagination.html %}
+                    </div>
+            </div>
+        </div>
+        {% include left_nav.html %}
+    </div>
+</div>
+</body>
+</html>

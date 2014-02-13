@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>新建单条图文消息 - {{account.wei_name}}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="shortcut icon" href="{{static_url('img/favicon.ico')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.adjust.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/index.css')}}">
+</head>
+<body>
+{% include nav.html %}
+<div class="container">
+    <div class="content">
+        <div class="main">
+            <div class="main-inner">
+                <h1 class="page-header">素材管理</h1>
+                {% include material_top.html %}
+                <ul class="nav nav-pills">
+                    <li><a href="/account/{{account.aid}}/image_article">所有图文</a></li>
+                    <li class="disabled"><a href="/account/{{account.aid}}/image_article/new/single">+新建单条图文</a></li>
+                    <li><a href="/account/{{account.aid}}/image_article/new/multi">+新建多条图文</a></li>
+                </ul>
+                <div class="new-edit">
+                    <div class="input-group input-group-lg edit-group">
+                        <span class="input-group-addon">标题</span>
+                        <input type="text" class="form-control" placeholder="标题字数要少于30">
+                    </div>
+
+                    <div class="input-group input-group-lg edit-group">
+                        <span class="input-group-addon">摘要</span>
+                        <textarea type="text" class="form-control summary" placeholder="摘要长度在120个字以内"></textarea>
+                    </div>
+
+                    <div class="input-group input-group-lg edit-group">
+                        <span class="input-group-addon">链接</span>
+                        <input type="text" class="form-control" placeholder="以http://开头">
+                    </div>
+
+                    <div class="input-group input-group-lg edit-group">
+                        <span class="input-group-addon">封面(大小640x360)</span>
+                        <input type="file" class="form-control" title="选择图片(大小640x360)">
+                    </div>
+
+                    <div class="btn btn-primary submit-btn">
+                        <span>保存</span>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        {% include left_nav.html %}
+    </div>
+</div>
+<script type="text/javascript" src="{{static_url('js/jquery-1.10.2.min.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/bootstrap.min.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/bootstrap.file-input.js')}}"></script>
+</body>
+</html>
