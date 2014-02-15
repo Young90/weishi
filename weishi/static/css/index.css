@@ -7,6 +7,44 @@ h1 {
     color: #666666;
 }
 
+.modal.fade .modal-dialog {
+    -webkit-transform: translate(0, 0) scale(0.9);
+    -ms-transform: translate(0, 0) scale(0.9);
+    transform: translate(0, 0) scale(0.9);
+    -webkit-transition: -webkit-transform 0.1s ease-out;
+    -moz-transition: -moz-transform 0.1s ease-out;
+    -o-transition: -o-transform 0.1s ease-out;
+    transition: transform 0.1s ease-out;
+}
+
+.modal.in .modal-dialog {
+    -webkit-transform: translate(0, 0);
+    -ms-transform: translate(0, 0);
+    transform: translate(0, 0);
+}
+
+.modal.fade {
+    -webkit-transition: opacity .1s linear, none;
+    -moz-transition: opacity .1s linear, none;
+    -ms-transition: opacity .1s linear, none;
+    -o-transition: opacity .1s linear, none;
+    transition: opacity .1s linear, none;
+}
+
+.modal-dialog {
+    top: 200px;
+    width: 300px;
+}
+
+.modal-content {
+    border-radius: 2px;
+}
+
+.modal-backdrop.in {
+    opacity: 0;
+    filter: alpha(opacity=50);
+}
+
 .index-top-nav {
     padding-left: 40px;
     padding-right: 40px;

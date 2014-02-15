@@ -1,13 +1,11 @@
 #coding:utf-8
-import random
-import string
 
 import qiniu.conf
 import qiniu.io
 import qiniu.rs
 import qiniu.rsf
 from const import Image
-
+from weishi.libs import key_util
 import weishi.conf
 
 qiniu.conf.ACCESS_KEY = weishi.conf.qiniu_access_key
@@ -21,17 +19,12 @@ url_prefix = Image.URL_PREFIX
 url_prefix_no_http = Image.URL_PREFIX_NO_HTTP
 
 
-def r(length):
-    lib = string.ascii_letters
-    return ''.join([random.choice(lib) for i in range(0, length)])
-
-
 def upload(file_content, prefix):
     """
     上传图片到七牛云存储
     返回图片完整地址
     """
-    key = prefix + "_" + r(16)
+    key = str(prefix) + "_" + key_util.generate_hexdigits_lower(16)
     ret, err = qiniu.io.put(policy.token(), key, file_content, extra)
     if err is None:
         return Image.URL_PREFIX % ret['key']

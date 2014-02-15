@@ -365,13 +365,6 @@ var imageUploader = {},
         var img = document.createElement("img"),
             preview = g("preview");
 
-        var imgTypeReg = /\.(png|gif|jpg|jpeg)$/gi, //格式过滤
-            urlFilter = "";                                     //地址过滤
-        if (!imgTypeReg.test(url) || url.indexOf(urlFilter) == -1) {
-            preview.innerHTML = "<span style='color: red'>" + lang.imageUrlError + "</span>";
-            flagImg = null;
-            return;
-        }
         preview.innerHTML = lang.imageLoading;
         img.onload = function () {
             flagImg = this;

@@ -8,7 +8,7 @@ from weishi.libs.decorators import authenticated
 from weishi.libs.handler import BaseHandler
 import weishi.libs.image as image_util
 from weishi.libs import wei_api
-from weishi.libs import id_generator
+from weishi.libs import key_util
 from weishi.libs.service import FansManager, MessageManager, ArticleManager, AccountManager, MenuManager
 
 
@@ -173,9 +173,9 @@ class AutoResponseHandler(AccountBaseHandler):
             result['error'] = u'内容不能为空'
             self.write(result)
         _type = self.get_argument('type', 'text')
-        _slug = id_generator.id_gen(9, string.ascii_letters)
+        _slug = key_util.generate_hexdigits_lower(8)
         while self.article_manager.exists_article(_slug):
-            _slug = id_generator.id_gen(9, string.ascii_letters)
+            _slug = key_util.generate_hexdigits_lower(8)
         self.article_manager.save_auto_response(self.account.aid, _slug, _content, _type)
         result['r'] = 1
         self.write(result)

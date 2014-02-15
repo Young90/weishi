@@ -139,6 +139,19 @@ class ArticleManager(Base):
         """查询slug是否被占用"""
         return self.db.get('select count(*) as count from t_article where slug = %s', slug)['count']
 
+    def save_article(self, slug, title, content, aid):
+        """保存文章到数据库"""
+        self.db.execute('insert into t_article (date, slug, title, content, aid) values (NOW(), %s, %s, %s, %s)',
+                        slug, title, content, aid)
+
+    def get_article(self, aid, start, end):
+        """从数据库获取文章列表"""
+        return self.db.query('select * from t_article where aid = %s order by id desc limit %s, %s', aid, start, end)
+
+    def get_article_count_by_aid(self, aid):
+        """"获取文章总数量"""
+        return self.db.get('select count(*) as count from t_article where aid = %s', aid)['count']
+
 
 class MenuManager(Base):
     def get_menu(self, aid):

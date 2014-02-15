@@ -24,6 +24,7 @@
                     <li class="disabled"><a href="/account/{{account.aid}}/article/new">+新建文章</a></li>
                 </ul>
                 <form class="form-horizontal post-form" role="form">
+                    <input type="hidden" name="aid" value="{{account.aid}}">
                     <div class="form-group">
                         <label for="title" class="col-sm-2 control-label">标题</label>
 
@@ -43,7 +44,7 @@
                     </div>
                     <div class="form-group">
                         <div class="col-sm-offset-2 col-sm-10 sub-button">
-                            <div class="btn btn-primary submit-btn">
+                            <div id="article-save-btn" class="btn btn-primary submit-btn">
                                 <span>保 存</span>
                             </div>
                         </div>
@@ -80,5 +81,6 @@
 </div>
 <script src="{{static_url('js/jquery-1.10.2.min.js')}}"></script>
 <script src="{{static_url('js/bootstrap.min.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/material.js')}}"></script>
 </body>
 </html>

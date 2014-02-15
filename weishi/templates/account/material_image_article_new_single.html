@@ -41,10 +41,10 @@
                     <div class="btn btn-success fileinput-button">
                         <i class="glyphicon glyphicon-plus"></i>
                         <span>选择封面(大小640x360)</span>
-                        <input id="fileupload" type="file" name="files[]">
+                        <input id="fileupload" type="file" name="file">
                     </div>
 
-                    <div id="progress" class="progress">
+                    <div id="progress" class="progress progress-striped active">
                         <div class="progress-bar progress-bar-success"></div>
                     </div>
 
@@ -85,6 +85,7 @@
 </div>
 <script type="text/javascript" src="{{static_url('js/jquery-1.10.2.min.js')}}"></script>
 <script type="text/javascript" src="{{static_url('js/bootstrap.min.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/material.js')}}"></script>
 <script type="text/javascript" src="{{static_url('js/jquery.ui.widget.js')}}"></script>
 <script type="text/javascript" src="{{static_url('js/jquery.iframe-transport.js')}}"></script>
 <script type="text/javascript" src="{{static_url('js/jquery.fileupload.js')}}"></script>
@@ -97,8 +98,7 @@
 $(function () {
     'use strict';
     // Change this to the location of your server-side upload handler:
-    var url = window.location.hostname === 'blueimp.github.io' ?
-                '//jquery-file-upload.appspot.com/' : 'server/php/',
+    var url = '/upload',
         uploadButton = $('<button/>')
             .addClass('btn btn-success')
             .prop('disabled', true)
@@ -108,7 +108,7 @@ $(function () {
                     data = $this.data();
                 $this
                     .off('click')
-                    .text('Abort')
+                    .text('取消上传')
                     .on('click', function () {
                         $this.remove();
                         data.abort();
@@ -128,8 +128,8 @@ $(function () {
         // send Blob objects via XHR requests:
         disableImageResize: /Android(?!.*Chrome)|Opera/
             .test(window.navigator.userAgent),
-        previewMaxWidth: 100,
-        previewMaxHeight: 100,
+        previewMaxWidth: 200,
+        previewMaxHeight: 120,
         previewCrop: true
     }).on('fileuploadadd', function (e, data) {
         data.context = $('<div/>').appendTo('#files');
@@ -171,6 +171,8 @@ $(function () {
     }).on('fileuploaddone', function (e, data) {
         $.each(data.result.files, function (index, file) {
             if (file.url) {
+                $('#progress').removeClass('progress-striped');
+                $('#progress').removeClass('active');
                 var link = $('<a>')
                     .attr('target', '_blank')
                     .prop('href', file.url);

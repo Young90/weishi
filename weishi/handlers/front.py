@@ -5,11 +5,11 @@ import string
 from weishi.libs.handler import BaseHandler
 from weishi.libs.decorators import authenticated
 from weishi.form.front_from import AccountForm
-from weishi.libs.id_generator import id_gen
 from weishi.libs.const import DOMAIN_NAME
 from weishi.libs.image import upload
 from weishi.libs.const import Image
 from weishi.libs.service import AccountManager
+from weishi.libs import key_util
 
 
 class FrontBaseHandler(BaseHandler):
@@ -60,12 +60,12 @@ class AccountsHandler(FrontBaseHandler):
         except KeyError:
             url = None
         print url
-        aid = id_gen(9, string.ascii_letters)
-        token = id_gen(6, string.ascii_lowercase)
+        aid = key_util(8, string.hexdigits)
+        token = key_util(8, string.ascii_letters)
         account = self.account_manager.get_account_by_aid(aid)
 
         while account:
-            aid = id_gen(9, string.ascii_lowercase)
+            aid = key_util(8, string.hexdigits)
             account = self.account_manager.get_account_by_aid(aid)
 
         self.account_manager.create_account(f.data['wei_id'], f.data['wei_name'], f.data['wei_account'],

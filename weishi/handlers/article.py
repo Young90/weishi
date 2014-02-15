@@ -2,6 +2,7 @@
 __author__ = 'Young'
 
 from tornado.web import HTTPError
+
 from weishi.libs.handler import BaseHandler
 
 
@@ -24,9 +25,6 @@ class ArticleHandler(BaseHandler):
         self.render('article/article.html', article=article)
 
 
-
-
-
 handlers = [
-    (r'/article/{slug}', ArticleHandler)
+    (r'/article/([^/]+)', ArticleHandler)
 ]
