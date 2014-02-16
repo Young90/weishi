@@ -2,14 +2,14 @@
 __author__ = 'young'
 
 import math
-import string
 from tornado.web import HTTPError, asynchronous
 from weishi.libs.decorators import authenticated
 from weishi.libs.handler import BaseHandler
 import weishi.libs.image as image_util
 from weishi.libs import wei_api
 from weishi.libs import key_util
-from weishi.libs.service import FansManager, MessageManager, ArticleManager, AccountManager, MenuManager
+from weishi.libs.service import FansManager, MessageManager, ArticleManager, AccountManager, \
+    MenuManager, ImageArticleManager
 
 
 class AccountBaseHandler(BaseHandler):
@@ -24,6 +24,7 @@ class AccountBaseHandler(BaseHandler):
     article_manager = None
     account_manager = None
     menu_manager = None
+    image_article_manager = None
 
     @authenticated
     @asynchronous
@@ -33,6 +34,7 @@ class AccountBaseHandler(BaseHandler):
         self.article_manager = ArticleManager(self.db)
         self.account_manager = AccountManager(self.db)
         self.menu_manager = MenuManager(self.db)
+        self.image_article_manager = ImageArticleManager(self.db)
 
         aid = self.request.uri.split('/')[2]
         if not aid:
@@ -45,6 +47,8 @@ class AccountBaseHandler(BaseHandler):
         if account.user_id != self.current_user.id:
             raise HTTPError(403)
             return
+        if self.get_cookie('aid', None) != account.aid:
+            self.set_cookie('aid', aid)
         if not wei_api.access_token_available(account):
             wei_api.get_access_token(account, self.account_manager.update_account_token)
             self.account = self.account_manager.get_account_by_aid(aid)
@@ -66,7 +70,7 @@ class TuwenHandler(AccountBaseHandler):
     """
 
     def get(self, aid):
-        self.render('account/material_image_article.html', account=self.account, index='material', top='image_article')
+        self.render('account/material_image_article_single.html', account=self.account, index='material', top='image_article')
 
 
 class AccountFansHandler(AccountBaseHandler):

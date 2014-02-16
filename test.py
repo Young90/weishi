@@ -162,6 +162,7 @@ req = urllib2.Request(url, xml)
 response = urllib2.urlopen(req)
 print response.read()
 """
+"""
 import hashlib
 
 password = '900717'
@@ -171,3 +172,10 @@ m.update(password + 'this is salt')
 p = m.hexdigest()
 
 print p
+"""
+
+id_list = [1, 2, 3, 0, 0, 0]
+
+id_list = filter(lambda a: a != 0, id_list)
+
+print id_list

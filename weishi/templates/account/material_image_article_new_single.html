@@ -18,29 +18,31 @@
                 <h1 class="page-header">素材管理</h1>
                 {% include material_top.html %}
                 <ul class="nav nav-pills">
-                    <li><a href="/account/{{account.aid}}/image_article">所有图文</a></li>
+                    <li><a href="/account/{{account.aid}}/image_article/single">单条图文</a></li>
+                    <li><a href="/account/{{account.aid}}/image_article/multi">多条图文</a></li>
                     <li class="disabled"><a href="/account/{{account.aid}}/image_article/new/single">+新建单条图文</a></li>
                     <li><a href="/account/{{account.aid}}/image_article/new/multi">+新建多条图文</a></li>
                 </ul>
                 <div class="new-edit">
+                    <input name="aid" type="hidden" value="{{account.aid}}">
                     <div class="input-group input-group-lg edit-group">
                         <span class="input-group-addon">标题</span>
-                        <input type="text" class="form-control" placeholder="标题字数要少于30">
+                        <input name="title" type="text" class="form-control" placeholder="标题字数要少于30">
                     </div>
 
                     <div class="input-group input-group-lg edit-group">
                         <span class="input-group-addon">摘要</span>
-                        <textarea type="text" class="form-control summary" placeholder="摘要长度在120个字以内"></textarea>
+                        <textarea name="summary" type="text" class="form-control summary" placeholder="摘要长度在120个字以内"></textarea>
                     </div>
 
                     <div class="input-group input-group-lg edit-group">
                         <span class="input-group-addon">链接</span>
-                        <input type="text" class="form-control" placeholder="以http://开头">
+                        <input name="link" type="text" class="form-control" placeholder="以http://开头">
                     </div>
 
                     <div class="btn btn-success fileinput-button">
                         <i class="glyphicon glyphicon-plus"></i>
-                        <span>选择封面(大小640x360)</span>
+                        <span>选择封面 <span class="tip">(建议图片尺寸640x360，大小控制在500Kb以内)</span></span>
                         <input id="fileupload" type="file" name="file">
                     </div>
 
@@ -50,7 +52,7 @@
 
                     <div id="files" class="files"></div>
 
-                    <div class="btn btn-primary submit-btn">
+                    <div id="single-save-btn" class="btn btn-primary submit-btn">
                         <span>保 存</span>
                     </div>
 
@@ -168,6 +170,7 @@ $(function () {
             'width',
             progress + '%'
         );
+        $('span.tip').text('(进度条停止滚动则上传完成)');
     }).on('fileuploaddone', function (e, data) {
         $.each(data.result.files, function (index, file) {
             if (file.url) {
@@ -185,6 +188,7 @@ $(function () {
                     .append(error);
             }
         });
+        $('span.tip').text('(上传完成，可以保存！)');
     }).on('fileuploadfail', function (e, data) {
         $.each(data.files, function (index, file) {
             var error = $('<span class="text-danger"/>').text('上传失败...');

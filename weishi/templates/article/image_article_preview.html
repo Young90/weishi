@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/html">
+<head>
+    <title>预览</title>
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/preview.css')}}">
+</head>
+<body>
+<div class="container">
+    <div class="title"><a href="{{image_article.link}}" target="_blank">{{image_article.title}}</a></div>
+    <div class="date">{{image_article.date}}</div>
+    <div class="image">
+        <img src="{{image_article.image}}?imageView2/1/w/320/h/160" >
+    </div>
+    <div class="summary">{{image_article.summary}}</div>
+    <div class="full">
+        <span class="left">阅读全文</span>
+        <span class="right"> > </span>
+    </div>
+</div>
+</body>
+</html>

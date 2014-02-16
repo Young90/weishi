@@ -104,6 +104,7 @@ class LogoutHandler(AuthHandler):
 
     def get(self):
         self.clear_cookie('user')
+        self.clear_cookie('aid')
         self.redirect('/')
 
 

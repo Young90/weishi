@@ -112,7 +112,7 @@ class MessageManager(Base):
     def get_message_by_openid_aid(self, aid, openid, start, end):
         """获取跟某个用户之间的消息列表"""
         return self.db.query('select * from t_message where openid = %s and aid = %s limit %s, %s',
-                             openid, aid, start, end)
+                             openid, aid, int(start), int(end))
 
     def get_message_count_by_aid_openid(self, aid, openid):
         """获取公众号跟某个粉丝之间的消息数量"""
@@ -146,7 +146,8 @@ class ArticleManager(Base):
 
     def get_article(self, aid, start, end):
         """从数据库获取文章列表"""
-        return self.db.query('select * from t_article where aid = %s order by id desc limit %s, %s', aid, start, end)
+        return self.db.query('select * from t_article where aid = %s order by id desc limit %s, %s',
+                             aid, int(start), int(end))
 
     def get_article_count_by_aid(self, aid):
         """"获取文章总数量"""
@@ -164,3 +165,37 @@ class MenuManager(Base):
 
     def save_menu(self, aid, menu):
         self.db.execute('insert into t_menu (aid, menu) values (%s, %s)', aid, menu)
+
+
+class ImageArticleManager(Base):
+    def get_image_article_by_id(self, _id):
+        """根据id获取单条图文"""
+        return self.db.query('select * from t_image_article where id = %s', int(_id))
+
+    def get_image_article_by_id_list(self, id_list):
+        """根据多个id获取图文消息"""
+        return self.db.query('select * from t_image_article where id in %s', id_list)
+
+    def list_single_image_article(self, aid, start, end):
+        """获取单条图文列表"""
+        return self.db.query('select * from t_image_article where aid = %s and type = 0 order by id desc limit %s, %s',
+                             aid, int(start), int(end))
+
+    def save_single_image_article(self, title, summary, link, image, aid):
+        """保存到条图文"""
+        self.db.execute('insert into t_image_article (date, title, link, summary, image, aid) '
+                        'values (NOW(), %s, %s, %s, %s, %s)', title, link, summary, image, aid)
+
+    def list_multi_image_article(self, aid, start, end):
+        """获取多条图文消息列表"""
+        return self.db.query('select * from t_image_article_group where aid = %s order by id desc limit %s, %s',
+                             aid, int(start), int(end))
+
+    def save_multi_image_article(self, id1, id2, id3, id4, id5, aid):
+        """"保存多条图文消息"""
+        self.db.execute('insert into t_image_article_group (date, id1, id2, id3, id4, id5, aid) values (NOW(), '
+                        '%s, %s, %s, %s, %s, %s)', id1, id2, id3, id4, id5, aid)
+
+    def get_multi_image_article_by_id(self, _id):
+        """根据id获取image_article"""
+        return self.db.query('select * from t_image_article_group where id = %s', _id)

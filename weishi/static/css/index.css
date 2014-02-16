@@ -389,10 +389,15 @@ table.image-article td.date {
     margin-bottom: 20px;
     height: 45px;
     line-height: 2;
-    width: 200px;
+    width: 560px;
     display: block;
     position: relative;
     overflow: hidden;
+    font-size: 16px;
+}
+
+.fileinput-button span.tip {
+    font-size: 12px;
 }
 
 .fileinput-button input {
@@ -402,6 +407,7 @@ table.image-article td.date {
     margin: 0;
     opacity: 0;
     height: 45px;
+    width: 560px;
     -ms-filter: 'alpha(opacity=0)';
     font-size: 200px;
     direction: ltr;
