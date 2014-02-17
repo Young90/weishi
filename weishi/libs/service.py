@@ -174,11 +174,16 @@ class ImageArticleManager(Base):
 
     def get_image_article_by_id_list(self, id_list):
         """根据多个id获取图文消息"""
-        return self.db.query('select * from t_image_article where id in %s', id_list)
+        return self.db.query('select * from t_image_article where id in (%s)', id_list)
 
     def list_single_image_article(self, aid, start, end):
         """获取单条图文列表"""
         return self.db.query('select * from t_image_article where aid = %s and type = 0 order by id desc limit %s, %s',
+                             aid, int(start), int(end))
+
+    def list_group_image_article(self, aid, start, end):
+        """获取多条图文列表"""
+        return self.db.query('select * from t_image_article_group where aid = %s order by id desc limit %s, %s',
                              aid, int(start), int(end))
 
     def save_single_image_article(self, title, summary, link, image, aid):
@@ -186,15 +191,20 @@ class ImageArticleManager(Base):
         self.db.execute('insert into t_image_article (date, title, link, summary, image, aid) '
                         'values (NOW(), %s, %s, %s, %s, %s)', title, link, summary, image, aid)
 
+    def save_single_image_article_with_type(self, title, summary, link, image, aid):
+        """保存到条图文"""
+        return self.db.execute('insert into t_image_article (date, title, link, summary, image, type, aid) '
+                               'values (NOW(), %s, %s, %s, %s, 1, %s)', title, link, summary, image, aid)
+
     def list_multi_image_article(self, aid, start, end):
         """获取多条图文消息列表"""
         return self.db.query('select * from t_image_article_group where aid = %s order by id desc limit %s, %s',
                              aid, int(start), int(end))
 
-    def save_multi_image_article(self, id1, id2, id3, id4, id5, aid):
+    def save_multi_image_article(self, id1, id2, id3, id4, id5, title, aid):
         """"保存多条图文消息"""
-        self.db.execute('insert into t_image_article_group (date, id1, id2, id3, id4, id5, aid) values (NOW(), '
-                        '%s, %s, %s, %s, %s, %s)', id1, id2, id3, id4, id5, aid)
+        return self.db.execute('insert into t_image_article_group (date, id1, id2, id3, id4, id5, title, aid) '
+                               'values (NOW(), %s, %s, %s, %s, %s, %s, %s)', id1, id2, id3, id4, id5, title, aid)
 
     def get_multi_image_article_by_id(self, _id):
         """根据id获取image_article"""

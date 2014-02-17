@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/html">
+<head>
+    <title>预览</title>
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/preview.css')}}">
+</head>
+<body>
+<div class="container multi">
+    <div class="main">
+        {% if main_article.image %}
+        <img src="{{main_article.image}}?imageView2/1/w/300/h/160" width="300" height="160">
+        {% else %}
+        <img src="" width="300" height="160">
+        {% end %}
+        <h4>
+            <a href="{{main_article.link}}" target="_blank">{{main_article.title}}</a>
+        </h4>
+    </div>
+    {% for article in article_list %}
+    <div class="item">
+        {% if article.image %}
+        <img class="image" src="{{article.image}}?imageView2/1/w/78/h/78">
+        {% else %}
+        <img class="image" src="" width="78" height="78">
+        {% end %}
+        <h4><a href="{{article.link}}" target="_blank">{{article.title}}</a></h4>
+    </div>
+    {% end %}
+</div>
+</body>
+</html>

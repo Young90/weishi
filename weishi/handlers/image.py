@@ -23,6 +23,7 @@ class ImageUploadHandler(BaseHandler):
         result = {'files': []}
         try:
             file_body = self.request.files['file'][0]['body']
+            file_name = self.request.files['file'][0]['filename']
             url = image_util.upload(file_body, self.aid)
             aid = self.get_cookie('aid', None)
             if not aid:
@@ -31,7 +32,8 @@ class ImageUploadHandler(BaseHandler):
                 result['error'] = u'上传出错'
                 self.write(result)
                 return
-            _file = {'url': url}
+            _file = {'url': url, 'name': file_name, 'size': len(file_body),
+                     'thumbnailUrl': url + '?imageView2/1/w/160/h/100'}
             files = [_file]
             result['files'] = files
             self.write(result)

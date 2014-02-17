@@ -33,33 +33,17 @@
                             </tr>
                             </thead>
                             <tbody>
+                            {% for article in articles %}
                             <tr>
-                                <td class="title"><a href="http://baidu.com" target="_blank">图文消息标题图文消息标题图文消息标题图文消息标题图文消息标题</a></td>
-                                <td class="date">2014-02-13 22:13</td>
+                                <td class="title"><a href="/image_article_group/{{article.id}}/preview" target="_blank">{{article.title}}</a></td>
+                                <td class="date">{{article.date}}</td>
                                 <td class="op">
                                     <a href="#">编辑</a>
                                     <a href="#">群发</a>
                                     <a href="#">删除</a>
                                 </td>
                             </tr>
-                            <tr>
-                                <td class="title"><a href="http://baidu.com" target="_blank">图文消息标题</a></td>
-                                <td class="date">2014-02-13 22:13</td>
-                                <td class="op">
-                                    <a href="#">编辑</a>
-                                    <a href="#">群发</a>
-                                    <a href="#">删除</a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="title"><a href="http://baidu.com" target="_blank">图文消息标题</a></td>
-                                <td class="date">2014-02-13 22:13</td>
-                                <td class="op">
-                                    <a href="#">编辑</a>
-                                    <a href="#">群发</a>
-                                    <a href="#">删除</a>
-                                </td>
-                            </tr>
+                            {% end %}
                             </tbody>
                         </table>
                         {% include pagination.html %}

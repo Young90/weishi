@@ -178,4 +178,4 @@ id_list = [1, 2, 3, 0, 0, 0]
 
 id_list = filter(lambda a: a != 0, id_list)
 
-print id_list
+print ','.join(str(x) for x in id_list)

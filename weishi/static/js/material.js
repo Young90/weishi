@@ -88,17 +88,17 @@ $('#single-save-btn').on('click', function (e) {
         'image': thumb
     }
     $.ajax({
-        type:'POST',
-        url:'/account/' + aid + '/image_article/new/single',
+        type: 'POST',
+        url: '/account/' + aid + '/image_article/new/single',
         data: params,
-        success:function(data) {
+        success: function (data) {
             if (data.r) {
                 $('#save-success').modal();
                 setTimeout(function () {
                     $('#save-success').modal('hide')
                 }, 1000);
                 setTimeout(function () {
-                    window.location = '/account/' + data.aid + '/image_article'
+                    window.location = '/account/' + data.aid + '/image_article/single'
                 }, 1500);
             } else {
                 button.removeAttr('disabled');
@@ -111,3 +111,69 @@ $('#single-save-btn').on('click', function (e) {
         }
     })
 })
+
+/*
+ 保存多条图文消息
+ */
+$('#multi-save-btn').on('click', function (e) {
+    var button = $('#multi-save-btn');
+    button.attr('disabled', 'disabled');
+    var aid = $('input[name="aid"]').val();
+    var items = $('.new-item');
+    var params = []
+    for (var i = 0; i < items.length; i++) {
+        var item = $(items[i]);
+        var title = item.find('input[name="title"]').val();
+        var link = item.find('input[name="link"]').val();
+        var image_link = item.find('a[href]');
+        var image = '';
+        if (image_link.length > 0) {
+            image = item.find('a[href]').attr('href');
+        }
+        if (title == '') {
+            continue;
+        }
+        var _p = {
+            'title': title,
+            'link': link,
+            'image': image
+        }
+        params.push(_p);
+    }
+    if (params.length == 0) {
+         button.removeAttr('disabled');
+                $('.error-message').html('填写正确的参数');
+                $('#save-failure').modal();
+                setTimeout(function () {
+                    $('#save-failure').modal('hide')
+                }, 1300);
+        return;
+    }
+    var data = {
+        params: JSON.stringify(params)
+    }
+    $.ajax({
+        type: "POST",
+        url: "/account/" + aid + '/image_article/new/multi',
+        data: data,
+        success: function (data) {
+            button.removeAttr('disabled');
+            if (data.r) {
+                $('#save-success').modal();
+                setTimeout(function () {
+                    $('#save-success').modal('hide')
+                }, 1000);
+                setTimeout(function () {
+                    window.location = '/account/' + data.aid + '/image_article/multi'
+                }, 1500);
+            } else {
+                button.removeAttr('disabled');
+                $('.error-message').html(data.error);
+                $('#save-failure').modal();
+                setTimeout(function () {
+                    $('#save-failure').modal('hide')
+                }, 1300);
+            }
+        }
+    })
+});

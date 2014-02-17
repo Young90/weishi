@@ -24,63 +24,194 @@
                     <li class="disabled"><a href="/account/{{account.aid}}/image_article/new/multi">+新建多条图文</a></li>
                 </ul>
                 <div class="new-edit">
+                    <input type="hidden" name="aid" value="{{account.aid}}">
                     <div class="new-item">
                         <div class="input-group edit-group">
                             <span class="input-group-addon">标题</span>
-                            <input type="text" class="form-control" placeholder="标题字数要少于30">
+                            <input name="title" type="text" class="form-control" placeholder="标题字数要少于30">
                         </div>
 
                         <div class="input-group edit-group">
                             <span class="input-group-addon">链接</span>
-                            <input type="text" class="form-control" placeholder="以http://开头">
+                            <input name="link" type="text" class="form-control" placeholder="以http://开头">
                         </div>
 
-                        <div class="input-group edit-group">
-                            <span class="input-group-addon">封面(大小640x360)</span>
-                            <input type="file" class="form-control" title="选择图片(大小640x360)">
+                        <div class="btn btn-success fileinput-button">
+                            <i class="glyphicon glyphicon-plus"></i>
+                            <span>选择封面 <span class="tip">(建议图片尺寸640x360，大小控制在500Kb以内)</span></span>
+                            <input class="fileupload" type="file" name="file">
                         </div>
+
+                        <div class="progress progress-striped active">
+                            <div class="progress-bar progress-bar-success"></div>
+                        </div>
+
+                        <div class="files"></div>
                     </div>
                     <div class="new-item">
                         <div class="input-group edit-group">
                             <span class="input-group-addon">标题</span>
-                            <input type="text" class="form-control" placeholder="标题字数要少于30">
+                            <input name="title" type="text" class="form-control" placeholder="标题字数要少于30">
                         </div>
 
                         <div class="input-group edit-group">
                             <span class="input-group-addon">链接</span>
-                            <input type="text" class="form-control" placeholder="以http://开头">
+                            <input name="link" type="text" class="form-control" placeholder="以http://开头">
                         </div>
 
-                        <div class="input-group edit-group">
-                            <span class="input-group-addon">封面(大小640x360)</span>
-                            <input type="file" class="form-control file" title="选择图片(大小640x360)">
+                        <div class="btn btn-success fileinput-button">
+                            <i class="glyphicon glyphicon-plus"></i>
+                            <span>选择封面 <span class="tip">(建议图片尺寸640x360，大小控制在500Kb以内)</span></span>
+                            <input class="fileupload" type="file" name="file">
                         </div>
+
+                        <div class="progress progress-striped active">
+                            <div class="progress-bar progress-bar-success"></div>
+                        </div>
+
+                        <div class="files"></div>
                     </div>
-                    <div id="new-item" class="new-item" style="display: none;">
+                    <div class="new-item">
                         <div class="input-group edit-group">
                             <span class="input-group-addon">标题</span>
-                            <input type="text" class="form-control" placeholder="标题字数要少于30">
+                            <input name="title" type="text" class="form-control" placeholder="标题字数要少于30">
                         </div>
 
                         <div class="input-group edit-group">
                             <span class="input-group-addon">链接</span>
-                            <input type="text" class="form-control" placeholder="以http://开头">
+                            <input name="link" type="text" class="form-control" placeholder="以http://开头">
+                        </div>
+
+                        <div class="btn btn-success fileinput-button">
+                            <i class="glyphicon glyphicon-plus"></i>
+                            <span>选择封面 <span class="tip">(建议图片尺寸640x360，大小控制在500Kb以内)</span></span>
+                            <input class="fileupload" type="file" name="file">
+                        </div>
+
+                        <div class="progress progress-striped active">
+                            <div class="progress-bar progress-bar-success"></div>
+                        </div>
+
+                        <div class="files"></div>
+                    </div>
+                    <div class="new-item">
+                        <div class="input-group edit-group">
+                            <span class="input-group-addon">标题</span>
+                            <input name="title" type="text" class="form-control" placeholder="标题字数要少于30">
                         </div>
 
                         <div class="input-group edit-group">
-                            <span class="input-group-addon">封面(大小640x360)</span>
-                            <input type="file" class="form-control file" title="选择图片(大小640x360)">
+                            <span class="input-group-addon">链接</span>
+                            <input name="link" type="text" class="form-control" placeholder="以http://开头">
+                        </div>
+
+                        <div class="btn btn-success fileinput-button">
+                            <i class="glyphicon glyphicon-plus"></i>
+                            <span>选择封面 <span class="tip">(建议图片尺寸640x360，大小控制在500Kb以内)</span></span>
+                            <input class="fileupload" type="file" name="file">
+                        </div>
+
+                        <div class="progress progress-striped active">
+                            <div class="progress-bar progress-bar-success"></div>
+                        </div>
+
+                        <div class="files"></div>
+                    </div>
+                    <div class="new-item">
+                        <div class="input-group edit-group">
+                            <span class="input-group-addon">标题</span>
+                            <input name="title" type="text" class="form-control" placeholder="标题字数要少于30">
+                        </div>
+
+                        <div class="input-group edit-group">
+                            <span class="input-group-addon">链接</span>
+                            <input name="link" type="text" class="form-control" placeholder="以http://开头">
+                        </div>
+
+                        <div class="btn btn-success fileinput-button">
+                            <i class="glyphicon glyphicon-plus"></i>
+                            <span>选择封面 <span class="tip">(建议图片尺寸640x360，大小控制在500Kb以内)</span></span>
+                            <input class="fileupload" type="file" name="file">
+                        </div>
+
+                        <div class="progress progress-striped active">
+                            <div class="progress-bar progress-bar-success"></div>
+                        </div>
+
+                        <div class="files"></div>
+                    </div>
+
+                </div>
+                <div id="multi-save-btn" class="btn btn-primary submit-btn">
+                    <span>保 存</span>
+                </div>
+            </div>
+            <div id="save-success" class="modal fade" tablindex="-1" role="dialog" aria-labelledby="myModalLabel"
+                     aria-hidden="true">
+                    <div class="modal-dialog modal-sm">
+                        <div class="modal-content" style="text-align: center;">
+                            <span class="glyphicon glyphicon-ok"
+                                  style="color: #17b385;font-size: 40px;margin: 20px;"></span>
+
+                            <div style="margin-bottom: 20px; font-size: 16px; color:#777">保存成功</div>
                         </div>
                     </div>
                 </div>
-                <div class="add-item"><a href="javascript:;">+增加一条</a></div>
-                    <div class="btn btn-primary submit-btn">
-                        <span>保存</span>
+                <div id="save-failure" class="modal fade" tablindex="-1" role="dialog" aria-labelledby="myModalLabel"
+                     aria-hidden="true">
+                    <div class="modal-dialog modal-sm">
+                        <div class="modal-content" style="text-align: center;">
+                            <span class="glyphicon glyphicon-remove"
+                                  style="color: #eb6a64;font-size: 40px;margin: 20px;"></span>
+
+                            <div style="margin-bottom: 20px; font-size: 16px; color:#777" class="error-message">保存失败
+                            </div>
+                        </div>
                     </div>
-            </div>
+                </div>
         </div>
         {% include left_nav.html %}
     </div>
 </div>
+<script type="text/javascript" src="{{static_url('js/jquery-1.10.2.min.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/bootstrap.min.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/material.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/jquery.ui.widget.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/jquery.iframe-transport.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/jquery.fileupload.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/load-image.min.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/jquery.fileupload-process.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/jquery.fileupload-image.js')}}"></script>
+<script>
+
+    $(function () {
+        var url = '/upload';
+        $('.fileupload').each(function (input_index) {
+            $(this).fileupload({
+                dropZone: $(this),
+                url: url,
+                dataType: 'json',
+                done: function (e, data) {
+                    $.each(data.result.files, function (index, file) {
+                        var zone = $('.files')[input_index];
+                        $(zone).append('<a href="' + file.url + '" target="_blank"><img src="'
+                                + file.thumbnailUrl + '"><p>' + file.name + '</p></a>');
+                        var pro_zone = $('.progress')[input_index];
+                        $(pro_zone).removeClass('progress-striped active');
+                    });
+                },
+                progressall: function (e, data) {
+                    var progress = parseInt(data.loaded / data.total * 100, 10);
+                    var pro_zone = $('.progress .progress-bar')[input_index]
+                    $(pro_zone).css(
+                            'width',
+                            progress + '%'
+                    );
+                }
+            }).prop('disabled', !$.support.fileInput)
+                    .parent().addClass($.support.fileInput ? undefined : 'disabled');
+        });
+    });
+</script>
 </body>
 </html>

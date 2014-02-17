@@ -2,6 +2,7 @@
 __author__ = 'young'
 
 import math
+import simplejson
 
 from tornado.web import HTTPError
 
@@ -26,16 +27,17 @@ class ImageArticleHandler(AccountBaseHandler):
 
 
 class ImageArticleGroupHandler(AccountBaseHandler):
-    """多条图文管理"""
+    """查看多条图文列表"""
 
     def get(self, aid):
         start = self.get_argument('start', 0)
         page_size = 10
         total = 5
         total_page = 1
+        articles = self.image_article_manager.list_multi_image_article(aid, start, page_size)
         self.render('account/material_image_article_multi.html', account=self.account, total=total, start=int(start),
                     total_page=total_page, page_size=page_size, prefix='/account/%s/image_article_multi' % aid,
-                    index='material', top='image_article')
+                    index='material', top='image_article', articles=articles)
 
 
 class NewSingleImageArticleHandler(AccountBaseHandler):
@@ -72,6 +74,39 @@ class NewMultiImageArticleHandler(AccountBaseHandler):
     def get(self, aid):
         self.render('account/material_image_article_new_multi.html', account=self.account,
                     index='material', top='image_article')
+
+    def post(self, *args, **kwargs):
+        aid = self.account.aid
+        result = {'r': 0, 'aid': aid}
+        params = self.get_argument('params', None)
+        if not params:
+            result['error'] = u'参数不正确'
+            self.write(result)
+            self.finish()
+            return
+        params = simplejson.loads(params, encoding='utf-8')
+        id_list = []
+        title = ''
+        for index, param in enumerate(params):
+            _title = param['title']
+            _link = param['link']
+            _image = param['image']
+            if len(_image) == 0:
+                _image = None
+            if index == 0:
+                title = _title
+            _id = self.image_article_manager.save_single_image_article_with_type(_title, None, _link, _image, aid)
+            id_list.append(_id)
+        self.image_article_manager.save_multi_image_article(id_list[0] if len(id_list) > 0 else 0,
+                                                            id_list[1] if len(id_list) > 1 else 0,
+                                                            id_list[2] if len(id_list) > 2 else 0,
+                                                            id_list[3] if len(id_list) > 3 else 0,
+                                                            id_list[4] if len(id_list) > 4 else 0,
+                                                            title, aid)
+        result['r'] = 1
+        self.write(result)
+        self.finish()
+        return
 
 
 class ArticleHandler(AccountBaseHandler):
@@ -135,10 +170,10 @@ class ImageArticleGroupPreviewHandler(BaseHandler):
         if not image_article_group:
             raise HTTPError(404, 'image article not exists')
         image_article_group = image_article_group[0]
-        main_article = self.image_article_manager.get_image_article_by_id(image_article_group.id1)
+        main_article = self.image_article_manager.get_image_article_by_id(image_article_group.id1)[0]
         id_list = [image_article_group.id2, image_article_group.id3, image_article_group.id4, image_article_group.id5]
         id_list = filter(lambda a: a != 0, id_list)
-        article_list = self.image_article_manager.get_image_article_by_id_list(id_list)
+        article_list = self.image_article_manager.get_image_article_by_id_list(','.join(str(x) for x in id_list))
         self.render('article/image_article_group_preview.html', main_article=main_article, article_list=article_list)
 
 
