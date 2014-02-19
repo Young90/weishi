@@ -158,7 +158,7 @@ class AutoResponseHandler(AccountBaseHandler):
     def get(self, aid):
         """查看已经设置的自动回复信息"""
         article = self.article_manager.get_auto_response(aid)
-        self.render('account/auto_response.html', account=self.account, article=article, index='auto')
+        self.render('account/auto_response_follow.html', account=self.account, article=article, index='auto')
 
     def post(self, *args, **kwargs):
         """修改自动回复信息"""
@@ -211,7 +211,7 @@ handlers = [
     (r'/account/([^/]+)', AccountIndexHandler),
     (r'/account/([^/]+)/fans', AccountFansHandler),
     (r'/account/([^/]+)/message/fans/([^/]+)', MessageHandler),
-    (r'/account/([^/]+)/auto', AutoResponseHandler),
+    (r'/account/([^/]+)/auto/follow', AutoResponseHandler),
     (r'/account/([^/]+)/menu', MenuHandler),
     (r'/account/([^/]+)/image/upload', UploadImageHandler),
     (r'/account/([^/]+)/image/list', ImageListHandler),
