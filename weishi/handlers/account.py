@@ -64,15 +64,6 @@ class AccountIndexHandler(AccountBaseHandler):
         self.render('account/index.html', account=self.account, index='index')
 
 
-class TuwenHandler(AccountBaseHandler):
-    """
-    微信号管理的默认处理方法
-    """
-
-    def get(self, aid):
-        self.render('account/material_image_article_single.html', account=self.account, index='material', top='image_article')
-
-
 class AccountFansHandler(AccountBaseHandler):
     """
     查看公共账号的所有粉丝
