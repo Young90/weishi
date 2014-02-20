@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>账号概况 - {{account.wei_name}}</title>
+    <title>自动回复 - {{account.wei_name}}</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="shortcut icon" href="{{static_url('img/favicon.ico')}}">
@@ -15,18 +15,10 @@
     <div class="content">
         <div class="main">
             <div class="main-inner">
-                <div class="new-edit">
-                    <div class="input-group input-group-lg">
-                        <span class="input-group-addon">接口URL</span>
-                        <input type="text" class="form-control" value="http://wsmt.sinaapp.com/api/{{account.aid}}">
-                    </div>
-
-                    <div class="input-group input-group-lg">
-                        <span class="input-group-addon">&nbsp;&nbsp;Token&nbsp;&nbsp;</span>
-                        <input type="text" class="form-control" value="{{account.token}}">
-                    </div>
-
-                </div>
+                <ul class="nav nav-tabs">
+                    <li><a href="/account/{{account.aid}}/auto/follow">关注时回复</a></li>
+                    <li class="active"><a href="/account/{{account.aid}}/auto/message">关键字回复</a></li>
+                </ul>
             </div>
         </div>
         {% include left_nav.html %}

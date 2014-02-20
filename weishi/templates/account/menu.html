@@ -15,8 +15,64 @@
     <div class="content">
         <div class="main">
             <div class="main-inner">
-                <h1 class="page-header">自定义菜单</h1>
-
+                <div class="new-edit menu">
+                    <div class="no-menu" style="display: none;">
+                        <div class="title">还没有设置菜单~</div>
+                        <div class="link"><a href="javascript:;">+添加一级菜单</a></div>
+                    </div>
+                    <div class="add-main">
+                        <a href="javascript:;">+添加一级菜单</a>
+                    </div>
+                    <div class="edit-menu">
+                        <div class="menu-item">
+                            <div class="main-container" data-type="" data-value="">
+                                <div class="input-container">
+                                    <input type="text" name="main" class="form-control input-lg main"
+                                           placeholder="一级菜单名称">
+                                </div>
+                                <div class="op">
+                                    <span class="action"><a href="javascript:;">+回复文本</a></span>
+                                    <span class="action"><a href="javascript:;">+回复单条图文</a></span>
+                                    <span class="action"><a href="javascript:;">+回复多条图文</a></span>
+                                    <span class="action"><a href="javascript:;">+点击跳转</a></span>
+                                    <span class="action remove"><a href="javascript:;">删除</a></span>
+                                </div>
+                            </div>
+                            <div class="sub-container" data-type="" data-value="">
+                                <div class="input-container">
+                                    <input type="text" name="main" class="form-control input-lg main"
+                                           placeholder="一级菜单名称">
+                                </div>
+                                <div class="op">
+                                    <span class="action"><a href="javascript:;">+回复文本</a></span>
+                                    <span class="action"><a href="javascript:;">+回复单条图文</a></span>
+                                    <span class="action"><a href="javascript:;">+回复多条图文</a></span>
+                                    <span class="action"><a href="javascript:;">+点击跳转</a></span>
+                                    <span class="action remove"><a href="javascript:;">删除</a></span>
+                                </div>
+                            </div>
+                            <div class="sub-container" data-type="" data-value="">
+                                <div class="input-container">
+                                    <input type="text" name="main" class="form-control input-lg main"
+                                           placeholder="一级菜单名称">
+                                </div>
+                                <div class="op">
+                                    <span class="action"><a href="javascript:;">+回复文本</a></span>
+                                    <span class="action"><a href="javascript:;">+回复单条图文</a></span>
+                                    <span class="action"><a href="javascript:;">+回复多条图文</a></span>
+                                    <span class="action"><a href="javascript:;">+点击跳转</a></span>
+                                    <span class="action remove"><a href="javascript:;">删除</a></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="add-sub-click">
+                            <a href="javascript:;">+添加二级菜单</a>
+                        </div>
+                    </div>
+                    <div id="menu-save-btn" class="btn btn-primary submit-btn">
+                        <span>保 存</span>
+                    </div>
+                </div>
             </div>
         </div>
         {% include left_nav.html %}

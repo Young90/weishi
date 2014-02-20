@@ -224,7 +224,7 @@ p.callout-info {
 
 .main-inner {
     min-height: 600px;
-    margin: 0 0 0 240px;
+    margin: 10px 0 0 240px;
     padding-left: 10px;
     padding-bottom: 60px;
 }
@@ -421,4 +421,110 @@ table.image-article td.date {
     font-size: 200px;
     direction: ltr;
     cursor: pointer;
+}
+
+.menu {
+    width: 800px;
+}
+
+.no-menu {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding-top: 100px;
+    text-align: center;
+    height: 300px;
+}
+
+.no-menu .title {
+    font-size: 20px;
+    color: #777777;
+}
+
+.no-menu .link {
+    padding-top: 20px;
+    font-size: 20px;
+}
+
+.no-menu .link a {
+    text-decoration: none;
+}
+
+.menu-item {
+    margin-bottom: 10px;
+}
+
+.menu a {
+    text-decoration: none;
+}
+
+.menu-item .main-container {
+    height: 88px;
+    vertical-align: middle;
+    line-height: 3;
+    border-bottom: 1px solid #ccc;
+    border-left: 1px solid #ccc;
+    padding-left: 10px;
+}
+
+.edit-menu {
+    margin-top: 10px;
+}
+
+.add-main {
+    font-size: 18px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+.input-container {
+    height: 45px;
+    margin-top: 10px;
+}
+
+.menu-item input.main {
+    width: 240px;
+}
+
+.menu-item .op {
+    width: 600px;
+}
+
+.menu-item span.action {
+    padding-left: 10px;
+    font-size: 13px;
+}
+
+.menu-item span.remove a {
+    color: #d43f3a;
+}
+
+.menu-item .form-control {
+    display: inline;
+}
+
+.sub-container {
+    height: 100px;
+    vertical-align: middle;
+    line-height: 3;
+    margin-left: 40px;
+    padding-left: 20px;
+    display: inline-block;
+    border-left: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+}
+
+.menu-item input.sub {
+    width: 200px;
+}
+
+.add-sub-click {
+    display: block;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    margin-left: 40px;
+    font-size: 16px;
+}
+
+.remove-btn {
+    text-align: left;
 }

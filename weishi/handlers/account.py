@@ -176,6 +176,13 @@ class AutoResponseHandler(AccountBaseHandler):
         self.write(result)
 
 
+class AutoResponseMessageHandler(AccountBaseHandler):
+    """自动回复设置"""
+
+    def get(self, aid):
+        self.render('account/auto_response_message.html', account=self.account, index='auto')
+
+
 class UploadImageHandler(AccountBaseHandler):
     """上传图片接口，返回图片的url"""
 
@@ -212,6 +219,7 @@ handlers = [
     (r'/account/([^/]+)/fans', AccountFansHandler),
     (r'/account/([^/]+)/message/fans/([^/]+)', MessageHandler),
     (r'/account/([^/]+)/auto/follow', AutoResponseHandler),
+    (r'/account/([^/]+)/auto/message', AutoResponseMessageHandler),
     (r'/account/([^/]+)/menu', MenuHandler),
     (r'/account/([^/]+)/image/upload', UploadImageHandler),
     (r'/account/([^/]+)/image/list', ImageListHandler),
