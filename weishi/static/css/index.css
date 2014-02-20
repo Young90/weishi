@@ -7,6 +7,18 @@ h1 {
     color: #666666;
 }
 
+a.disabled {
+    color: #999999;
+}
+
+a.disabled:hover,
+a.disabled:focus {
+    color: #999999;
+    text-decoration: none;
+    cursor: not-allowed;
+    background-color: transparent;
+}
+
 .modal.fade .modal-dialog {
     -webkit-transform: translate(0, 0) scale(0.9);
     -ms-transform: translate(0, 0) scale(0.9);
@@ -492,6 +504,10 @@ table.image-article td.date {
 .menu-item span.action {
     padding-left: 10px;
     font-size: 13px;
+}
+
+.menu-item span.black {
+    color: #555;
 }
 
 .menu-item span.remove a {
