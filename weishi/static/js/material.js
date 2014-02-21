@@ -9,15 +9,18 @@ $('#article-save-btn').on('click', function (e) {
     var title = $(form).find('input[name="title"]').val();
     var content = UE.getEditor('content').getContent();
     if (aid == '') {
-        alert('参数不正确');
+        ModalManager.show_failure_modal('参数不正确！');
+        button.removeAttr('disabled');
         return;
     }
     if (title == '') {
-        alert('填写标题！');
+        ModalManager.show_failure_modal('填写标题！');
+        button.removeAttr('disabled');
         return;
     }
     if (content == '') {
-        alert('内容不能为空！');
+        ModalManager.show_failure_modal('内容不能为空！');
+        button.removeAttr('disabled');
         return;
     }
     var params = {
@@ -30,13 +33,7 @@ $('#article-save-btn').on('click', function (e) {
         data: params,
         success: function (data) {
             if (data.r) {
-                $('#save-success').modal();
-                setTimeout(function () {
-                    $('#save-success').modal('hide')
-                }, 1000);
-                setTimeout(function () {
-                    window.location = '/account/' + data.aid + '/article'
-                }, 1500);
+                ModalManager.show_success_modal('保存成功！');
             }
         }
     })
@@ -55,17 +52,17 @@ $('#single-save-btn').on('click', function (e) {
     var link = $('input[name="link"]').val();
 
     if (title == '') {
-        alert('标题不能为空！');
+        ModalManager.show_failure_modal('标题不能为空！');
         button.removeAttr('disabled');
         return
     }
     if (summary == '') {
-        alert('摘要不能为空！');
+        ModalManager.show_failure_modal('摘要不能为空！');
         button.removeAttr('disabled');
         return
     }
     if (link == '') {
-        alert('链接不能为空！');
+        ModalManager.show_failure_modal('链接不能为空！');
         button.removeAttr('disabled');
         return;
     }
@@ -93,20 +90,13 @@ $('#single-save-btn').on('click', function (e) {
         data: params,
         success: function (data) {
             if (data.r) {
-                $('#save-success').modal();
-                setTimeout(function () {
-                    $('#save-success').modal('hide')
-                }, 1000);
+                ModalManager.show_success_modal('保存成功！');
                 setTimeout(function () {
                     window.location = '/account/' + data.aid + '/image_article/single'
                 }, 1500);
             } else {
                 button.removeAttr('disabled');
-                $('.error-message').html(data.error);
-                $('#save-failure').modal();
-                setTimeout(function () {
-                    $('#save-failure').modal('hide')
-                }, 1300);
+                ModalManager.show_failure_modal(data.error);
             }
         }
     })
@@ -141,12 +131,8 @@ $('#multi-save-btn').on('click', function (e) {
         params.push(_p);
     }
     if (params.length == 0) {
-         button.removeAttr('disabled');
-                $('.error-message').html('填写正确的参数');
-                $('#save-failure').modal();
-                setTimeout(function () {
-                    $('#save-failure').modal('hide')
-                }, 1300);
+        button.removeAttr('disabled');
+        ModalManager.show_failure_modal('请填写正确的参数');
         return;
     }
     var data = {
@@ -159,20 +145,13 @@ $('#multi-save-btn').on('click', function (e) {
         success: function (data) {
             button.removeAttr('disabled');
             if (data.r) {
-                $('#save-success').modal();
-                setTimeout(function () {
-                    $('#save-success').modal('hide')
-                }, 1000);
+                ModalManager.show_success_modal('保存成功！')
                 setTimeout(function () {
                     window.location = '/account/' + data.aid + '/image_article/multi'
                 }, 1500);
             } else {
                 button.removeAttr('disabled');
-                $('.error-message').html(data.error);
-                $('#save-failure').modal();
-                setTimeout(function () {
-                    $('#save-failure').modal('hide')
-                }, 1300);
+                ModalManager.show_failure_modal(data.error);
             }
         }
     })

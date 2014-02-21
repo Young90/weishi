@@ -57,12 +57,25 @@ a.disabled:focus {
     filter: alpha(opacity=50);
 }
 
+.modal-footer {
+    border-top: none !important;
+    margin-top: 0px !important;
+}
+
 .index-top-nav {
     padding-left: 40px;
     padding-right: 40px;
     margin: 20px auto 0;
     height: 30px;
     line-height: 30px;
+}
+
+span.add-on {
+    width:100px;
+}
+
+.account-info {
+    width: 400px;
 }
 
 .top-left-logo {
@@ -437,14 +450,13 @@ table.image-article td.date {
 
 .menu {
     width: 800px;
+    min-height: 300px;
 }
 
 .no-menu {
-    border: 1px solid #ccc;
     border-radius: 4px;
     padding-top: 100px;
     text-align: center;
-    height: 300px;
 }
 
 .no-menu .title {
@@ -491,6 +503,10 @@ table.image-article td.date {
 .input-container {
     height: 45px;
     margin-top: 10px;
+}
+
+.input-container span.result {
+    padding-left: 10px;
 }
 
 .menu-item input.main {
