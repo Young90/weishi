@@ -47,7 +47,7 @@ function add_sub_menu(obj) {
         '</div>' +
         '<div class="op">' +
         '<span class="action black">回复内容 </span>' +
-        '<span class="action"><a href="javascript:;">文本</a></span>' +
+        '<span class="action"><a href="javascript:;" onclick="javascript:show_input_text_dialog(this);">文本</a></span>' +
         '<span class="action"><a href="javascript:;">单条图文</a></span>' +
         '<span class="action"><a href="javascript:;">多条图文</a></span>' +
         '<span class="action"><a href="javascript:;">链接</a></span>' +
@@ -60,12 +60,24 @@ function add_sub_menu(obj) {
 
 function remove_sub_menu(obj) {
     var container = $(obj).parents('.sub-container');
-    if (confirm('确定移除此二级菜单吗？')) {
-        $(container).remove();
-    }
+    ModalManager.show_confirm_modal('确定移除此二级菜单吗？', function (result) {
+        if (result) $(container).remove();
+    });
 }
 
 function remove_main_menu(obj) {
     var container = $(obj).parents('.edit-menu');
-    ModalManager.show_confirm_modal('所有的二级菜单也将移除，确定吗？', $(container).remove());
+    ModalManager.show_confirm_modal('所有的二级菜单也将移除，确定吗？', function (result) {
+        if (result) $(container).remove();
+    });
+}
+
+function show_input_text_dialog(obj) {
+    ModalManager.show_input_modal('输入要回复的文本信息', function (input) {
+        var container = $(obj).parents('.op').parent();
+        var result = $(container).find('.result');
+        $(container).attr('data-type', 'text');
+        $(container).attr('data-value', input);
+        $(result).text('文本：' + input);
+    });
 }

@@ -48,8 +48,27 @@ a.disabled:focus {
     width: 300px;
 }
 
+.modal-dialog {
+    width: 400px;
+}
+
+.modal-header {
+    border-bottom: none;
+}
+
+.modal-body {
+    padding: 0 0 0 0;
+}
+
 .modal-content {
     border-radius: 2px;
+}
+
+.modal-input-textarea {
+    width: 340px;
+    margin-left: 20px;
+    resize: vertical;
+    height: 100px !important;
 }
 
 .modal-backdrop.in {
@@ -506,7 +525,11 @@ table.image-article td.date {
 }
 
 .input-container span.result {
+    display: block;
+    width: 200px;
     padding-left: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .menu-item input.main {
