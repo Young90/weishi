@@ -71,6 +71,11 @@ a.disabled:focus {
     height: 100px !important;
 }
 
+.modal-input {
+    width: 340px;
+    margin-left: 20px;
+}
+
 .modal-backdrop.in {
     opacity: 0;
     filter: alpha(opacity=50);
@@ -526,7 +531,7 @@ table.image-article td.date {
 
 .input-container span.result {
     display: block;
-    width: 200px;
+    width: 300px;
     padding-left: 10px;
     overflow: hidden;
     text-overflow: ellipsis;

@@ -20,6 +20,8 @@
                         <div class="add-main">
                             <a href="javascript:;" onclick="javascript:add_main_menu();">+添加一级菜单</a>
                         </div>
+                        <input type="hidden" name="aid" value="{{account.aid}}">
+                        {% if not menu %}
                         <div class="edit-menu">
                             <div class="menu-item">
                                 <div class="main-container" data-type="" data-value="">
@@ -31,9 +33,9 @@
                                     <div class="op">
                                         <span class="action black">回复内容 </span>
                                         <span class="action"><a href="javascript:;" onclick="javascript:show_input_text_dialog(this);">文本</a></span>
-                                        <span class="action"><a href="javascript:;">单条图文</a></span>
-                                        <span class="action"><a href="javascript:;">多条图文</a></span>
-                                        <span class="action"><a href="javascript:;">链接</a></span>
+                                        <span class="action"><a href="javascript:;" onclick="javascript:show_input_single_dialog(this);">单条图文</a></span>
+                                        <span class="action"><a href="javascript:;" onclick="javascript:show_input_multi_dialog(this);">多条图文</a></span>
+                                        <span class="action"><a href="javascript:;" onclick="javascript:show_input_link_dialog(this);">链接</a></span>
                                     </div>
                                 </div>
                             </div>
@@ -41,6 +43,87 @@
                                 <a href="javascript:;" onclick="javascript:add_sub_menu(this);">+添加二级菜单</a>
                             </div>
                         </div>
+                        {% else %}
+                            {% for item in menu %}
+                            {% if item['type']=='button' %}
+                                <div class="edit-menu">
+                                    <div class="menu-item">
+                                        <div class="main-container" data-type="button" data-value="">
+                                            <div class="input-container">
+                                                <input type="text" name="main" class="form-control input-lg main"
+                                                     value="{{item['name']}}"  placeholder="一级菜单名称">
+                                                <span class="result"></span>
+                                            </div>
+                                            <div class="op" style="display:none;">
+                                                <span class="action black">回复内容 </span>
+                                                <span class="action"><a href="javascript:;" onclick="javascript:show_input_text_dialog(this);">文本</a></span>
+                                                <span class="action"><a href="javascript:;" onclick="javascript:show_input_single_dialog(this);">单条图文</a></span>
+                                                <span class="action"><a href="javascript:;" onclick="javascript:show_input_multi_dialog(this);">多条图文</a></span>
+                                                <span class="action"><a href="javascript:;" onclick="javascript:show_input_link_dialog(this);">链接</a></span>
+                                            </div>
+                                        </div>
+                                        {% for sub_item in item['sub_buttons'] %}
+                                        <div class="sub-container" data-type="{{sub_item['type']}}" data-value="{{sub_item['value']}}">
+                                            <div class="input-container">
+                                                <input type="text" name="sub" value="{{sub_item['name']}}" class="form-control input-lg main" placeholder="二级菜单名称">
+                                                {% if sub_item['type']=='text' %}
+                                                <span class="result">文本 : {{sub_item['value']}}</span>
+                                                {% elif sub_item['type']=='single' %}
+                                                <span class="result">单条图文 : <a href="/image_article/{{sub_item['value']}}/preview" target="_blank">预览</span>
+                                                {% elif sub_item['type']=='multi' %}
+                                                <span class="result">多条图文 : <a href="/image_article_group/{{sub_item['value']}}/preview" target="_blank">预览</span>
+                                                {% elif sub_item['type']=='link' %}
+                                                <span class="result">链接 : <a href="{{sub_item['value']}}" target="_blank">{{sub_item['value']}}</span>
+                                                {% end %}
+                                            </div>
+                                            <div class="op">
+                                                <span class="action black">回复内容 </span>
+                                                <span class="action"><a href="javascript:;" onclick="javascript:show_input_text_dialog(this);">文本</a></span>
+                                                <span class="action"><a href="javascript:;" onclick="javascript:show_input_single_dialog(this);">单条图文</a></span>
+                                                <span class="action"><a href="javascript:;" onclick="javascript:show_input_multi_dialog(this);">多条图文</a></span>
+                                                <span class="action"><a href="javascript:;" onclick="javascript:show_input_link_dialog(this);">链接</a></span>
+                                                <span class="action remove"><a href="javascript:;" onclick="javascript:remove_sub_menu(this);">删除</a></span>
+                                            </div>
+                                        </div>
+                                        {% end %}
+                                    </div>
+                                    <div class="add-sub-click">
+                                        <a href="javascript:;" onclick="javascript:add_sub_menu(this);">+添加二级菜单</a>
+                                    </div>
+                                </div>
+                             {% else %}
+                             <div class="edit-menu">
+                                    <div class="menu-item">
+                                        <div class="main-container" data-type="{{item['type']}}" data-value="{{item['value']}}">
+                                            <div class="input-container">
+                                                <input type="text" name="main" class="form-control input-lg main"
+                                                     value="{{item['name']}}"  placeholder="一级菜单名称">
+                                                {% if item['type']=='text' %}
+                                                <span class="result">文本 : {{item['value']}}</span>
+                                                {% elif item['type']=='single' %}
+                                                <span class="result">单条图文 : <a href="/image_article/{{item['value']}}/preview" target="_blank">预览</span>
+                                                {% elif item['type']=='multi' %}
+                                                <span class="result">多条图文 : <a href="/image_article_group/{{item['value']}}/preview" target="_blank">预览</span>
+                                                {% elif item['type']=='link' %}
+                                                <span class="result">链接 : <a href="{{item['value']}}" target="_blank">{{item['value']}}</span>
+                                                {% end %}
+                                            </div>
+                                            <div class="op">
+                                                <span class="action black">回复内容 </span>
+                                                <span class="action"><a href="javascript:;" onclick="javascript:show_input_text_dialog(this);">文本</a></span>
+                                                <span class="action"><a href="javascript:;" onclick="javascript:show_input_single_dialog(this);">单条图文</a></span>
+                                                <span class="action"><a href="javascript:;" onclick="javascript:show_input_multi_dialog(this);">多条图文</a></span>
+                                                <span class="action"><a href="javascript:;" onclick="javascript:show_input_link_dialog(this);">链接</a></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="add-sub-click">
+                                        <a href="javascript:;" onclick="javascript:add_sub_menu(this);">+添加二级菜单</a>
+                                    </div>
+                                </div>
+                             {% end %}
+                            {% end %}
+                        {% end %}
                     </div>
                     <div id="menu-save-btn" class="btn btn-primary submit-btn">
                         <span>保 存</span>

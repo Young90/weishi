@@ -17,10 +17,10 @@ function add_main_menu() {
         '</div>' +
         '<div class="op">' +
         ' <span class="action black">回复内容 </span>' +
-        '<span class="action"><a href="javascript:;">文本</a></span>' +
-        '<span class="action"><a href="javascript:;">单条图文</a></span>' +
-        '<span class="action"><a href="javascript:;">多条图文</a></span>' +
-        '<span class="action"><a href="javascript:;">链接</a></span>' +
+        '<span class="action"><a href="javascript:;" onclick="javascript:show_input_text_dialog(this);">文本</a></span>' +
+        '<span class="action"><a href="javascript:;" onclick="javascript:show_input_single_dialog(this);">单条图文</a></span>' +
+        '<span class="action"><a href="javascript:;" onclick="javascript:show_input_multi_dialog(this);">多条图文</a></span>' +
+        '<span class="action"><a href="javascript:;" onclick="javascript:show_input_link_dialog(this);">链接</a></span>' +
         '<span class="action remove"><a href="javascript:;" onclick="javascript:remove_main_menu(this);">删除</a></span>' +
         '</div>' +
         '</div>' +
@@ -35,6 +35,10 @@ function add_main_menu() {
 
 function add_sub_menu(obj) {
     var container = $(obj).parent().parent();
+    $(container).find('.main-container').find('.result').html('');
+    $(container).find('.main-container').attr('data-type', 'button');
+    $(container).find('.main-container').attr('data-value', '');
+    $(container).find('.main-container').find('.op').css('display', 'None');
     var items = $(container).find('.sub-container');
     if (items.length >= 5) {
         ModalManager.show_failure_modal('二级菜单最多五个！');
@@ -42,15 +46,15 @@ function add_sub_menu(obj) {
     }
     var sub_html = '<div class="sub-container" data-type="" data-value="">' +
         '<div class="input-container">' +
-        '<input type="text" name="main" class="form-control input-lg main" placeholder="二级菜单名称">' +
+        '<input type="text" name="sub" class="form-control input-lg main" placeholder="二级菜单名称">' +
         '<span class="result"></span>' +
         '</div>' +
         '<div class="op">' +
         '<span class="action black">回复内容 </span>' +
         '<span class="action"><a href="javascript:;" onclick="javascript:show_input_text_dialog(this);">文本</a></span>' +
-        '<span class="action"><a href="javascript:;">单条图文</a></span>' +
-        '<span class="action"><a href="javascript:;">多条图文</a></span>' +
-        '<span class="action"><a href="javascript:;">链接</a></span>' +
+        '<span class="action"><a href="javascript:;" onclick="javascript:show_input_single_dialog(this);">单条图文</a></span>' +
+        '<span class="action"><a href="javascript:;" onclick="javascript:show_input_multi_dialog(this);">多条图文</a></span>' +
+        '<span class="action"><a href="javascript:;" onclick="javascript:show_input_link_dialog(this);">链接</a></span>' +
         '<span class="action remove"><a href="javascript:;" onclick="javascript:remove_sub_menu(this);">删除</a></span>' +
         '</div>' +
         '</div>';
@@ -59,9 +63,16 @@ function add_sub_menu(obj) {
 }
 
 function remove_sub_menu(obj) {
-    var container = $(obj).parents('.sub-container');
+    var sub_container = $(obj).parents('.sub-container');
     ModalManager.show_confirm_modal('确定移除此二级菜单吗？', function (result) {
-        if (result) $(container).remove();
+        var container = $(sub_container).parents('.menu-item');
+        if ($(container).find('.sub-container').length == 1) {
+            $(container).find('.op').css('display', 'block');
+            $(container).find('.main-container').attr('data-type', '');
+        }
+        if (result) {
+            $(sub_container).remove();
+        }
     });
 }
 
@@ -73,11 +84,132 @@ function remove_main_menu(obj) {
 }
 
 function show_input_text_dialog(obj) {
-    ModalManager.show_input_modal('输入要回复的文本信息', function (input) {
+    ModalManager.show_input_modal('输入要回复的文本信息', 'textarea', function (input) {
         var container = $(obj).parents('.op').parent();
         var result = $(container).find('.result');
         $(container).attr('data-type', 'text');
         $(container).attr('data-value', input);
-        $(result).text('文本：' + input);
+        $(result).html('文本：' + input);
     });
 }
+
+function show_input_single_dialog(obj) {
+    ModalManager.show_input_modal('输入单条图文的id', 'input', function (input) {
+        var container = $(obj).parents('.op').parent();
+        var result = $(container).find('.result');
+        $(container).attr('data-type', 'single');
+        $(container).attr('data-value', input);
+        $(result).html('单条图文：' + '<a target="_blank" href="/image_article/' + input + '/preview">预览</a>');
+    });
+};
+
+function show_input_multi_dialog(obj) {
+    ModalManager.show_input_modal('输入多条图文的id', 'input', function (input) {
+        var container = $(obj).parents('.op').parent();
+        var result = $(container).find('.result');
+        $(container).attr('data-type', 'multi');
+        $(container).attr('data-value', input);
+        $(result).html('多条图文：' + '<a target="_blank" href="/image_article_group/' + input + '/preview">预览</a>');
+    });
+};
+
+function show_input_link_dialog(obj) {
+    ModalManager.show_input_modal('输入链接地址', 'input', function (input) {
+        var container = $(obj).parents('.op').parent();
+        var result = $(container).find('.result');
+        $(container).attr('data-type', 'link');
+        $(container).attr('data-value', input);
+        $(result).html('链接地址：' + '<a target="_blank" href="' + input + '">' + input + '</a>');
+    });
+};
+
+$('#menu-save-btn').on('click', function () {
+    var button = $('#menu-save-btn');
+    button.attr('disabled', 'disabled');
+    var items = $('.edit-menu');
+    var result = [];
+    var aid = $('input[name="aid"]').val();
+    for (var i = 0; i < items.length; i++) {
+        var item = items[i];
+        var main_container = $(item).find('.main-container');
+        var main_name = $(main_container).find('input[name="main"]').val();
+        if (main_name.trim().length == 0) {
+            ModalManager.show_failure_modal('主菜单名称还未填写！');
+            button.removeAttr('disabled');
+            return;
+        }
+        var main_type = $(main_container).attr('data-type');
+        var main_value = $(main_container).attr('data-value');
+        if (main_type != 'button') {
+            var sub_items = $(item).find('.sub-container');
+            if (sub_items.length > 0) {
+                ModalManager.show_failure_modal('一级菜单添加信息后，不能添加二级菜单！');
+                button.removeAttr('disabled');
+                return;
+            }
+            if (main_type == '' || main_value == '') {
+                ModalManager.show_failure_modal('一级菜单没有回复内容！');
+                button.removeAttr('disabled');
+                return;
+            }
+            var _p = {
+                'name': main_name,
+                'type': main_type,
+                'value': main_value
+            }
+            result.push(_p);
+        } else {
+            var _p = {
+                'name': main_name,
+                'type': 'button'
+            }
+            var sub_buttons = [];
+            var sub_items = $(item).find('.sub-container');
+            for (var j = 0; j < sub_items.length; j++) {
+                var sub_item = sub_items[j];
+                var sub_name = $(sub_item).find('input[name="sub"]').val();
+                if (sub_name.trim().length == 0) {
+                    ModalManager.show_failure_modal('二级菜单名称不能为空！');
+                    button.removeAttr('disabled');
+                    return;
+                }
+                var type = $(sub_item).attr('data-type');
+                var value = $(sub_item).attr('data-value');
+                if (type == '' || value == '') {
+                    ModalManager.show_failure_modal('二级菜单还没有选择回复内容！');
+                    button.removeAttr('disabled');
+                    return;
+                }
+                var _sub = {
+                    'name': sub_name,
+                    'type': type,
+                    'value': value
+                }
+                sub_buttons.push(_sub);
+            }
+            _p['sub_buttons'] = sub_buttons;
+            result.push(_p);
+        }
+    }
+    var data = {
+        params: JSON.stringify(result)
+    }
+    $.ajax({
+        type: "POST",
+        url: "/account/" + aid + '/menu',
+        data: data,
+        success: function (data) {
+            button.removeAttr('disabled');
+            if (data.r) {
+                ModalManager.show_success_modal('保存成功！')
+                setTimeout(function () {
+                    window.location.reload();
+                }, 1500);
+            } else {
+                button.removeAttr('disabled');
+                ModalManager.show_failure_modal(data.error);
+            }
+        }
+    })
+})
+;

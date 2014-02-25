@@ -2,6 +2,7 @@
 __author__ = 'young'
 
 import math
+import simplejson
 from tornado.web import HTTPError, asynchronous
 from weishi.libs.decorators import authenticated
 from weishi.libs.handler import BaseHandler
@@ -9,7 +10,7 @@ import weishi.libs.image as image_util
 from weishi.libs import wei_api
 from weishi.libs import key_util
 from weishi.libs.service import FansManager, MessageManager, ArticleManager, AccountManager, \
-    MenuManager, ImageArticleManager
+    MenuManager, ImageArticleManager, AutoManager
 
 
 class AccountBaseHandler(BaseHandler):
@@ -25,6 +26,7 @@ class AccountBaseHandler(BaseHandler):
     account_manager = None
     menu_manager = None
     image_article_manager = None
+    auto_manager = None
 
     @authenticated
     @asynchronous
@@ -35,6 +37,7 @@ class AccountBaseHandler(BaseHandler):
         self.account_manager = AccountManager(self.db)
         self.menu_manager = MenuManager(self.db)
         self.image_article_manager = ImageArticleManager(self.db)
+        self.auto_manager = AutoManager(self.db)
 
         aid = self.request.uri.split('/')[2]
         if not aid:
@@ -130,26 +133,101 @@ class MenuHandler(AccountBaseHandler):
 
     def get(self, aid):
         """设置自定义菜单的页面"""
-        menu = self.menu_manager.get_menu(self.account.aid)
+        menu = []
+        main_menu = self.menu_manager.get_main_menu_list(aid)
+        if not main_menu:
+            self.render('account/menu.html', menu=None, account=self.account, index='menu')
+            return
+        for item in main_menu:
+            if item.type and item.mkey:
+                # 如果一级菜单没有子菜单
+                if item.auto_id:
+                    # 自动回复
+                    auto = self.auto_manager.get_auto_by_id(item.auto_id)
+                    p = {'name': item.name, 'type': auto.type,
+                         'value': auto.re_content if auto.re_content else auto.re_img_art_id}
+                else:
+                    # url视图
+                    p = {'name': item.name, 'type': 'link', 'value': item.url}
+                menu.append(p)
+            else:
+                #如果有二级菜单，遍历所有的子菜单
+                sub_menus = self.menu_manager.get_sub_menu_list(aid, item.id)
+                p = {'name': item.name, 'type': 'button'}
+                sub_buttons = []
+                for sub in sub_menus:
+                    if sub.type and sub.mkey and sub.auto_id:
+                        # 如果二级菜单为点击事件，查询自动回复的类型和内容
+                        auto = self.auto_manager.get_auto_by_id(sub.auto_id)
+                        sub_button = {'name': sub.name, 'type': auto.type,
+                                      'value': auto.re_content if auto.re_content else auto.re_img_art_id}
+                    else:
+                        # 如果二级菜单为url视图
+                        sub_button = {'name': sub.name, 'type': 'link', 'value': sub.url}
+                    sub_buttons.append(sub_button)
+                p['sub_buttons'] = sub_buttons
+                menu.append(p)
+            print menu
         self.render('account/menu.html', menu=menu, account=self.account, index='menu')
 
     def post(self, *args, **kwargs):
         """设置自定义菜单"""
-        menu = self.get_argument('menu', None)
-        result = {'r': 0}
-        if not menu:
+        aid = self.account.aid
+        params = self.get_argument('params', None)
+        result = {'r': 1}
+        if not params:
+            result['r'] = 0
             result['error'] = u'自定义菜单不能为空'
             self.write(result)
+            self.finish()
             return
-        wei_api.set_menu(self.account, menu, self._call_back)
-        self.write(result)
-
-    def _call_back(self, result, menu):
+        params = simplejson.loads(params, encoding='utf-8')
+        #先清空已保存的菜单记录
+        self.menu_manager.truncate_account_menu(aid)
+        #清空菜单相关的自动回复
+        self.auto_manager.truncate_account_menu_auto(aid)
+        for param in params:
+            name = param['name']
+            _type = param['type']
+            if _type == 'button':
+                _id = self.menu_manager.save_main_menu_item(aid, name)
+                for sub_button in param['sub_buttons']:
+                    mkey = key_util.generate_hexdigits_lower(8)
+                    sub_name = sub_button['name']
+                    sub_type = sub_button['type']
+                    sub_value = sub_button['value']
+                    if sub_type == 'text':
+                        auto_id = self.auto_manager.save_text_auto_response(aid, 'text', mkey)
+                        self.menu_manager.save_sub_menu_item(aid, sub_name, 'click', None, auto_id, _id, mkey)
+                    elif sub_type == 'single':
+                        auto_id = self.auto_manager.save_image_article_auto_response(aid, 'single', sub_value, mkey)
+                        self.menu_manager.save_sub_menu_item(aid, sub_name, 'click', None, auto_id, _id, mkey)
+                    elif sub_type == 'multi':
+                        auto_id = self.auto_manager.save_image_article_auto_response(aid, 'multi', sub_value, mkey)
+                        self.menu_manager.save_sub_menu_item(aid, sub_name, 'click', None, auto_id, _id, mkey)
+                    elif sub_type == 'link':
+                        self.menu_manager.save_sub_menu_item(aid, name, 'view', sub_value, 0, _id, None)
+            elif _type == 'text':
+                value = param['value']
+                mkey = key_util.generate_hexdigits_lower(8)
+                auto_id = self.auto_manager.save_text_auto_response(aid, value, mkey)
+                self.menu_manager.save_main_menu_item_response(aid, name, 'click', None, auto_id, mkey)
+            elif _type == 'single':
+                value = param['value']
+                mkey = key_util.generate_hexdigits_lower(8)
+                auto_id = self.auto_manager.save_image_article_auto_response(aid, 'single', value, mkey)
+                self.menu_manager.save_main_menu_item_response(aid, name, 'click', None, auto_id, mkey)
+            elif _type == 'multi':
+                value = param['value']
+                mkey = key_util.generate_hexdigits_lower(8)
+                auto_id = self.auto_manager.save_image_article_auto_response(aid, 'multi', value, mkey)
+                self.menu_manager.save_main_menu_item_response(aid, name, 'click', None, auto_id, mkey)
+            elif _type == 'link':
+                value = param['value']
+                self.menu_manager.save_main_menu_item_response(aid, name, 'view', value, 0, None)
         self.write(result)
         self.finish()
-        if result['r']:
-            self.menu_manager.delete_menu(self.account.aid)
-            self.menu_manager.save_menu(self.account.aid, menu)
+        return
 
 
 class AutoResponseHandler(AccountBaseHandler):

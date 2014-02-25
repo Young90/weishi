@@ -78,20 +78,26 @@ var ModalManager = {
         });
     },
 
-    show_input_modal: function (message, callback) {
-        var $modal = $('<div id="input-modal" class="modal fade">' +
+    show_input_modal: function (message, type, callback) {
+        var html = '<div id="input-modal" class="modal fade">' +
             '<div class="modal-dialog modal-sm">' +
             '<div class="modal-content">' +
             '<div class="modal-header"><h5 class="modal-title" style="color: #444"></h5></div>' +
-            '<div class="modal-body">' +
-            '<textarea class="form-control modal-input-textarea" name="input"></textarea>' +
-            '<div class="modal-footer">' +
+            '<div class="modal-body">';
+        if (type == 'input') {
+            html += '<input class="form-control modal-input" name="input">';
+        }
+        if (type == 'textarea') {
+            html += '<textarea class="form-control modal-input-textarea" name="input"></textarea>';
+        }
+        html += '<div class="modal-footer">' +
             '<button type="button" class="btn btn-default" id="confirm-modal-cancel">取消</button>' +
             '<button type="button" class="btn btn-primary" id="confirm-modal-sure">确定</button>' +
             '</div>' +
             '</div>' +
             '</div>' +
-            '</div>');
+            '</div>';
+        var $modal = $(html);
         $modal.find('.modal-title').text(message);
         $modal.modal({
             show: true,
@@ -104,7 +110,7 @@ var ModalManager = {
             $('.modal-backdrop').remove();
         });
         $('#confirm-modal-sure').click(function () {
-            var input = $modal.find('textarea[name="input"]').val();
+            var input = $modal.find('.form-control').val();
             if (input.trim().length > 0) {
                 $modal.modal('hide');
                 $modal.remove();
@@ -113,5 +119,4 @@ var ModalManager = {
             }
         });
     }
-
 };

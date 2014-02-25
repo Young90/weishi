@@ -177,32 +177,7 @@ class ImageArticleGroupPreviewHandler(BaseHandler):
         self.render('article/image_article_group_preview.html', main_article=main_article, article_list=article_list)
 
 
-class ImageArticleSingleList(BaseHandler):
-    """获取账号的单条图文列表"""
-
-    image_article_manager = None
-    account = None
-
-    def prepare(self):
-        aid = self.get_cookie('aid', None)
-        if not aid:
-            raise HTTPError(403, 'invalid aid')
-        self.image_article_manager = ImageArticleManager(self.db)
-
-    def get(self):
-        self.write('')
-
-
-class ImageArticleMultiList(BaseHandler):
-    """获取账号的多条图文列表"""
-
-    def get(self):
-        self.write('')
-
-
 handlers = [
-    (r'/image_article/single/list', ImageArticleSingleList),
-    (r'/image_article/multi/list', ImageArticleMultiList),
     (r'/image_article/([^/]+)/preview', ImageArticlePreviewHandler),
     (r'/image_article_group/([^/]+)/preview', ImageArticleGroupPreviewHandler),
     (r'/account/([^/]+)/image_article/single', ImageArticleHandler),

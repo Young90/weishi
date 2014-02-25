@@ -59,7 +59,7 @@ class AccountManager(Base):
 
     def delete_account(self, aid, user_id):
         """删除公众账号"""
-        self.db.excute('delete from t_account where aid = %s and user_id = %s', aid, user_id)
+        self.db.execute('delete from t_account where aid = %s and user_id = %s', aid, user_id)
 
     def get_account_by_aid(self, aid):
         """根据aid获取公众账号"""
@@ -155,16 +155,34 @@ class ArticleManager(Base):
 
 
 class MenuManager(Base):
-    def get_menu(self, aid):
-        """"获取保存的自定义菜单"""
-        return self.db.get('select * from t_menu where aid = %s', aid)
+    def get_main_menu_list(self, aid):
+        """"获取保存的自定义菜单的主菜单"""
+        return self.db.query('select * from t_menu where aid = %s and first = 1', aid)
 
-    def delete_menu(self, aid):
-        """删除自定义菜单"""
+    def get_sub_menu_list(self, aid, parent_id):
+        """获取保存的自定义菜单的二级菜单"""
+        return self.db.query('select * from t_menu where aid = %s and second = 1 and parent_id = %s', aid, parent_id)
+
+    def save_main_menu_item(self, aid, name):
+        """保存自定义菜单中的主菜单，并返回id"""
+        return self.db.execute('insert into t_menu (date, name, first, second, aid) values (NOW(), %s, %s, %s, %s)',
+                               name, 1, 0, aid)
+
+    def save_main_menu_item_response(self, aid, name, t, url, auto_id, mkey):
+        """保存作为回复的一级菜单"""
+        return self.db.execute('insert into t_menu (date, name, first, second, type, url, auto_id, parent_id, '
+                               'mkey, aid) values (NOW(), %s, %s, %s, %s, %s, %s, %s, %s, %s)', name, 1, 0, t,
+                               url, auto_id, 0, mkey, aid)
+
+    def save_sub_menu_item(self, aid, name, t, url, auto_id, parent_id, mkey):
+        """保存自定菜单中的二级菜单"""
+        return self.db.execute('insert into t_menu (date, name, first, second, type, url, auto_id, parent_id, '
+                               'mkey, aid) values (NOW(), %s, %s, %s, %s, %s, %s, %s, %s, %s)', name, 0, 1, t,
+                               url, auto_id, parent_id, mkey, aid)
+
+    def truncate_account_menu(self, aid):
+        """清空账号已定义的菜单记录"""
         self.db.execute('delete from t_menu where aid = %s', aid)
-
-    def save_menu(self, aid, menu):
-        self.db.execute('insert into t_menu (aid, menu) values (%s, %s)', aid, menu)
 
 
 class ImageArticleManager(Base):
@@ -209,3 +227,23 @@ class ImageArticleManager(Base):
     def get_multi_image_article_by_id(self, _id):
         """根据id获取image_article"""
         return self.db.query('select * from t_image_article_group where id = %s', _id)
+
+
+class AutoManager(Base):
+    def get_auto_by_id(self, _id):
+        """根据id获取自动回复"""
+        return self.db.get('select * from t_auto where id = %s', _id)
+
+    def save_text_auto_response(self, aid, content, mkey):
+        """保存菜单中的文字自动回复，并返回该条目的id"""
+        return self.db.execute('insert into t_auto (date, aid, type, re_time, re_content, mkey) '
+                               'values (NOW(), %s, %s, %s, %s, %s)', aid, 'text', 'click', content, mkey)
+
+    def save_image_article_auto_response(self, aid, re_type, re_img_art_id, mkey):
+        """保存菜单中的图文自动，并返回该条目的id"""
+        return self.db.execute('insert into t_auto (date, aid, type, re_time, re_img_art_id, mkey) '
+                               'values (NOW(), %s, %s, %s, %s, %s)', aid, re_type, 'click', re_img_art_id, mkey)
+
+    def truncate_account_menu_auto(self, aid):
+        """清空账号与自定义菜单相关的自动回复"""
+        self.db.execute('delete from t_auto where aid = %s and mkey is not null and re_time = %s', aid, 'click')
