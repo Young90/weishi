@@ -167,7 +167,6 @@ class MenuHandler(AccountBaseHandler):
                     sub_buttons.append(sub_button)
                 p['sub_buttons'] = sub_buttons
                 menu.append(p)
-            print menu
         self.render('account/menu.html', menu=menu, account=self.account, index='menu')
 
     def post(self, *args, **kwargs):
@@ -175,6 +174,7 @@ class MenuHandler(AccountBaseHandler):
         aid = self.account.aid
         params = self.get_argument('params', None)
         result = {'r': 1}
+        button = []
         if not params:
             result['r'] = 0
             result['error'] = u'自定义菜单不能为空'
@@ -191,40 +191,68 @@ class MenuHandler(AccountBaseHandler):
             _type = param['type']
             if _type == 'button':
                 _id = self.menu_manager.save_main_menu_item(aid, name)
+                menu = {'name': name}
+                sub_buttons = []
                 for sub_button in param['sub_buttons']:
                     mkey = key_util.generate_hexdigits_lower(8)
                     sub_name = sub_button['name']
                     sub_type = sub_button['type']
                     sub_value = sub_button['value']
                     if sub_type == 'text':
-                        auto_id = self.auto_manager.save_text_auto_response(aid, 'text', mkey)
-                        self.menu_manager.save_sub_menu_item(aid, sub_name, 'click', None, auto_id, _id, mkey)
+                        auto_id = self.auto_manager.save_text_auto_response(aid=aid, content=sub_value, mkey=mkey)
+                        self.menu_manager.save_sub_menu_item(aid=aid, name=sub_name, t='click', url=None,
+                                                             auto_id=auto_id, parent_id=_id, mkey=mkey)
+                        sub_menu = {'type': 'click', 'name': sub_name, 'key': mkey}
                     elif sub_type == 'single':
-                        auto_id = self.auto_manager.save_image_article_auto_response(aid, 'single', sub_value, mkey)
-                        self.menu_manager.save_sub_menu_item(aid, sub_name, 'click', None, auto_id, _id, mkey)
+                        auto_id = self.auto_manager.save_image_article_auto_response(aid=aid, re_type='single',
+                                                                                     re_img_art_id=sub_value, mkey=mkey)
+                        self.menu_manager.save_sub_menu_item(aid=aid, name=sub_name, t='click', url=None,
+                                                             auto_id=auto_id, parent_id=_id, mkey=mkey)
+                        sub_menu = {'type': 'click', 'name': sub_name, 'key': mkey}
                     elif sub_type == 'multi':
-                        auto_id = self.auto_manager.save_image_article_auto_response(aid, 'multi', sub_value, mkey)
-                        self.menu_manager.save_sub_menu_item(aid, sub_name, 'click', None, auto_id, _id, mkey)
+                        auto_id = self.auto_manager.save_image_article_auto_response(aid=aid, re_type='multi',
+                                                                                     re_img_art_id=sub_value, mkey=mkey)
+                        self.menu_manager.save_sub_menu_item(aid=aid, name=sub_name, t='click', url=None,
+                                                             auto_id=auto_id, parent_id=_id, mkey=mkey)
+                        sub_menu = {'type': 'click', 'name': sub_name, 'key': mkey}
                     elif sub_type == 'link':
-                        self.menu_manager.save_sub_menu_item(aid, name, 'view', sub_value, 0, _id, None)
+                        self.menu_manager.save_sub_menu_item(aid=aid, name=sub_name, t='view', url=sub_value, auto_id=0,
+                                                             parent_id=_id, mkey=None)
+                        sub_menu = {'type': 'view', 'name': sub_name, 'url': sub_value}
+                    sub_buttons.append(sub_menu)
+                menu['sub_button'] = sub_buttons
             elif _type == 'text':
                 value = param['value']
                 mkey = key_util.generate_hexdigits_lower(8)
-                auto_id = self.auto_manager.save_text_auto_response(aid, value, mkey)
-                self.menu_manager.save_main_menu_item_response(aid, name, 'click', None, auto_id, mkey)
+                auto_id = self.auto_manager.save_text_auto_response(aid=aid, content=value, mkey=mkey)
+                self.menu_manager.save_main_menu_item_response(aid=aid, name=name, t='click', url=None, auto_id=auto_id,
+                                                               mkey=mkey)
+                menu = {'type': 'click', 'name': name, 'key': mkey}
             elif _type == 'single':
                 value = param['value']
                 mkey = key_util.generate_hexdigits_lower(8)
-                auto_id = self.auto_manager.save_image_article_auto_response(aid, 'single', value, mkey)
-                self.menu_manager.save_main_menu_item_response(aid, name, 'click', None, auto_id, mkey)
+                auto_id = self.auto_manager.save_image_article_auto_response(aid=aid, re_type='single',
+                                                                             re_img_art_id=value, mkey=mkey)
+                self.menu_manager.save_main_menu_item_response(aid=aid, name=name, t='click', url=None, auto_id=auto_id,
+                                                               mkey=mkey)
+                menu = {'type': 'click', 'name': name, 'key': mkey}
             elif _type == 'multi':
                 value = param['value']
                 mkey = key_util.generate_hexdigits_lower(8)
-                auto_id = self.auto_manager.save_image_article_auto_response(aid, 'multi', value, mkey)
-                self.menu_manager.save_main_menu_item_response(aid, name, 'click', None, auto_id, mkey)
+                auto_id = self.auto_manager.save_image_article_auto_response(aid=aid, re_type='multi',
+                                                                             re_img_art_id=value, mkey=mkey)
+                self.menu_manager.save_main_menu_item_response(aid=aid, name=name, t='click', url=None, auto_id=auto_id,
+                                                               mkey=mkey)
+                menu = {'type': 'click', 'name': name, 'key': mkey}
             elif _type == 'link':
                 value = param['value']
-                self.menu_manager.save_main_menu_item_response(aid, name, 'view', value, 0, None)
+                self.menu_manager.save_main_menu_item_response(aid=aid, name=name, t='view', url=value, auto_id=0,
+                                                               mkey=None)
+                menu = {'type': 'view', 'name': name, 'url': value}
+            button.append(menu)
+        button = {'button': button}
+        wei_api.set_menu(self.account, button)
+        print button
         self.write(result)
         self.finish()
         return
