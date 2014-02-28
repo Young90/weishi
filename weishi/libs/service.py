@@ -65,12 +65,10 @@ class AccountManager(Base):
         """根据aid获取公众账号"""
         return self.db.get('select * from t_account where aid = %s', aid)
 
-    def update_account_token(self, account):
+    def update_account_token(self, aid, access_token, expires):
         """当access_token过期后，获取微信的access_token"""
-        print 'AccountManager.update_account_token start...'
-        self.db.execute('update t_account set access_token = %s, expires = %s where aid = %s',
-                        account.access_token, account.expires, account.aid)
-        print 'AccountManager.update_account_token end...'
+        self.db.execute('update t_account set access_token = %s, expires = %s where aid = %s', access_token, expires,
+                        aid)
 
     def check_account(self, aid):
         """经过微信服务器验证的，将checked设为1"""

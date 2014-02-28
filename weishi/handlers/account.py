@@ -77,10 +77,7 @@ class AccountFansHandler(AccountBaseHandler):
         page_size = 10
         fans = self.fans_manager.get_fans(aid, start, page_size)
         total = self.fans_manager.get_fans_count(aid)
-        print 'total : %s' % total
         total_page = math.ceil(float(total) / page_size)
-        print 'start : %s' % start
-        print 'total_page : %s' % total_page
         self.render('account/fans.html', fans=fans, account=self.account, total=total,
                     start=int(start), total_page=total_page, page_size=page_size, prefix='/account/%s/fans' % aid,
                     index='fans')

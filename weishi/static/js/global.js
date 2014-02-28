@@ -118,5 +118,20 @@ var ModalManager = {
                 if (callback) callback(input);
             }
         });
+    },
+
+    show_process_modal: function () {
+        var $modal = $('<div id="process-modal" class="modal fade" tablindex="-1" role="dialog" aria-labelledby="myModalLabel" ' +
+            'aria-hidden="true">' +
+            '<div class="modal-dialog modal-sm">' +
+            '<div class="modal-content" style="height: 160px;padding-left: 30px; padding-right: 30px; padding-top: 66px;">' +
+            '<div class="progress progress-striped active">' +
+            '<div class="progress-bar"  role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 100%">' +
+            '</div>' +
+            '</div>' +
+            '</div>' +
+            '</div>' +
+            '</div>');
+        $modal.modal();
     }
 };

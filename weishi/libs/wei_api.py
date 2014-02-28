@@ -40,13 +40,12 @@ def get_access_token(account, callback, *args):
             access_token = body['access_token']
             # 计算access_token过期时间，为了保证可用，比官方时间少200s
             time = datetime.datetime.now() + datetime.timedelta(seconds=7000)
-            account['access_token'] = access_token
-            account['expires'] = time
+            access_token = access_token
+            expires = time
     except KeyError:
         print body
-    print 'wei_api.py get_access_token end...'
     if callback:
-        callback(account, *args)
+        callback(*args, access_token=access_token, expires=expires, aid=account.aid)
 
 
 @gen.coroutine
@@ -141,7 +140,6 @@ def send_text_message(account, message, *callback):
 def set_menu(account, menu, *callback):
     """自定义菜单"""
     client = AsyncHTTPClient(max_clients=20)
-    print account.access_token
     url = CUSTOM_MENU % account.access_token
     response = yield gen.Task(client.fetch, url, method='POST',
                               body=simplejson.dumps(menu, encoding='utf-8', ensure_ascii=False))

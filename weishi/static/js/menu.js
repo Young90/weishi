@@ -119,11 +119,12 @@ function show_input_link_dialog(obj) {
         var result = $(container).find('.result');
         $(container).attr('data-type', 'link');
         $(container).attr('data-value', input);
-        $(result).html('链接地址：' + '<a target="_blank" href="' + input + '">' + input + '</a>');
+        $(result).html('链接地址：' + '<a target="_blank" href="' + input + '">查看</a>');
     });
 };
 
 $('#menu-save-btn').on('click', function () {
+    ModalManager.show_process_modal();
     var button = $('#menu-save-btn');
     button.attr('disabled', 'disabled');
     var items = $('.edit-menu');
@@ -200,6 +201,7 @@ $('#menu-save-btn').on('click', function () {
         data: data,
         success: function (data) {
             button.removeAttr('disabled');
+            $('#process-modal').modal('hide');
             if (data.r) {
                 ModalManager.show_success_modal('保存成功！')
                 setTimeout(function () {
@@ -211,5 +213,4 @@ $('#menu-save-btn').on('click', function () {
             }
         }
     })
-})
-;
+});
