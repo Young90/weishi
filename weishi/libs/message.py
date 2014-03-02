@@ -35,6 +35,8 @@ def process_message(account, message, path):
             return _process_subscribe_event(account, message, path)
         if event == 'unsubscribe':
             return _process_unsubscribe_event(account, message)
+        if event == 'click':
+            return
 
 
 def _add_single_fan(user, aid):
@@ -143,3 +145,23 @@ def _process_unsubscribe_event(account, message):
     print 'openid : %s' % openid
     print 'account : %s' % account.aid
     db.execute('update t_fans set status = 0 where openid = %s and aid = %s', openid, account.aid)
+
+
+def _process_menu_click_event(account, message, path):
+    """
+    处理用户点击自定义菜单的事件
+    """
+    openid = message['FromUserName']
+    key = message['EventKey']
+    auto = db.get('select * from t_auto where mkey = %s and aid = %s', key, account.aid)
+    if not auto:
+        return None
+    if auto.type == 'text':
+        result = {'ToUserName': message['FromUserName'], 'FromUserName': account.wei_account,
+                  'CreateTime': int(time.time()), 'MsgType': 'text', 'Content': auto.re_content}
+        return Loader(path).load('message/text_message.xml').generate(result=result)
+    if auto.type == 'single':
+        image_article = db.get('select * from t_image_article where id = %s', auto.re_img_art_id)
+        if not image_article:
+            return None
+        

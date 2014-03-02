@@ -81,7 +81,7 @@ class APIHandler(APIBaseHandler):
         if not wei_api.access_token_available(account):
             self.account['access_token'] = account.access_token
             self.account['expires'] = account.expires
-            wei_api.get_access_token(account, self.account_manager.update_account_token(account))
+            wei_api.get_access_token(account, self.account_manager.update_account_token)
         message = self._get_message()
         if not message:
             raise HTTPError(404)

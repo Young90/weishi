@@ -249,7 +249,6 @@ class MenuHandler(AccountBaseHandler):
             button.append(menu)
         button = {'button': button}
         wei_api.set_menu(self.account, button)
-        print button
         self.write(result)
         self.finish()
         return
