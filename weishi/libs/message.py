@@ -1,17 +1,22 @@
 #coding:utf-8
 __author__ = 'Young'
 
-import datetime
 import time
 
 from tornado.template import Loader
 
 from weishi import db
 from weishi.libs import wei_api
+from weishi.libs.service import ImageArticleManager, FansManager, AutoManager, MessageManager
 
 
 db.connect()
 db = db.conn.mysql
+
+image_article_manager = ImageArticleManager(db)
+fans_manager = FansManager(db)
+auto_manager = AutoManager(db)
+message_manager = MessageManager(db)
 
 
 def process_message(account, message, path):
@@ -36,92 +41,48 @@ def process_message(account, message, path):
         if event == 'unsubscribe':
             return _process_unsubscribe_event(account, message)
         if event == 'click':
-            return
+            return _process_menu_click_event(account, message, path)
 
 
 def _add_single_fan(user, aid):
     """将关注的用户保存到数据库"""
-    if db.get('select * from t_fans where openid = %s', user['openid']):
-        db.execute('update t_fans set status = 1, date = %s, subscribe_time = %s where openid = %s and aid = %s',
-                   datetime.datetime.now(), datetime.datetime.now(), user['openid'], aid)
+    openid = user['openid']
+    if fans_manager.get_fans_by_id(openid):
+        # 如果用户已经取消关注后再关注
+        fans_manager.re_subscribe_fans(openid, aid)
     else:
-        db.execute('insert into t_fans (date, openid, nickname, sex, country, province, city, avatar, '
-                   'subscribe_time, language, aid) values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
-                   datetime.datetime.now(), user['openid'], user['nickname'], user['sex'], user['country'],
-                   user['province'], user['city'], user['headimgurl'],
-                   datetime.datetime.fromtimestamp(int(user['subscribe_time'])), user['language'], aid)
+        # 第一次关注，保存到数据库
+        fans_manager.save_single_fans(user, aid)
 
 
 def _process_text_message(aid, message):
     """接受用户发送的文本消息"""
-    openid = message['FromUserName']
-    content = message['Content']
-    create_time = message['CreateTime']
-    msg_id = message['MsgId']
-    db.execute('insert into t_message (type, create_time, message_id, content, status, openid, aid)'
-               ' values (%s, %s, %s, %s, %s, %s, %s)', 'text', datetime.datetime.fromtimestamp(int(create_time)),
-               msg_id, content, 0, openid, aid)
+    message_manager.receive_text_message(message, aid)
 
 
 def _process_image_message(aid, message):
     """接收用户发送的图片消息"""
-    openid = message['FromUserName']
-    url = message['PicUrl']
-    create_time = message['CreateTime']
-    msg_id = message['MsgId']
-    media_id = message['MediaId']
-    db.execute('insert into t_message (type, create_time, message_id, url, media_id, status, openid, aid) '
-               'values (%s, %s, %s, %s, %s, %s, %s, %s)', 'image', datetime.datetime.fromtimestamp(int(create_time)),
-               msg_id, url, media_id, 0, openid, aid)
+    message_manager.receive_image_message(message, aid)
 
 
 def _process_voice_message(aid, message):
     """接收用户发送的语音消息"""
-    openid = message['FromUserName']
-    create_time = message['CreateTime']
-    msg_id = message['MsgId']
-    media_id = message['MediaId']
-    msg_format = message['Format']
-    db.execute('insert into t_message (type, create_time, message_id, media_id, format, status, openid, aid) '
-               'values (%s, %s, %s, %s, %s, %s, %s, %s)', 'voice', datetime.datetime.fromtimestamp(int(create_time)),
-               msg_id, media_id, msg_format, 0, openid, aid)
+    message_manager.receive_voice_message(message, aid)
 
 
 def _process_video_message(aid, message):
     """接收用户发送的视频消息"""
-    openid = message['FromUserName']
-    create_time = message['CreateTime']
-    msg_id = message['MsgId']
-    media_id = message['MediaId']
-    db.execute('insert into t_message (type, create_time, message_id, media_id, status, openid, aid) '
-               'values (%s, %s, %s, %s, %s, %s, %s)', 'video', datetime.datetime.fromtimestamp(int(create_time)),
-               msg_id, media_id, 0, openid, aid)
+    message_manager.receive_video_message(message, aid)
 
 
 def _process_location_message(aid, message):
     """接收用户发送的位置消息"""
-    openid = message['FromUserName']
-    create_time = message['CreateTime']
-    msg_id = message['MsgId']
-    x = message['Location_X']
-    y = message['Location_Y']
-    scale = message['Scale']
-    label = message['Label']
-    db.execute('insert into t_message (type, create_time, message_id, x, y, scale, label, status, openid, aid) '
-               'values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', 'location',
-               datetime.datetime.fromtimestamp(int(create_time)),
-               msg_id, x, y, scale, label, 0, openid, aid)
+    message_manager.receive_location_message(message, aid)
 
 
 def _process_link_message(aid, message):
     """接收用户发送的链接消息"""
-    openid = message['FromUserName']
-    create_time = message['CreateTime']
-    msg_id = message['MsgId']
-    url = message['Url']
-    db.execute('insert into t_message (type, create_time, message_id, url, status, openid, aid) '
-               'values (%s, %s, %s, %s, %s, %s, %s)', 'video', datetime.datetime.fromtimestamp(int(create_time)),
-               msg_id, url, 0, openid, aid)
+    message_manager.receive_link_message(message, aid)
 
 
 def _process_subscribe_event(account, message, path):
@@ -142,26 +103,47 @@ def _process_unsubscribe_event(account, message):
     处理用户取消关注账号的事件
     """
     openid = message['FromUserName']
-    print 'openid : %s' % openid
-    print 'account : %s' % account.aid
-    db.execute('update t_fans set status = 0 where openid = %s and aid = %s', openid, account.aid)
+    fans_manager.get_fans()
+    fans_manager.unsubscribe_fans(openid, account.aid)
 
 
 def _process_menu_click_event(account, message, path):
     """
     处理用户点击自定义菜单的事件
     """
-    openid = message['FromUserName']
     key = message['EventKey']
-    auto = db.get('select * from t_auto where mkey = %s and aid = %s', key, account.aid)
+    print '_process_menu_click_event : key ------ %s' % key
+    auto = auto_manager.get_auto_by_key(key)
     if not auto:
         return None
     if auto.type == 'text':
         result = {'ToUserName': message['FromUserName'], 'FromUserName': account.wei_account,
                   'CreateTime': int(time.time()), 'MsgType': 'text', 'Content': auto.re_content}
+        print '_process_menu_click_event : text result ------ %s' % result
         return Loader(path).load('message/text_message.xml').generate(result=result)
     if auto.type == 'single':
-        image_article = db.get('select * from t_image_article where id = %s', auto.re_img_art_id)
+        image_article = image_article_manager.get_image_article_by_id(auto.re_img_art_id)
         if not image_article:
             return None
-        
+        result = {'ToUserName': message['FromUserName'], 'FromUserName': account.wei_account,
+                  'CreateTime': int(time.time()), 'count': 1,
+                  'items': [{'title': image_article.title, 'summary': image_article.summary,
+                             'thumb': image_article.image, 'url': image_article.link}]}
+        print '_process_menu_click_event : single result ------ %s' % result
+        return Loader(path).load('message/image_message.xml').generate(result=result)
+    if auto.type == 'multi':
+        image_article_group = image_article_manager.get_multi_image_article_by_id(auto.re_img_art_id)
+        if not image_article_group:
+            return None
+        id_list = [image_article_group.id1, image_article_group.id2, image_article_group.id3, image_article_group.id4,
+                   image_article_group.id5]
+        id_list = filter(lambda a: a != 0, id_list)
+        article_list = image_article_manager.get_image_article_by_id_list(','.join(str(x) for x in id_list))
+        items = []
+        for article in article_list:
+            item = {'title': article.title, 'summary': article.summary, 'thumb': article.image, 'url': article.link}
+            items.append(item)
+        result = {'ToUserName': message['FromUserName'], 'FromUserName': account.wei_account,
+                  'CreateTime': int(time.time()), 'count': len(items), 'items': items}
+        print '_process_menu_click_event : multi result ------ %s' % result
+        return Loader(path).load('message/image_message.xml').generate(result=result)

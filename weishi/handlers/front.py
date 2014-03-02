@@ -60,8 +60,8 @@ class AccountsHandler(FrontBaseHandler):
         except KeyError:
             url = None
         print url
-        aid = key_util(8, string.hexdigits)
-        token = key_util(8, string.ascii_letters)
+        aid = key_util.generate_hexdigits_lower(8)
+        token = key_util.generate_hexdigits_lower(8)
         account = self.account_manager.get_account_by_aid(aid)
 
         while account:

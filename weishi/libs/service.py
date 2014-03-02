@@ -105,6 +105,15 @@ class FansManager(Base):
             self.save_single_fans(user, aid)
         print 'FansManager.add_fans end...'
 
+    def unsubscribe_fans(self, openid, aid):
+        """粉丝取消关注，更新状态"""
+        self.db.execute('update t_fans set status = 0 where openid = %s and aid = %s', openid, aid)
+
+    def re_subscribe_fans(self, openid, aid):
+        """粉丝重新关注，更新状态"""
+        self.db.execute('update t_fans set status = 1, date = %s, subscribe_time = %s where openid = %s and aid = %s',
+                        datetime.datetime.now(), datetime.datetime.now(), openid, aid)
+
 
 class MessageManager(Base):
     def get_message_by_openid_aid(self, aid, openid, start, end):
@@ -121,6 +130,78 @@ class MessageManager(Base):
         """发送消息后保存到数据库"""
         self.db.execute('insert into t_message (type, create_time, outgoing, content, openid, aid) '
                         'values (1, %s, 1, %s, %s, %s)', int(time.time()), content, openid, aid)
+
+    def receive_text_message(self, message, aid):
+        """接收用户发来的文本消息，保存到数据库"""
+        openid = message['FromUserName']
+        content = message['Content']
+        create_time = message['CreateTime']
+        msg_id = message['MsgId']
+        self.db.execute('insert into t_message (type, create_time, message_id, content, status, openid, aid)'
+                        ' values (%s, %s, %s, %s, %s, %s, %s)', 'text',
+                        datetime.datetime.fromtimestamp(int(create_time)),
+                        msg_id, content, 0, openid, aid)
+
+    def receive_image_message(self, message, aid):
+        """接收用户发送的图片消息"""
+        openid = message['FromUserName']
+        url = message['PicUrl']
+        create_time = message['CreateTime']
+        msg_id = message['MsgId']
+        media_id = message['MediaId']
+        self.db.execute('insert into t_message (type, create_time, message_id, url, media_id, status, openid, aid) '
+                        'values (%s, %s, %s, %s, %s, %s, %s, %s)', 'image',
+                        datetime.datetime.fromtimestamp(int(create_time)),
+                        msg_id, url, media_id, 0, openid, aid)
+
+    def receive_voice_message(self, message, aid):
+        """接收用户发送的语音消息"""
+        openid = message['FromUserName']
+        create_time = message['CreateTime']
+        msg_id = message['MsgId']
+        media_id = message['MediaId']
+        msg_format = message['Format']
+        self.db.execute('insert into t_message (type, create_time, message_id, media_id, format, status, openid, aid) '
+                        'values (%s, %s, %s, %s, %s, %s, %s, %s)', 'voice',
+                        datetime.datetime.fromtimestamp(int(create_time)),
+                        msg_id, media_id, msg_format, 0, openid, aid)
+
+    def receive_video_message(self, message, aid):
+        """接收用户发送的视频消息"""
+        openid = message['FromUserName']
+        create_time = message['CreateTime']
+        msg_id = message['MsgId']
+        media_id = message['MediaId']
+        self.db.execute('insert into t_message (type, create_time, message_id, media_id, status, openid, aid) '
+                        'values (%s, %s, %s, %s, %s, %s, %s)', 'video',
+                        datetime.datetime.fromtimestamp(int(create_time)),
+                        msg_id, media_id, 0, openid, aid)
+
+    def receive_location_message(self, message, aid):
+        """接收用户发送的位置消息"""
+        openid = message['FromUserName']
+        create_time = message['CreateTime']
+        msg_id = message['MsgId']
+        x = message['Location_X']
+        y = message['Location_Y']
+        scale = message['Scale']
+        label = message['Label']
+        self.db.execute(
+            'insert into t_message (type, create_time, message_id, x, y, scale, label, status, openid, aid) '
+            'values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', 'location',
+            datetime.datetime.fromtimestamp(int(create_time)),
+            msg_id, x, y, scale, label, 0, openid, aid)
+
+    def receive_link_message(self, message, aid):
+        """接收用户发送的链接消息"""
+        openid = message['FromUserName']
+        create_time = message['CreateTime']
+        msg_id = message['MsgId']
+        url = message['Url']
+        self.db.execute('insert into t_message (type, create_time, message_id, url, status, openid, aid) '
+                        'values (%s, %s, %s, %s, %s, %s, %s)', 'video',
+                        datetime.datetime.fromtimestamp(int(create_time)),
+                        msg_id, url, 0, openid, aid)
 
 
 class ArticleManager(Base):
@@ -155,11 +236,12 @@ class ArticleManager(Base):
 class MenuManager(Base):
     def get_main_menu_list(self, aid):
         """"获取保存的自定义菜单的主菜单"""
-        return self.db.query('select * from t_menu where aid = %s and first = 1', aid)
+        return self.db.query('select * from t_menu where aid = %s and first = 1 order by id', aid)
 
     def get_sub_menu_list(self, aid, parent_id):
         """获取保存的自定义菜单的二级菜单"""
-        return self.db.query('select * from t_menu where aid = %s and second = 1 and parent_id = %s', aid, parent_id)
+        return self.db.query('select * from t_menu where aid = %s and second = 1 and parent_id = %s order by id', aid,
+                             parent_id)
 
     def save_main_menu_item(self, aid, name):
         """保存自定义菜单中的主菜单，并返回id"""
@@ -186,7 +268,7 @@ class MenuManager(Base):
 class ImageArticleManager(Base):
     def get_image_article_by_id(self, _id):
         """根据id获取单条图文"""
-        return self.db.query('select * from t_image_article where id = %s', int(_id))
+        return self.db.get('select * from t_image_article where id = %s', int(_id))
 
     def get_image_article_by_id_list(self, id_list):
         """根据多个id获取图文消息"""
@@ -223,14 +305,18 @@ class ImageArticleManager(Base):
                                'values (NOW(), %s, %s, %s, %s, %s, %s, %s)', id1, id2, id3, id4, id5, title, aid)
 
     def get_multi_image_article_by_id(self, _id):
-        """根据id获取image_article"""
-        return self.db.query('select * from t_image_article_group where id = %s', _id)
+        """根据id获取image_article_group"""
+        return self.db.get('select * from t_image_article_group where id = %s', _id)
 
 
 class AutoManager(Base):
     def get_auto_by_id(self, _id):
         """根据id获取自动回复"""
         return self.db.get('select * from t_auto where id = %s', _id)
+
+    def get_auto_by_key(self, mkey):
+        """根据key获取自动回复"""
+        return self.db.get('select * from t_auto where mkey = %s', mkey)
 
     def save_text_auto_response(self, aid, content, mkey):
         """保存菜单中的文字自动回复，并返回该条目的id"""

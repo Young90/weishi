@@ -155,7 +155,7 @@ class ImageArticlePreviewHandler(BaseHandler):
         image_article = self.image_article_manager.get_image_article_by_id(article_id)
         if not image_article:
             raise HTTPError(404, 'image article not exists')
-        self.render('article/image_article_preview.html', image_article=image_article[0])
+        self.render('article/image_article_preview.html', image_article=image_article)
 
 
 class ImageArticleGroupPreviewHandler(BaseHandler):
@@ -169,8 +169,7 @@ class ImageArticleGroupPreviewHandler(BaseHandler):
         image_article_group = self.image_article_manager.get_multi_image_article_by_id(article_id)
         if not image_article_group:
             raise HTTPError(404, 'image article not exists')
-        image_article_group = image_article_group[0]
-        main_article = self.image_article_manager.get_image_article_by_id(image_article_group.id1)[0]
+        main_article = self.image_article_manager.get_image_article_by_id(image_article_group.id1)
         id_list = [image_article_group.id2, image_article_group.id3, image_article_group.id4, image_article_group.id5]
         id_list = filter(lambda a: a != 0, id_list)
         article_list = self.image_article_manager.get_image_article_by_id_list(','.join(str(x) for x in id_list))

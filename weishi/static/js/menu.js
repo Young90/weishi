@@ -196,14 +196,14 @@ $('#menu-save-btn').on('click', function () {
         params: JSON.stringify(result)
     }
     $.ajax({
-        type: "POST",
-        url: "/account/" + aid + '/menu',
+        type: 'POST',
+        url: '/account/' + aid + '/menu',
         data: data,
         success: function (data) {
             button.removeAttr('disabled');
             $('#process-modal').modal('hide');
             if (data.r) {
-                ModalManager.show_success_modal('保存成功！')
+                ModalManager.show_success_modal('保存成功！');
                 setTimeout(function () {
                     window.location.reload();
                 }, 1500);

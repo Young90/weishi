@@ -8,7 +8,7 @@
         {% for item in result['items'] %}
         <item>
             <Title><![CDATA[{{item['title']}}]]></Title>
-            <Description><![CDATA[{{item['description']}}]]></Description>
+            <Description><![CDATA[{{item['summary']}}]]></Description>
             <PicUrl><![CDATA[{{item['thumb']}}]]></PicUrl>
             <Url><![CDATA[{{item['url']}}]]></Url>
         </item>
