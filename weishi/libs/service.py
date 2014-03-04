@@ -51,11 +51,15 @@ class UserManager(Base):
 
 
 class AccountManager(Base):
-    def create_account(self, wei_id, wei_name, wei_account, app_id, app_secret, token, aid, avatar, user_id):
+    def create_account(self, wei_id, wei_name, wei_account, token, aid, avatar, user_id):
         """添加微信公众账号"""
-        self.db.execute("insert into t_account (date, wei_id, wei_name, wei_account, app_id, app_secret,"
-                        " token, aid, avatar, user_id) values (NOW(), %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-                        wei_id, wei_name, wei_account, app_id, app_secret, token, aid, avatar, user_id)
+        self.db.execute("insert into t_account (date, wei_id, wei_name, wei_account, token, aid, avatar, user_id) "
+                        "values (NOW(), %s, %s, %s, %s, %s, %s, %s)", wei_id, wei_name, wei_account, token, aid, avatar,
+                        user_id)
+
+    def update_account_app_info(self, aid, app_id, app_secret):
+        """更新账号app信息"""
+        self.db.execute('update t_account set app_id = %s, app_secret = %s where aid = %s', app_id, app_secret, aid)
 
     def delete_account(self, aid, user_id):
         """删除公众账号"""
@@ -84,6 +88,10 @@ class FansManager(Base):
     def get_fans_by_id(self, fans_id):
         """根据id获取粉丝对象"""
         return self.db.get('select * from t_fans where id = %s limit 1', fans_id)
+
+    def get_fans_by_openid(self, openid):
+        """根据openid获取粉丝"""
+        return self.db.get('select * from t_fans where openid = %s limit 1', openid)
 
     def get_fans_count(self, aid):
         """获取粉丝数量"""
@@ -139,8 +147,7 @@ class MessageManager(Base):
         msg_id = message['MsgId']
         self.db.execute('insert into t_message (type, create_time, message_id, content, status, openid, aid)'
                         ' values (%s, %s, %s, %s, %s, %s, %s)', 'text',
-                        datetime.datetime.fromtimestamp(int(create_time)),
-                        msg_id, content, 0, openid, aid)
+                        datetime.datetime.fromtimestamp(int(create_time)), msg_id, content, 0, openid, aid)
 
     def receive_image_message(self, message, aid):
         """接收用户发送的图片消息"""
@@ -151,8 +158,7 @@ class MessageManager(Base):
         media_id = message['MediaId']
         self.db.execute('insert into t_message (type, create_time, message_id, url, media_id, status, openid, aid) '
                         'values (%s, %s, %s, %s, %s, %s, %s, %s)', 'image',
-                        datetime.datetime.fromtimestamp(int(create_time)),
-                        msg_id, url, media_id, 0, openid, aid)
+                        datetime.datetime.fromtimestamp(int(create_time)), msg_id, url, media_id, 0, openid, aid)
 
     def receive_voice_message(self, message, aid):
         """接收用户发送的语音消息"""
@@ -163,8 +169,7 @@ class MessageManager(Base):
         msg_format = message['Format']
         self.db.execute('insert into t_message (type, create_time, message_id, media_id, format, status, openid, aid) '
                         'values (%s, %s, %s, %s, %s, %s, %s, %s)', 'voice',
-                        datetime.datetime.fromtimestamp(int(create_time)),
-                        msg_id, media_id, msg_format, 0, openid, aid)
+                        datetime.datetime.fromtimestamp(int(create_time)), msg_id, media_id, msg_format, 0, openid, aid)
 
     def receive_video_message(self, message, aid):
         """接收用户发送的视频消息"""
@@ -174,8 +179,7 @@ class MessageManager(Base):
         media_id = message['MediaId']
         self.db.execute('insert into t_message (type, create_time, message_id, media_id, status, openid, aid) '
                         'values (%s, %s, %s, %s, %s, %s, %s)', 'video',
-                        datetime.datetime.fromtimestamp(int(create_time)),
-                        msg_id, media_id, 0, openid, aid)
+                        datetime.datetime.fromtimestamp(int(create_time)), msg_id, media_id, 0, openid, aid)
 
     def receive_location_message(self, message, aid):
         """接收用户发送的位置消息"""
@@ -189,8 +193,7 @@ class MessageManager(Base):
         self.db.execute(
             'insert into t_message (type, create_time, message_id, x, y, scale, label, status, openid, aid) '
             'values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', 'location',
-            datetime.datetime.fromtimestamp(int(create_time)),
-            msg_id, x, y, scale, label, 0, openid, aid)
+            datetime.datetime.fromtimestamp(int(create_time)), msg_id, x, y, scale, label, 0, openid, aid)
 
     def receive_link_message(self, message, aid):
         """接收用户发送的链接消息"""
@@ -200,8 +203,7 @@ class MessageManager(Base):
         url = message['Url']
         self.db.execute('insert into t_message (type, create_time, message_id, url, status, openid, aid) '
                         'values (%s, %s, %s, %s, %s, %s, %s)', 'video',
-                        datetime.datetime.fromtimestamp(int(create_time)),
-                        msg_id, url, 0, openid, aid)
+                        datetime.datetime.fromtimestamp(int(create_time)), msg_id, url, 0, openid, aid)
 
 
 class ArticleManager(Base):
@@ -318,10 +320,24 @@ class AutoManager(Base):
         """根据key获取自动回复"""
         return self.db.get('select * from t_auto where mkey = %s', mkey)
 
-    def save_text_auto_response(self, aid, content, mkey):
+    def get_follow_auto(self, aid):
+        """获取账号设置的关注自动回复信息"""
+        return self.db.get('select * from t_auto where aid = %s and re_time = %s', aid, 'follow')
+
+    def save_text_auto(self, aid, content):
+        """保存文本回复信息"""
+        self.db.execute('insert into t_auto (date, aid, type, re_time, re_content) values (NOW(), %s, %s, %s, %s)',
+                        aid, 'text', 'follow', content)
+
+    def save_text_auto_response(self, aid, re_type, content, mkey):
         """保存菜单中的文字自动回复，并返回该条目的id"""
         return self.db.execute('insert into t_auto (date, aid, type, re_time, re_content, mkey) '
-                               'values (NOW(), %s, %s, %s, %s, %s)', aid, 'text', 'click', content, mkey)
+                               'values (NOW(), %s, %s, %s, %s, %s)', aid, re_type, 'click', content, mkey)
+
+    def save_image_article_auto(self, aid, re_type, re_img_art_id):
+        """保存菜单中的图文自动，并返回该条目的id"""
+        return self.db.execute('insert into t_auto (date, aid, type, re_time, re_img_art_id) '
+                               'values (NOW(), %s, %s, %s, %s)', aid, re_type, 'follow', re_img_art_id)
 
     def save_image_article_auto_response(self, aid, re_type, re_img_art_id, mkey):
         """保存菜单中的图文自动，并返回该条目的id"""
@@ -331,3 +347,7 @@ class AutoManager(Base):
     def truncate_account_menu_auto(self, aid):
         """清空账号与自定义菜单相关的自动回复"""
         self.db.execute('delete from t_auto where aid = %s and mkey is not null and re_time = %s', aid, 'click')
+
+    def remove_follow_auto_message(self, aid):
+        """删除已经保存的关注自动回复"""
+        self.db.execute('delete from t_auto where aid = %s and re_time = %s', aid, 'follow')

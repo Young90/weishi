@@ -1,14 +1,10 @@
 #coding:utf-8
 __author__ = 'Young'
 
-import time
-
-from tornado.template import Loader
-
 from weishi import db
 from weishi.libs import wei_api
 from weishi.libs.service import ImageArticleManager, FansManager, AutoManager, MessageManager
-
+from weishi.libs import message_util
 
 db.connect()
 db = db.conn.mysql
@@ -93,9 +89,24 @@ def _process_subscribe_event(account, message, path):
     """
     openid = message['FromUserName']
     wei_api.get_user_info(account, openid, _add_single_fan)
-    result = {'ToUserName': message['FromUserName'], 'FromUserName': account.wei_account,
-              'CreateTime': int(time.time()), 'MsgType': 'text', 'Content': '欢迎关注~'}
-    return Loader(path).load('message/text_message.xml').generate(result=result)
+    auto = auto_manager.get_follow_auto(account.aid)
+    if auto.type == 'text':
+        return message_util.text_response_to_message(auto.re_content, message, path, account.wei_account)
+    if auto.type == 'single':
+        image_article = image_article_manager.get_image_article_by_id(auto.re_img_art_id)
+        return message_util.image_article_group_to_message([image_article], message, path, account.wei_account)
+    if auto.type == 'multi':
+        image_article_group = image_article_manager.get_multi_image_article_by_id(auto.re_img_art_id)
+        if not image_article_group:
+            return None
+        id_list = [image_article_group.id1, image_article_group.id2, image_article_group.id3, image_article_group.id4,
+                   image_article_group.id5]
+        id_list = filter(lambda a: a != 0, id_list)
+        article_list = []
+        for _id in id_list:
+            article_list.append(image_article_manager.get_image_article_by_id(_id))
+        print article_list
+        return message_util.image_article_group_to_message(article_list, message, path, account.wei_account)
 
 
 def _process_unsubscribe_event(account, message):
@@ -103,7 +114,6 @@ def _process_unsubscribe_event(account, message):
     处理用户取消关注账号的事件
     """
     openid = message['FromUserName']
-    fans_manager.get_fans()
     fans_manager.unsubscribe_fans(openid, account.aid)
 
 
@@ -117,20 +127,10 @@ def _process_menu_click_event(account, message, path):
     if not auto:
         return None
     if auto.type == 'text':
-        result = {'ToUserName': message['FromUserName'], 'FromUserName': account.wei_account,
-                  'CreateTime': int(time.time()), 'MsgType': 'text', 'Content': auto.re_content}
-        print '_process_menu_click_event : text result ------ %s' % result
-        return Loader(path).load('message/text_message.xml').generate(result=result)
+        return message_util.text_response_to_message(auto.re_content, message, path, account.wei_account)
     if auto.type == 'single':
         image_article = image_article_manager.get_image_article_by_id(auto.re_img_art_id)
-        if not image_article:
-            return None
-        result = {'ToUserName': message['FromUserName'], 'FromUserName': account.wei_account,
-                  'CreateTime': int(time.time()), 'count': 1,
-                  'items': [{'title': image_article.title, 'summary': image_article.summary,
-                             'thumb': image_article.image, 'url': image_article.link}]}
-        print '_process_menu_click_event : single result ------ %s' % result
-        return Loader(path).load('message/image_message.xml').generate(result=result)
+        return message_util.image_article_group_to_message([image_article], message, path, account.wei_account)
     if auto.type == 'multi':
         image_article_group = image_article_manager.get_multi_image_article_by_id(auto.re_img_art_id)
         if not image_article_group:
@@ -139,11 +139,4 @@ def _process_menu_click_event(account, message, path):
                    image_article_group.id5]
         id_list = filter(lambda a: a != 0, id_list)
         article_list = image_article_manager.get_image_article_by_id_list(','.join(str(x) for x in id_list))
-        items = []
-        for article in article_list:
-            item = {'title': article.title, 'summary': article.summary, 'thumb': article.image, 'url': article.link}
-            items.append(item)
-        result = {'ToUserName': message['FromUserName'], 'FromUserName': account.wei_account,
-                  'CreateTime': int(time.time()), 'count': len(items), 'items': items}
-        print '_process_menu_click_event : multi result ------ %s' % result
-        return Loader(path).load('message/image_message.xml').generate(result=result)
+        return message_util.image_article_group_to_message(article_list, message, path, account.wei_account)

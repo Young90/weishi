@@ -19,10 +19,52 @@
                     <li class="active"><a href="/account/{{account.aid}}/auto/follow">关注时回复</a></li>
                     <li><a href="/account/{{account.aid}}/auto/message">关键字回复</a></li>
                 </ul>
+                {% if not auto %}
+                <div class="new-edit" data-type="" data-value="">
+                {% else %}
+                <div class="new-edit" data-type="{{auto.type}}" data-value="{% if auto.type=='text' %}{{auto.re_content}}{% else %}{{auto.re_img_art_id}}{% end %}">
+                {% end %}
+                    <input type="hidden" value="{{account.aid}}" name="aid">
+                    <ul class="nav nav-pills">
+                        <li><a href="javascript:;" onclick="javascript:auto_onclick('text');">文本回复</a></li>
+                        <li><a href="javascript:;" onclick="javascript:auto_onclick('single');">单条图文回复</a></li>
+                        <li><a href="javascript:;" onclick="javascript:auto_onclick('multi');">多条图文回复</a></li>
+                    </ul>
+                    {% if not auto %}
+                    <div class="auto-container">
+                        <div class="type"></div>
+                        <div class="result"></div>
+                    </div>
+                    {% else %}
+                    <div class="auto-container">
+                        {% if auto.type == 'text' %}
+                        <div class="type">文本回复</div>
+                        <div class="result">{{auto.re_content}}</div>
+                        {% elif auto.type == 'single' %}
+                        <div class="type">单条图文回复</div>
+                        <div class="result"><a href="/image_article/{{auto.re_img_art_id}}/preview" target="_blank">预览</a></div>
+                        {% elif auto.type == 'multi' %}
+                        <div class="type">多条图文回复</div>
+                        <div class="result"><a href="/image_article_group/{{auto.re_img_art_id}}/preview" target="_blank">预览</a></div>
+                        {% end %}
+                    </div>
+                    {% end %}
+                    <div class="input-group input-group-lg" style="margin-top: 10px;">
+                        <div>
+                            <div id="auto-save-btn" class="btn btn-primary submit-btn">
+                                <span>保 存</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         {% include left_nav.html %}
     </div>
 </div>
+<script src="{{static_url('js/jquery-1.10.2.min.js')}}"></script>
+<script src="{{static_url('js/bootstrap.min.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/global.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/auto-response.js')}}"></script>
 </body>
 </html>

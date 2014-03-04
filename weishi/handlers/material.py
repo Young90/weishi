@@ -172,7 +172,9 @@ class ImageArticleGroupPreviewHandler(BaseHandler):
         main_article = self.image_article_manager.get_image_article_by_id(image_article_group.id1)
         id_list = [image_article_group.id2, image_article_group.id3, image_article_group.id4, image_article_group.id5]
         id_list = filter(lambda a: a != 0, id_list)
-        article_list = self.image_article_manager.get_image_article_by_id_list(','.join(str(x) for x in id_list))
+        article_list = []
+        for _id in id_list:
+            article_list.append(self.image_article_manager.get_image_article_by_id(_id))
         self.render('article/image_article_group_preview.html', main_article=main_article, article_list=article_list)
 
 

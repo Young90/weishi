@@ -25,19 +25,19 @@
                 <div class="alert alert-danger" style="display: none;"></div>
                 <div class="add-account clearfix">
                     <div class="form-group">
-                        <label class="control-label" for="weiAccount"><b>*</b>公众微信号</label>
+                        <label class="control-label" for="weiAccount"><b>*</b>微信号</label>
                         <input type="text" name="wei_account" class="form-control input-lg" id="weiAccount">
-                        <p class="help-block error-words">公众微信号没有填写</p>
+                        <p class="help-block error-words">微信号没有填写</p>
                     </div>
                     <div class="form-group">
-                        <label class="control-label" for="weiName"><b>*</b>公众号名称</label>
+                        <label class="control-label" for="weiName"><b>*</b>微信名称</label>
                         <input type="text" name="wei_name" class="form-control input-lg" id="weiName">
-                        <p class="help-block error-words">公众号名称没有填写</p>
+                        <p class="help-block error-words">微信名称没有填写</p>
                     </div>
                     <div class="form-group">
-                        <label class="control-label" for="weiId"><b>*</b>公众号id</label>
+                        <label class="control-label" for="weiId"><b>*</b>原始id</label>
                         <input type="text" name="wei_id" class="form-control input-lg" id="weiId">
-                        <p class="help-block error-words">公众号id没有填写</p>
+                        <p class="help-block error-words">原始id没有填写</p>
                     </div>
                     <div class="form-group">
                         <label class="control-label">头像</label>
@@ -47,44 +47,8 @@
                         </div>
                         <p class="help-block">该头像仅显示在微世后台，并不会真正影响到微信上的头像。最好是大于200px×200px正方形的图片，不然会被拉伸或变形</p>
                     </div>
-                    <div class="form-group">
-                        <label class="control-label" for="appId"><b>*</b>开发者模式appId</label>
-                        <input type="text" name="app_id" class="form-control input-lg" id="appId">
-                        <p class="help-block error-words">AppId没有填写</p>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label" for="appSecret"><b>*</b>开发者模式appSecret</label>
-                        <input type="text" name="app_secret" class="form-control input-lg" id="appSecret">
-                        <p class="help-block error-words">AppSecret没有填写</p>
-                    </div>
-                    <p class="help-block help-warning">请仔细核对 AppId 和 AppSecret，一经提交，不可修改。</p>
                 </div>
             </form>
-        </div>
-        <!-- Modal -->
-        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 class="modal-title" id="myModalLabel" style="text-align: center;">添加成功</h4>
-                    </div>
-                    <div class="modal-body">
-                        <p>微信公众账号添加成功，请打开微信后台，在【高级功能】-【开发模式】里面填写下面由微世提供的token和url。</p>
-                        <div class="form-group">
-                            <label class="control-label">token</label>
-                            <p class="callout-info" id="weishiToken"></p>
-                        </div>
-                        <div class="form-group">
-                            <label class="control-label">url</label>
-                            <p class="callout-info" id="weishiUrl"></p>
-                        </div>
-                        <p class="help-block">（请不要在任何地方泄露你的token和url，如需截图，请记得抹掉）</p>
-                    </div>
-                    <div class="modal-footer">
-                        <a href="/" class="btn btn-primary">完成</a>
-                    </div>
-                </div>
-            </div>
         </div>
         <script type="text/javascript" src="{{static_url('js/jquery-1.10.2.min.js')}}"></script>
         <script type="text/javascript" src="{{static_url('js/bootstrap.min.js')}}"></script>
