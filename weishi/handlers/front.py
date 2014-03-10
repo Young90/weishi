@@ -24,11 +24,13 @@ class FrontIndexHandler(BaseHandler):
     账号管理首页，显示所有的公众账号
     """
 
-    @authenticated
     def get(self):
-        user_id = self.current_user.id
-        accounts = self.db.query('select * from t_account where user_id = %s', user_id)
-        self.render('index.html', accounts=accounts)
+        if self.get_current_user():
+            user_id = self.current_user.id
+            accounts = self.db.query('select * from t_account where user_id = %s', user_id)
+            self.render('index.html', accounts=accounts)
+        else:
+            self.render('default.html')
 
 
 class AccountsHandler(FrontBaseHandler):

@@ -133,7 +133,6 @@ class UserCheckHandler(AuthHandler):
 
 handlers = [
     (r'/login', LoginHandler),
-    (r'/signup', SignUpHandler),
     (r'/logout', LogoutHandler),
     (r'/user/check', UserCheckHandler),
 ]
