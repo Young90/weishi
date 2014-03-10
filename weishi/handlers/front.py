@@ -5,7 +5,6 @@ import string
 from weishi.libs.handler import BaseHandler
 from weishi.libs.decorators import authenticated
 from weishi.form.front_from import AccountForm
-from weishi.libs.const import DOMAIN_NAME
 from weishi.libs.image import upload
 from weishi.libs.const import Image
 from weishi.libs.service import AccountManager
@@ -70,11 +69,10 @@ class AccountsHandler(FrontBaseHandler):
             aid = key_util(8, string.hexdigits)
             account = self.account_manager.get_account_by_aid(aid)
 
-        self.account_manager.create_account(f.data['wei_id'], f.data['wei_name'], f.data['wei_account'],
-                                            f.data['app_id'], f.data['app_secret'], token, aid, url,
-                                            self.current_user.id)
+        self.account_manager.create_account(f.data['wei_id'], f.data['wei_name'], f.data['wei_account'], token, aid,
+                                            url, self.current_user.id)
 
-        r = {'r': 1, 'token': token, 'url': DOMAIN_NAME + '/api/' + aid}
+        r = {'r': 1, 'aid': aid}
         self.write(r)
 
     @authenticated
@@ -96,7 +94,28 @@ class AccountsHandler(FrontBaseHandler):
         self.write(r)
 
 
+class UpdateAppHandler(FrontBaseHandler):
+    """
+    更新账号的app信息
+    """
+
+    @authenticated
+    def post(self, *args, **kwargs):
+        """更新账号的app_id和app_secret"""
+        aid = self.get_cookie('aid', '')
+        app_id = self.get_argument('app_id', '')
+        app_secret = self.get_argument('app_secret', '')
+        account = self.account_manager.get_account_by_aid(aid)
+        if not account or account.user_id != self.current_user.id:
+            result = {'r': 0, 'error': '账号错误'}
+            self.write(result)
+        self.account_manager.update_account_app_info(aid, app_id, app_secret)
+        result = {'r': 1}
+        self.write(result)
+
+
 handlers = [
     (r'/', FrontIndexHandler),
     (r'/accounts', AccountsHandler),
+    (r'/accounts/update', UpdateAppHandler),
 ]

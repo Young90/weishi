@@ -259,23 +259,28 @@ class AutoResponseHandler(AccountBaseHandler):
 
     def get(self, aid):
         """查看已经设置的自动回复信息"""
-        article = self.article_manager.get_auto_response(aid)
-        self.render('account/auto_response_follow.html', account=self.account, article=article, index='auto')
+        auto = self.auto_manager.get_follow_auto(aid)
+        self.render('account/auto_response_follow.html', account=self.account, auto=auto, index='auto')
 
     def post(self, *args, **kwargs):
         """修改自动回复信息"""
-        result = {'r': 0}
-        _content = self.get_argument('content', None)
-        if not _content:
-            result['error'] = u'内容不能为空'
+        result = {'r': 1}
+        _type = self.get_argument('type')
+        _value = self.get_argument('value')
+        if not _type or not _value:
+            result['r'] = 0
+            result['error'] = '无效的参数'
             self.write(result)
-        _type = self.get_argument('type', 'text')
-        _slug = key_util.generate_hexdigits_lower(8)
-        while self.article_manager.exists_article(_slug):
-            _slug = key_util.generate_hexdigits_lower(8)
-        self.article_manager.save_auto_response(self.account.aid, _slug, _content, _type)
-        result['r'] = 1
+            self.finish()
+        self.auto_manager.remove_follow_auto_message(self.account.aid)
+        if _type == 'text':
+            self.auto_manager.save_text_auto(self.account.aid, _value)
+        elif _type == 'single':
+            self.auto_manager.save_image_article_auto(self.account.aid, 'single', int(_value))
+        elif _type == 'multi':
+            self.auto_manager.save_image_article_auto(self.account.aid, 'multi', int(_value))
         self.write(result)
+        self.finish()
 
 
 class AutoResponseMessageHandler(AccountBaseHandler):

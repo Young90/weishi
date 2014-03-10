@@ -82,14 +82,11 @@ class APIHandler(APIBaseHandler):
         if not account:
             raise HTTPError(404)
         if not wei_api.access_token_available(account):
-            self.account['access_token'] = account.access_token
-            self.account['expires'] = account.expires
             wei_api.get_access_token(account, self.account_manager.update_account_token)
         message = self._get_message()
         if not message:
             raise HTTPError(404)
         result = message_util.process_message(account, message, self.get_template_path())
-        print 'result --------------- %s' % result
         if result:
             self.write(result)
 

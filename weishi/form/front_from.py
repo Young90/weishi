@@ -21,11 +21,3 @@ class AccountForm(Form):
         validators.input_required(message=u'微信号不能为空'),
         validators.length(max=100, message=u'微信号长度过长'),
     ])
-    app_id = StringField('app_id', validators=[
-        validators.input_required(message=u'app_id不能为空'),
-        validators.length(max=100, message=u'app_id长度不正确'),
-    ])
-    app_secret = StringField('app_secret', validators=[
-        validators.input_required(message=u'app_secret不能为空'),
-        validators.length(max=100, message=u'app_secret长度不正确'),
-    ])

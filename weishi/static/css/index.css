@@ -99,7 +99,7 @@ span.add-on {
 }
 
 .account-info {
-    width: 400px;
+    width: 420px;
 }
 
 .top-left-logo {
@@ -143,7 +143,7 @@ span.add-on {
 .wx-account-container .head h1 {
     margin: 0;
     line-height: 80px;
-    padding-left: 40px;
+    padding-left: 120px;
 }
 
 .wx-account-container .head .btn-default {
@@ -419,6 +419,10 @@ table.image-article td.date {
     font-size: 16px;
 }
 
+span.add-on {
+    min-width: 110px;
+}
+
 .submit-btn {
     width: 120px;
     line-height: 1.8;
@@ -587,4 +591,17 @@ table.image-article td.date {
 
 .remove-btn {
     text-align: left;
+}
+
+.auto-container {
+    margin-top: 20px;
+    font-size: 16px;
+    padding-left: 20px;
+    width: 320px;
+    min-height: 80px;
+}
+
+.auto-container .result {
+    color: #428bca;
+    margin-top: 10px;
 }
