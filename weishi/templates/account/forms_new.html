@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>新建表单 - {{account.wei_name}}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="shortcut icon" href="{{static_url('img/favicon.ico')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.adjust.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/index.css')}}">
+</head>
+<body>
+{% include nav.html %}
+<div class="container">
+    <div class="content">
+        <div class="main">
+            <div class="main-inner">
+                <ul class="nav nav-pills">
+                    <li><a href="/account/{{account.aid}}/form">所有表单</a></li>
+                    <li class="disabled"><a href="/account/{{account.aid}}/form/new">+新建表单</a></li>
+                </ul>
+                <div class="new-edit">
+                    <input type="hidden" name="aid" value="{{account.aid}}">
+
+                    <div class="input-group input-group-lg">
+                        <span class="input-group-addon">表单名称</span>
+                        <input name="name" type="text" class="form-control" placeholder="显示在表单页面中，如预约量房">
+                    </div>
+
+                    <div class="new-item">
+                        <div class="input-group">
+                            <span class="input-group-addon">字段名称</span>
+                            <input name="iname" type="text" class="form-control" placeholder="填写字段名称">
+                        </div>
+
+                        <div class="input-group form-fragment">
+                            <span class="input-group-addon">字段类型</span>
+                            <label>
+                                <input class="itype" type="radio" value="input" name="adfadf" checked>
+                                <span>单行文本</span>
+                            </label>
+                            <label>
+                                <input class="itype" type="radio" value="textarea" name="adfadf">
+                                <span>多行文本</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="add-sub-click">
+                        <a href="javascript:;" onclick="javascript:add_fragment();">+添加字段</a>
+                    </div>
+
+                    <div id="form-save-btn" class="btn btn-primary submit-btn" onclick="javascript:submit_form();">
+                        <span>保 存</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% include left_nav.html %}
+    </div>
+</div>
+<script type="text/javascript" src="{{static_url('js/jquery-1.10.2.min.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/bootstrap.min.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/global.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/menu.js')}}"></script>
+</body>
+</html>

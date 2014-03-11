@@ -3,6 +3,7 @@ __author__ = 'young'
 
 import math
 import simplejson
+import json
 from tornado.web import HTTPError, asynchronous
 from weishi.libs.decorators import authenticated
 from weishi.libs.handler import BaseHandler
@@ -10,7 +11,7 @@ import weishi.libs.image as image_util
 from weishi.libs import wei_api
 from weishi.libs import key_util
 from weishi.libs.service import FansManager, MessageManager, ArticleManager, AccountManager, \
-    MenuManager, ImageArticleManager, AutoManager
+    MenuManager, ImageArticleManager, AutoManager, FormManager
 
 
 class AccountBaseHandler(BaseHandler):
@@ -27,6 +28,7 @@ class AccountBaseHandler(BaseHandler):
     menu_manager = None
     image_article_manager = None
     auto_manager = None
+    form_manager = None
 
     @authenticated
     @asynchronous
@@ -38,6 +40,7 @@ class AccountBaseHandler(BaseHandler):
         self.menu_manager = MenuManager(self.db)
         self.image_article_manager = ImageArticleManager(self.db)
         self.auto_manager = AutoManager(self.db)
+        self.form_manager = FormManager(self.db)
 
         aid = self.request.uri.split('/')[2]
         if not aid:
@@ -321,6 +324,61 @@ class ImageListHandler(AccountBaseHandler):
         self.finish()
 
 
+class FormHandler(AccountBaseHandler):
+    """自定义表单管理"""
+
+    def get(self, aid):
+        forms = self.form_manager.get_form_list_by_aid(self.account.aid)
+        self.render('account/forms.html', account=self.account, index='form', forms=forms)
+
+
+class FormDataHandler(AccountBaseHandler):
+    """查看表单上数据"""
+
+    def get(self, aid, fid):
+        form = self.form_manager.get_form_by_fid(fid)
+        if not form:
+            raise HTTPError(404)
+        if aid != form.aid:
+            raise HTTPError(404)
+        contents = json.loads(form.content)
+        items = []
+        for content in contents:
+            items.append(content['name'])
+        form_contents = self.form_manager.list_form_content_by_fid(fid)
+        forms = []
+        for form_content in form_contents:
+            c = json.loads(form_content.content)
+            c['date'] = form_content.date
+            forms.append(c)
+        self.render('account/form_data.html', account=self.account, index='form', contents=forms, items=items, form=form)
+
+
+class NewFormHandler(AccountBaseHandler):
+    """自定义表单管理"""
+
+    def get(self, aid):
+        """返回页面"""
+        self.render('account/forms_new.html', account=self.account, index='form')
+
+    def post(self, *args, **kwargs):
+        """创建表单"""
+        result = {'r': 0}
+        name = self.get_argument('name', None)
+        params = self.get_argument('params', None)
+        print name
+        print params
+        if not name or not params:
+            result['error'] = '参数不正确'
+            self.write(result)
+            self.finish()
+        self.form_manager.save_form(name, key_util.generate_hexdigits_lower(8), self.account.aid, params)
+        result['r'] = 1
+        result['aid'] = self.account.aid
+        self.write(result)
+        self.finish()
+
+
 handlers = [
     (r'/account/([^/]+)', AccountIndexHandler),
     (r'/account/([^/]+)/fans', AccountFansHandler),
@@ -331,5 +389,8 @@ handlers = [
     (r'/account/([^/]+)/image/upload', UploadImageHandler),
     (r'/account/([^/]+)/image/list', ImageListHandler),
     (r'/account/([^/]+)/roll', ImageListHandler),
+    (r'/account/([^/]+)/form', FormHandler),
+    (r'/account/([^/]+)/form/new', NewFormHandler),
+    (r'/account/([^/]+)/form/([^/]+)/data', FormDataHandler),
 ]
 

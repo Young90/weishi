@@ -214,3 +214,92 @@ $('#menu-save-btn').on('click', function () {
         }
     })
 });
+
+function add_fragment() {
+    var name = randomString(8);
+    var html = '<div class="new-item">' +
+        '<div class="input-group">' +
+        '<span class="input-group-addon">字段名称</span>' +
+        '<input name="iname" type="text" class="form-control" placeholder="填写字段名称">' +
+        '</div>' +
+        '<div class="input-group form-fragment">' +
+        '<span class="input-group-addon">字段类型</span>' +
+        '<label>' +
+        '<input class="itype" type="radio" value="input" name="' + name + '" checked>' +
+        '<span>单行文本</span>' +
+        '</label>' +
+        '<label>' +
+        '<input class="itype" type="radio" value="textarea" name="' + name + '">' +
+        '<span>多行文本</span>' +
+        '</label>' +
+        '</div>' +
+        '</div>';
+    $('.add-sub-click').before(html);
+};
+
+function submit_form() {
+    var button = $('#form-save-btn');
+    button.attr('disabled', 'disabled');
+    var aid = $('input[name="aid"]').val();
+    var name = $('input[name="name"]').val();
+    if (name == '') {
+        button.removeAttr('disabled');
+        ModalManager.show_failure_modal('填写表单名称');
+        return
+    }
+    var fragments = $('.new-item');
+    if (fragments.length == 1) {
+        button.removeAttr('disabled');
+        ModalManager.show_failure_modal('至少添加两个字段');
+        return
+    }
+    var params = []
+    for (var i = 0; i < fragments.length; i++) {
+        var fragment = fragments[i];
+        var sub_name = $(fragment).find('input[class="itype"]').attr('name');
+        var iname = $(fragment).find('input[name="iname"]').val();
+        var itype = $(fragment).find('input[name="' + sub_name + '"]:checked').val();
+        if (iname == '' || itype == '' || iname == 'undefined' || itype == 'undefined') {
+            button.removeAttr('disabled');
+            ModalManager.show_failure_modal('参数不完整');
+            return
+        }
+        var p = {'name': iname, 'type': itype}
+        params.push(p);
+    }
+    var data = {
+        'name': name,
+        'params': JSON.stringify(params)
+    }
+    $.ajax({
+        type: 'POST',
+        url: '/account/' + aid + '/form/new',
+        data: data,
+        success: function (data) {
+            button.removeAttr('disabled');
+            if (data.r) {
+                ModalManager.show_success_modal('保存成功！');
+                setTimeout(function () {
+                    window.location = '/account/' + data.aid + '/form'
+                }, 1500);
+            } else {
+                button.removeAttr('disabled');
+                ModalManager.show_failure_modal(data.error);
+            }
+        }
+    })
+};
+
+function randomString(length) {
+    var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz'.split('');
+
+    if (!length) {
+        length = Math.floor(Math.random() * chars.length);
+    }
+
+    var str = '';
+    for (var i = 0; i < length; i++) {
+        str += chars[Math.floor(Math.random() * chars.length)];
+    }
+    return str;
+}

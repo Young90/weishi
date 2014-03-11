@@ -351,3 +351,28 @@ class AutoManager(Base):
     def remove_follow_auto_message(self, aid):
         """删除已经保存的关注自动回复"""
         self.db.execute('delete from t_auto where aid = %s and re_time = %s', aid, 'follow')
+
+
+class FormManager(Base):
+    """表单管理类"""
+
+    def get_form_by_fid(self, fid):
+        """根据fid获取表单"""
+        return self.db.get('select * from t_form where fid = %s', fid)
+
+    def save_form(self, name, fid, aid, content):
+        """保存自定义表单"""
+        self.db.execute('insert into t_form (name, date, fid, content, aid) values (%s, now(), %s, %s, %s)', name, fid,
+                        content, aid)
+
+    def get_form_list_by_aid(self, aid):
+        """根据aid获取自定义表单列表"""
+        return self.db.query('select * from t_form where aid = %s', aid)
+
+    def save_input_to_form_content(self, fid, content):
+        """将数据存储到表"""
+        self.db.execute('insert into t_form_content (date, fid, content) values (NOW(), %s, %s)', fid, content)
+
+    def list_form_content_by_fid(self, fid):
+        """查询填写的表单列表"""
+        return self.db.query('select * from t_form_content where fid = %s', fid)

@@ -605,3 +605,10 @@ span.add-on {
     color: #428bca;
     margin-top: 10px;
 }
+
+.form-fragment label {
+    font-style: normal;
+    font-weight: normal;
+    margin-left: 10px;
+    margin-right: 20px;
+}

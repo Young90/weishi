@@ -180,10 +180,13 @@ id_list = filter(lambda a: a != 0, id_list)
 
 print ','.join(str(x) for x in id_list)
 """
-
+"""
 import hashlib
 
 tmp_list = ['68b20b98', '1393770355', '1394248361']
 tmp_list.sort()
 print '_validate_signature ---------- %s' % tmp_list
 print hashlib.sha1(''.join(tmp_list)).hexdigest()
+"""
+a = '手机'
+print unicode(a, 'latin1')

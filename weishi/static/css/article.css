@@ -72,11 +72,11 @@ legend {
 }
 
 html {
-    background-color: #f8f7f5;
+    background-color: #f8f7f5 !important;
 }
 
 body {
-    background: #f8f7f5;
+    background: #f8f7f5 !important;
     color: #222;
     font-family: Helvetica, STHeiti STXihei, Microsoft JhengHei, Microsoft YaHei, Tohoma, Arial;
     height: 100%;
@@ -93,6 +93,10 @@ body > .tips {
     top: 50%;
     width: 200px;
     z-index: 100;
+}
+
+textarea {
+    resize: vertical;
 }
 
 .page {

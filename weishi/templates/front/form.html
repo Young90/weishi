@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>{{form.name}}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/article.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.css')}}">
+</head>
+<body id="activity-detail">
+<div class="page-bizinfo">
+    <div class="header">
+        <h1 id="activity-name">{{form.name}}</h1>
+    </div>
+</div>
+
+<div id="page-content" class="page-content">
+    <div class="text">
+        <form action="/form/{{form.fid}}" method="post" role="form">
+            {% for item in items %}
+            <div class="form-group">
+                <label>{{item['name']}}</label>
+                {% if item['type'] == 'input' %}
+                <input name="{{item['name']}}" type="text" class="form-control" placeholder="{{item['name']}}">
+                {% else %}
+                <textarea name="{{item['name']}}" class="form-control"></textarea>
+                {% end %}
+            </div>
+            {% end %}
+            <button type="submit" class="btn btn-lg btn-primary">提交</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

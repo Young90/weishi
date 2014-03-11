@@ -20,6 +20,11 @@
         {% else %}
         <li><a href="/account/{{account.aid}}/menu">自定义菜单</a></li>
         {% end %}
+        {% if index=='form' %}
+        <li class="active"><a href="/account/{{account.aid}}/form">自定义表单</a></li>
+        {% else %}
+        <li><a href="/account/{{account.aid}}/form">自定义表单</a></li>
+        {% end %}
         {% if index=='fans' %}
         <li class="active"><a href="/account/{{account.aid}}/fans">粉丝</a></li>
         {% else %}

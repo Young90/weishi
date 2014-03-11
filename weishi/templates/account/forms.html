@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>所有表单 - {{account.wei_name}}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="shortcut icon" href="{{static_url('img/favicon.ico')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.adjust.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/index.css')}}">
+</head>
+<body>
+{% include nav.html %}
+<div class="container">
+    <div class="content">
+        <div class="main">
+            <div class="main-inner">
+                <ul class="nav nav-pills">
+                    <li class="disabled"><a href="/account/{{account.aid}}/form">所有表单</a></li>
+                    <li><a href="/account/{{account.aid}}/form/new">+新建表单</a></li>
+                </ul>
+                <div class="panel panel-default">
+                        <table class="table image-article">
+                            <thead>
+                            <tr>
+                                <th>名称</th>
+                                <th>创建时间</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for form in forms %}
+                            <tr>
+                                <td class="title">{{form.name}}</td>
+                                <td class="date">{{form.date}}</td>
+                                <td class="op">
+                                    <a href="/form/{{form.fid}}" target="_blank">预览</a>
+                                    <a href="/account/{{account.aid}}/form/{{form.fid}}/data">数据查看</a>
+                                </td>
+                            </tr>
+                            {% end %}
+                            </tbody>
+                        </table>
+                    </div>
+            </div>
+        </div>
+        {% include left_nav.html %}
+    </div>
+</div>
+</body>
+</html>
