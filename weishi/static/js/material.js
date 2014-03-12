@@ -34,11 +34,81 @@ $('#article-save-btn').on('click', function (e) {
         success: function (data) {
             if (data.r) {
                 ModalManager.show_success_modal('保存成功！');
+                setTimeout(function () {
+                    window.location = '/account/' + data.aid + '/article'
+                }, 1500);
             }
         }
     })
 });
 
+/*
+ 更新文章信息
+ */
+$('#article-update-btn').on('click', function (e) {
+    var button = $('#article-update-btn');
+    button.attr('disabled', 'disabled');
+    var form = $('.post-form');
+    var aid = $(form).find('input[name="aid"]').val();
+    var slug = $(form).find('input[name="slug"]').val();
+    var title = $(form).find('input[name="title"]').val();
+    var content = UE.getEditor('content').getContent();
+    if (aid == '') {
+        ModalManager.show_failure_modal('参数不正确！');
+        button.removeAttr('disabled');
+        return;
+    }
+    if (title == '') {
+        ModalManager.show_failure_modal('填写标题！');
+        button.removeAttr('disabled');
+        return;
+    }
+    if (content == '') {
+        ModalManager.show_failure_modal('内容不能为空！');
+        button.removeAttr('disabled');
+        return;
+    }
+    var params = {
+        "slug": slug,
+        "title": title,
+        "content": content
+    }
+    $.ajax({
+        type: 'POST',
+        url: '/account/' + aid + '/article/' + slug + '/edit',
+        data: params,
+        success: function (data) {
+            if (data.r) {
+                ModalManager.show_success_modal('保存成功！');
+                setTimeout(function () {
+                    window.location = '/account/' + data.aid + '/article'
+                }, 1500);
+            }
+        }
+    })
+});
+
+/*
+ 删除文章
+ */
+function delete_article(aid, slug) {
+    ModalManager.show_confirm_modal('确认删除？', function (result) {
+        if (result) {
+            $.ajax({
+                type: 'DELETE',
+                url: '/account/' + aid + '/article/' + slug + '/edit',
+                success: function (data) {
+                    if (data.r) {
+                        ModalManager.show_success_modal('保存成功！');
+                        setTimeout(function () {
+                            window.location = '/account/' + data.aid + '/article'
+                        }, 1500);
+                    }
+                }
+            })
+        }
+    });
+};
 
 /*
  保存单条图文消息

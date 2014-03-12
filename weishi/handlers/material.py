@@ -123,6 +123,47 @@ class ArticleHandler(AccountBaseHandler):
                     index='material', top='article')
 
 
+class EditArticleHandler(AccountBaseHandler):
+    """编辑文章"""
+
+    def get(self, aid, slug):
+        article = self.article_manager.get_article_by_slug(slug)
+        if not article:
+            raise HTTPError(404)
+        if article.aid != aid:
+            raise HTTPError(404)
+        self.render('account/material_article_edit.html', account=self.account, index='material', top='article',
+                    article=article)
+
+    def post(self, *args, **kwargs):
+        """保存修改"""
+        result = {'r': 1, 'aid': self.account.aid}
+        title = self.get_argument('title', '')
+        content = self.get_argument('content', '')
+        slug = self.get_argument('slug', '')
+        article = self.article_manager.get_article_by_slug(slug)
+        if not article:
+            raise HTTPError(404)
+        if article.aid != self.account.aid:
+            raise HTTPError(404)
+        self.article_manager.update_article(slug, title, content)
+        self.write(result)
+        self.finish()
+
+    def delete(self, *args, **kwargs):
+        """删除文章"""
+        result = {'r': 1, 'aid': self.account.aid}
+        slug = args[1]
+        article = self.article_manager.get_article_by_slug(slug)
+        if not article:
+            raise HTTPError(404)
+        if article.aid != self.account.aid:
+            raise HTTPError(404)
+        self.article_manager.delete_article(slug)
+        self.write(result)
+        self.finish()
+
+
 class NewArticleHandler(AccountBaseHandler):
     """新建文章"""
 
@@ -187,4 +228,5 @@ handlers = [
     (r'/account/([^/]+)/image_article/new/multi', NewMultiImageArticleHandler),
     (r'/account/([^/]+)/article', ArticleHandler),
     (r'/account/([^/]+)/article/new', NewArticleHandler),
+    (r'/account/([^/]+)/article/([^/]+)/edit', EditArticleHandler),
 ]

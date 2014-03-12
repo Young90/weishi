@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>编辑文章 - {{account.wei_name}}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="shortcut icon" href="{{static_url('img/favicon.ico')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.adjust.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/index.css')}}">
+    <script type="text/javascript" src="{{static_url('ueditor/ueditor.config.js')}}"></script>
+    <script type="text/javascript" src="{{static_url('ueditor/ueditor.all.js')}}"></script>
+</head>
+<body>
+{% include nav.html %}
+<div class="container">
+    <div class="content">
+        <div class="main">
+            <div class="main-inner">
+                {% include material_top.html %}
+                <ul class="nav nav-pills">
+                    <li><a href="/account/{{account.aid}}/article">所有文章</a></li>
+                    <li class="disabled"><a href="/account/{{account.aid}}/article/new">+新建文章</a></li>
+                </ul>
+                <form class="form-horizontal post-form" role="form">
+                    <input type="hidden" name="aid" value="{{account.aid}}">
+                    <input type="hidden" name="slug" value="{{article.slug}}">
+                    <div class="form-group">
+                        <label for="title" class="col-sm-2 control-label">标题</label>
+
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="title" name="title" placeholder="文章标题" value="{{article.title}}">
+                        </div>
+                    </div>
+                    <div class="form-group main-content">
+                        <label for="content" class="col-sm-2 control-label">内容</label>
+
+                        <div class="col-sm-10">
+                            <textarea id="content">{{article.content}}</textarea>
+                            <script type="text/javascript">
+                                UE.getEditor('content')
+                            </script>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10 sub-button">
+                            <div id="article-update-btn" class="btn btn-primary submit-btn">
+                                <span>保 存</span>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% include left_nav.html %}
+</div>
+</div>
+<script src="{{static_url('js/jquery-1.10.2.min.js')}}"></script>
+<script src="{{static_url('js/bootstrap.min.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/global.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/material.js')}}"></script>
+</body>
+</html>

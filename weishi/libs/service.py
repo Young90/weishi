@@ -234,6 +234,18 @@ class ArticleManager(Base):
         """"获取文章总数量"""
         return self.db.get('select count(*) as count from t_article where aid = %s', aid)['count']
 
+    def get_article_by_slug(self, slug):
+        """根据文章id获取文章"""
+        return self.db.get('select * from t_article where slug = %s', slug)
+
+    def update_article(self, slug, title, content):
+        """更新文章内容"""
+        self.db.execute('update t_article set title = %s, content = %s where slug = %s', title, content, slug)
+
+    def delete_article(self, slug):
+        """删除文章"""
+        self.db.execute('delete from t_article where slug = %s', slug)
+
 
 class MenuManager(Base):
     def get_main_menu_list(self, aid):

@@ -199,7 +199,7 @@ class MenuHandler(AccountBaseHandler):
                     sub_type = sub_button['type']
                     sub_value = sub_button['value']
                     if sub_type == 'text':
-                        auto_id = self.auto_manager.save_text_auto_response(aid=aid, content=sub_value, mkey=mkey)
+                        auto_id = self.auto_manager.save_text_auto_response(aid=aid, content=sub_value, mkey=mkey, re_type='text')
                         self.menu_manager.save_sub_menu_item(aid=aid, name=sub_name, t='click', url=None,
                                                              auto_id=auto_id, parent_id=_id, mkey=mkey)
                         sub_menu = {'type': 'click', 'name': sub_name, 'key': mkey}
@@ -224,7 +224,7 @@ class MenuHandler(AccountBaseHandler):
             elif _type == 'text':
                 value = param['value']
                 mkey = key_util.generate_hexdigits_lower(8)
-                auto_id = self.auto_manager.save_text_auto_response(aid=aid, content=value, mkey=mkey)
+                auto_id = self.auto_manager.save_text_auto_response(aid=aid, content=value, mkey=mkey, re_type='text')
                 self.menu_manager.save_main_menu_item_response(aid=aid, name=name, t='click', url=None, auto_id=auto_id,
                                                                mkey=mkey)
                 menu = {'type': 'click', 'name': name, 'key': mkey}
