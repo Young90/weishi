@@ -404,6 +404,12 @@ class CardManager(Base):
             'insert into t_card (date, aid, cid, register, name, mobile, address, phone, about) '
             'values (NOW(), %s, %s, %s, %s, %s, %s, %s, %s)', aid, cid, register, name, mobile, address, phone, about)
 
+    def update_card(self, cid, register, name, mobile, address, phone, about):
+        """公众号创建会员卡"""
+        self.db.execute(
+            'update t_card set register = %s, name = %s, mobile = %s, address = %s, phone = %s, about = %s where cid = %s',
+            register, name, mobile, address, phone, about, cid)
+
     def save_member(self, aid, cid, num, openid, name, mobile, address):
         """保存用户的会员卡信息"""
         self.db.execute(

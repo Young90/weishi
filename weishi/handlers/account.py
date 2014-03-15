@@ -2,9 +2,11 @@
 __author__ = 'young'
 
 import math
-import simplejson
 import json
+
+import simplejson
 from tornado.web import HTTPError, asynchronous
+
 from weishi.libs.decorators import authenticated
 from weishi.libs.handler import BaseHandler
 import weishi.libs.image as image_util
@@ -417,14 +419,20 @@ class CardHandler(AccountBaseHandler):
 
     def post(self, *args, **kwargs):
         """提交会员卡创建信息"""
+        card = self.card_manager.get_card_by_aid(self.account.aid)
         register = self.get_argument('register', 0)
         name = self.get_argument('name', 0)
         mobile = self.get_argument('mobile', 0)
         address = self.get_argument('address', 0)
         phone = self.get_argument('phone', None)
         about = self.get_argument('about', None)
-        cid = key_util.generate_hexdigits_lower(8)
-        self.card_manager.save_card(self.account.aid, cid, register, name, mobile, address, phone, about)
+        if not card:
+            # 如果还没创建，则创建
+            cid = key_util.generate_hexdigits_lower(8)
+            self.card_manager.save_card(self.account.aid, cid, register, name, mobile, address, phone, about)
+        else:
+            # 如果已经存在，则更新信息
+            self.card_manager.update_card(card.cid, register, name, mobile, address, phone, about)
         result = {'r': 1}
         self.write(result)
         self.finish()

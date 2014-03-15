@@ -47,7 +47,7 @@ function submit_reg_form(n, m, a) {
         data: data,
         success: function(data) {
             if (data.r) {
-                ModalManager.show_success_modal('保存成功！');
+                ModalManager.show_success_modal('注册成功！');
                 setTimeout(function () {
                     window.location.reload();
                 }, 1500);
