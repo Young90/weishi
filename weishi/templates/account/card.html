@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>会员卡 - {{account.wei_name}}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="shortcut icon" href="{{static_url('img/favicon.ico')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.adjust.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/index.css')}}">
+</head>
+<body>
+{% include nav.html %}
+<div class="container">
+    <div class="content">
+        <div class="main">
+            <div class="main-inner">
+                {% if not card %}
+                <div class="new-edit">
+                    <div class="alert alert-danger" style="margin-top: 10px;">还没会员卡，勾选以下选项后，点击创建即可</div>
+                    <div class="alert alert-info">如果允许用户点击进入会员卡页面即可自动生成会员号，则勾选自动创建
+                        <br><br>如果需要用户填写信息，在需要的信息前勾选（暂时支持姓名、手机号和地址），同时取消自动创建的勾选，如果勾选了自动创建，手机和地址的勾选将失效
+                    </div>
+                    <div class="input-group card-create">
+                        <input type="checkbox" name="register" value="1" checked> 自动创建 &nbsp;&nbsp;&nbsp;
+                    </div>
+                    <div class="input-group card-create">
+                        <input type="checkbox" name="name" value="1"> 填写姓名&nbsp;&nbsp;&nbsp;
+                        <input type="checkbox" name="mobile" value="1"> 填写手机号&nbsp;&nbsp;&nbsp;
+                        <input type="checkbox" name="address" value="1"> 填写地址&nbsp;&nbsp;&nbsp;
+                    </div>
+                    <div class="input-group card-create">
+                        商家电话 : <br><input type="text" name="phone" class="form-control phone-input"
+                                          placeholder="选填，在会员卡页面显示，点击后可以拨打电话"><br>
+                        会员优惠 : <br><textarea name="about" class="form-control phone-input"
+                                             placeholder="选填，在会员卡页面显示，介绍会员权限等"></textarea>
+                    </div>
+                    <div id="card-save-btn" class="btn btn-primary submit-btn" onclick="javascript:submit_form();">
+                        <span>创 建</span>
+                    </div>
+                </div>
+                {% else %}
+                <div class="new-edit">
+                    <div class="alert alert-success">如果要在自定义菜单中添加会员卡，请复制以下链接到会员卡</div>
+                    <div class="input-group input-group-lg account-info" style="margin-bottom: 10px;">
+                        <span class="input-group-addon add-on">会员卡地址</span>
+                        <input type="text" class="form-control" value="http://wsmt.sinaapp.com/card/{{card.cid}}">
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        共有{{total}}个会员
+                    </div>
+                    <table class="table image-article">
+                        <thead>
+                        <tr>
+                            <th>时间</th>
+                            <th>姓名</th>
+                            <th>会员号</th>
+                            <th>手机</th>
+                            <th>地址</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for member in members %}
+                        <tr>
+                            <td class="date">{{member.date}}</td>
+                            <td class="name">{{member.name}}</td>
+                            <td class="num">{{member.num}}</td>
+                            <td class="mobile">{{member.mobile}}</td>
+                            <td class="address">{{member.address}}</td>
+                        </tr>
+                        {% end %}
+                        </tbody>
+                    </table>
+                </div>
+                {% end %}
+
+            </div>
+        </div>
+        {% include left_nav.html %}
+    </div>
+</div>
+<script src="{{static_url('js/jquery-1.10.2.min.js')}}"></script>
+<script src="{{static_url('js/bootstrap.min.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/global.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/accounts.js')}}"></script>
+</body>
+</html>

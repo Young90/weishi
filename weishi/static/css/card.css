@@ -1,0 +1,137 @@
+body {
+    font-family: "Microsoft YaHei";
+    background: #E7E7E7;
+    max-width: 640px;
+    margin: auto;
+    width: 100%;
+    min-height: 100%;
+    font-size: 14px;
+    line-height: 1.231;
+    -webkit-touch-callout: none;
+    display: -webkit-box;
+    position: relative;
+    padding: 0px;
+	-webkit-box-orient: vertical;
+	-webkit-box-align: stretch;
+}
+
+.container {
+    max-width: 640px;
+    margin: auto;
+    -webkit-box-sizing: border-box;
+    width: 100%;
+    background: #E7E7E7 !important;
+    padding-left: 10px;
+    padding-right: 10px;
+    border: none !important;
+    box-shadow: none !important;
+    zoom: 1;
+}
+
+.card-container {
+    padding-top: 10px;
+}
+
+.card {
+    width: 280px;
+    height: 170px;
+    margin: auto;
+    background: #4a3c33;
+    border-radius: 10px;
+    box-shadow: inset 0 -1px 0 #cacaca, 0 1px 2px rgba(0, 0, 0, .3);
+}
+
+.name {
+    text-shadow: 0 8px 8px rgba(0, 0, 0, 0.7);
+    font-size: 36px;
+    color: #fff;
+    width: 280px;
+    margin: auto;
+    text-align: center;
+    height: 100px;
+    line-height: 3.6;
+}
+
+.num {
+    font-size: 16px;
+    color: #ffffff;
+    width: 280px;
+    text-align: center;
+    padding-left: 100px;
+    margin-top: 30px;
+}
+
+.num .member-num {
+    color: #fbb450;
+}
+
+.num .member-num a {
+    color: #fbb450;
+    text-decoration: none;
+}
+
+.info-container {
+    color: #333333;
+    margin-top: 10px;
+    min-height: 100px;
+    border-radius: 5px;
+    background: #fff;
+    box-shadow: 0 1px 2px 0 rgba(158, 158, 158, 0.2);
+}
+
+.tele {
+    font-size: 18px;
+    color: #333333;
+    text-align: left;
+    height: 40px;
+    padding-top: 10px;
+    border-bottom: 1px solid #f0f0f0;
+    line-height: 1;
+}
+
+.tele a {
+    display: block;
+    padding-left: 20px;
+    color: #333333;
+    text-decoration: none;
+
+}
+
+.fa-phone {
+    font-size: 20px;
+    margin-right: 10px;
+}
+
+.fa-chevron-right {
+    float: right;
+    margin-right: 20px;
+    font-size: 20px;
+}
+
+.comment {
+    padding-left: 10px;
+    padding-right: 10px;
+    font-size: 16px;
+    line-height: 1.5;
+    padding-bottom: 10px;
+}
+
+.comment p {
+    padding-top: 10px;
+}
+
+.title {
+    font-size: 18px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.form-control {
+    font-size: 16px !important;
+    height: 45px !important;
+}
+
+.modal-dialog {
+    top: 100px;
+    width: 260px;
+}

@@ -3,7 +3,7 @@ __author__ = 'Young'
 
 from weishi import db
 from weishi.libs import wei_api
-from weishi.libs.service import ImageArticleManager, FansManager, AutoManager, MessageManager
+from weishi.libs.service import ImageArticleManager, FansManager, AutoManager, MessageManager, CardManager
 from weishi.libs import message_util
 
 db.connect()
@@ -13,6 +13,7 @@ image_article_manager = ImageArticleManager(db)
 fans_manager = FansManager(db)
 auto_manager = AutoManager(db)
 message_manager = MessageManager(db)
+card_manager = CardManager(db)
 
 
 def process_message(account, message, path):
@@ -131,6 +132,10 @@ def _process_menu_click_event(account, message, path):
     if auto.type == 'single':
         image_article = image_article_manager.get_image_article_by_id(auto.re_img_art_id)
         return message_util.image_article_group_to_message([image_article], message, path, account.wei_account)
+    if auto.type == 'card':
+        card = card_manager.get_card_by_aid(account.aid)
+        member = card_manager.get_user_card_info(card.cid, message['FromUserName'])
+        return message_util.card_response_to_message(card, member, message, path, account.wei_account)
     if auto.type == 'multi':
         image_article_group = image_article_manager.get_multi_image_article_by_id(auto.re_img_art_id)
         if not image_article_group:

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>注册会员</title>
+    <meta content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"
+          name="viewport">
+    <meta content="application/xhtml+xml;charset=UTF-8" http-equiv="Content-Type">
+    <meta content="no-cache,must-revalidate" http-equiv="Cache-Control">
+    <meta content="no-cache" http-equiv="pragma">
+    <meta content="0" http-equiv="expires">
+    <meta content="telephone=no, address=no" name="format-detection">
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.css')}}" media="all">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/index.css')}}" media="all">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/card.css')}}" media="all">
+    <link rel="stylesheet" type="text/css" href="http://cdn.staticfile.org/font-awesome/4.0.3/css/font-awesome.css"
+          media="all">
+</head>
+<body onselectstart="return true;" ondragstart="return false;">
+<div class="container">
+    <div class="title">填写以下信息，注册成为{{account.wei_name}}会员</div>
+    <div class="form">
+        <input type="hidden" name="cid" value="{{card.cid}}">
+        <input type="hidden" name="openid" value="{{openid}}">
+        {% if card.name %}
+        <input type="text" name="name" class="form-control" placeholder="姓名，您的称呼"><br>
+        {% end %}
+        {% if card.address %}
+        <input type="text" name="address" class="form-control" placeholder="地址，方便给您寄送物品"><br>
+        {% end %}
+        {% if card.mobile %}
+        <input type="tel" name="mobile" class="form-control" placeholder="手机，方便联系到您"><br>
+        {% end %}
+    </div>
+    <div id="card-save-btn" class="btn btn-primary submit-btn" onclick="javascript:submit_reg_form('{{card.name}}','{{card.mobile}}','{{card.address}}');">
+        <span>提 交</span>
+    </div>
+    <div class="info-container">
+        <div class="tele"><a href="tel:{{card.phone}}"><i class="fa fa-phone"></i>{{card.phone}}<i class="fa fa-chevron-right"></i></a></div>
+        <div class="comment">
+            <p>{{card.about}}</p>
+        </div>
+    </div>
+</div>
+<script src="http://cdn.staticfile.org/jquery/2.1.0/jquery.min.js"></script>
+<script src="http://cdn.staticfile.org/twitter-bootstrap/3.1.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="{{static_url('js/global.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/front.js')}}"></script>
+</body>
+</html>

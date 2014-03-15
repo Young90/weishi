@@ -11,7 +11,7 @@ import weishi.libs.image as image_util
 from weishi.libs import wei_api
 from weishi.libs import key_util
 from weishi.libs.service import FansManager, MessageManager, ArticleManager, AccountManager, \
-    MenuManager, ImageArticleManager, AutoManager, FormManager
+    MenuManager, ImageArticleManager, AutoManager, FormManager, CardManager
 
 
 class AccountBaseHandler(BaseHandler):
@@ -29,6 +29,7 @@ class AccountBaseHandler(BaseHandler):
     image_article_manager = None
     auto_manager = None
     form_manager = None
+    card_manager = None
 
     @authenticated
     @asynchronous
@@ -41,6 +42,7 @@ class AccountBaseHandler(BaseHandler):
         self.image_article_manager = ImageArticleManager(self.db)
         self.auto_manager = AutoManager(self.db)
         self.form_manager = FormManager(self.db)
+        self.card_manager = CardManager(self.db)
 
         aid = self.request.uri.split('/')[2]
         if not aid:
@@ -199,7 +201,8 @@ class MenuHandler(AccountBaseHandler):
                     sub_type = sub_button['type']
                     sub_value = sub_button['value']
                     if sub_type == 'text':
-                        auto_id = self.auto_manager.save_text_auto_response(aid=aid, content=sub_value, mkey=mkey, re_type='text')
+                        auto_id = self.auto_manager.save_text_auto_response(aid=aid, content=sub_value, mkey=mkey,
+                                                                            re_type='text')
                         self.menu_manager.save_sub_menu_item(aid=aid, name=sub_name, t='click', url=None,
                                                              auto_id=auto_id, parent_id=_id, mkey=mkey)
                         sub_menu = {'type': 'click', 'name': sub_name, 'key': mkey}
@@ -219,6 +222,11 @@ class MenuHandler(AccountBaseHandler):
                         self.menu_manager.save_sub_menu_item(aid=aid, name=sub_name, t='view', url=sub_value, auto_id=0,
                                                              parent_id=_id, mkey=None)
                         sub_menu = {'type': 'view', 'name': sub_name, 'url': sub_value}
+                    elif sub_type == 'card':
+                        auto_id = self.auto_manager.save_card_auto_response(aid, mkey)
+                        self.menu_manager.save_sub_menu_item(aid=aid, name=sub_name, t='card', url='', auto_id=auto_id,
+                                                             parent_id=_id, mkey=mkey)
+                        sub_menu = {'type': 'click', 'name': sub_name, 'key': mkey}
                     sub_buttons.append(sub_menu)
                 menu['sub_button'] = sub_buttons
             elif _type == 'text':
@@ -226,6 +234,12 @@ class MenuHandler(AccountBaseHandler):
                 mkey = key_util.generate_hexdigits_lower(8)
                 auto_id = self.auto_manager.save_text_auto_response(aid=aid, content=value, mkey=mkey, re_type='text')
                 self.menu_manager.save_main_menu_item_response(aid=aid, name=name, t='click', url=None, auto_id=auto_id,
+                                                               mkey=mkey)
+                menu = {'type': 'click', 'name': name, 'key': mkey}
+            elif _type == 'card':
+                mkey = key_util.generate_hexdigits_lower(8)
+                auto_id = self.auto_manager.save_card_auto_response(aid, mkey)
+                self.menu_manager.save_main_menu_item_response(aid=aid, name=name, t='card', url='', auto_id=auto_id,
                                                                mkey=mkey)
                 menu = {'type': 'click', 'name': name, 'key': mkey}
             elif _type == 'single':
@@ -351,7 +365,8 @@ class FormDataHandler(AccountBaseHandler):
             c = json.loads(form_content.content)
             c['date'] = form_content.date
             forms.append(c)
-        self.render('account/form_data.html', account=self.account, index='form', contents=forms, items=items, form=form)
+        self.render('account/form_data.html', account=self.account, index='form', contents=forms, items=items,
+                    form=form)
 
 
 class NewFormHandler(AccountBaseHandler):
@@ -379,6 +394,42 @@ class NewFormHandler(AccountBaseHandler):
         self.finish()
 
 
+class CardHandler(AccountBaseHandler):
+    """会员卡管理"""
+
+    def get(self, aid):
+        """
+        如果还没有创建会员卡，则返回创建页面
+        如果已经创建，列出会员信息
+        """
+        card = self.card_manager.get_card_by_aid(self.account.aid)
+        if not card:
+            self.render('account/card.html', account=self.account, index='card', card=None)
+            return
+        start = self.get_argument('start', 0)
+        page_size = 20
+        total = self.card_manager.get_card_member_count(self.account.aid, card.cid)
+        total_page = math.ceil(float(total) / page_size)
+        card_members = self.card_manager.list_card_member(aid, card.cid, int(start), int(start) + page_size)
+        self.render('account/card.html', account=self.account, index='card', members=card_members, total=total,
+                    total_page=total_page, page_size=page_size, start=start, card=card)
+        return
+
+    def post(self, *args, **kwargs):
+        """提交会员卡创建信息"""
+        register = self.get_argument('register', 0)
+        name = self.get_argument('name', 0)
+        mobile = self.get_argument('mobile', 0)
+        address = self.get_argument('address', 0)
+        phone = self.get_argument('phone', None)
+        about = self.get_argument('about', None)
+        cid = key_util.generate_hexdigits_lower(8)
+        self.card_manager.save_card(self.account.aid, cid, register, name, mobile, address, phone, about)
+        result = {'r': 1}
+        self.write(result)
+        self.finish()
+
+
 handlers = [
     (r'/account/([^/]+)', AccountIndexHandler),
     (r'/account/([^/]+)/fans', AccountFansHandler),
@@ -392,5 +443,6 @@ handlers = [
     (r'/account/([^/]+)/form', FormHandler),
     (r'/account/([^/]+)/form/new', NewFormHandler),
     (r'/account/([^/]+)/form/([^/]+)/data', FormDataHandler),
+    (r'/account/([^/]+)/card', CardHandler),
 ]
 

@@ -85,3 +85,37 @@ $('#app-save-btn').on('click', function () {
         }
     })
 });
+
+$('#card-save-btn').on('click', function () {
+    var button = $('#card-save-btn');
+    button.attr('disabled', 'disabled');
+    var link = window.location.href;
+    var register = $('input[name="register"]').is(':checked') ? 1 : 0;
+    var name = $('input[name="name"]').is(':checked') ? 1 : 0;
+    var mobile = $('input[name="mobile"]').is(':checked') ? 1 : 0;
+    var address = $('input[name="address"]').is(':checked') ? 1 : 0;
+    var phone = $('input[name="phone"]').val();
+    var about = $('textarea[name="about"]').val();
+    var data = {
+        'register': register,
+        'name': name,
+        'mobile': mobile,
+        'address': address,
+        'phone': phone,
+        'about': about
+    }
+    $.ajax({
+        type: 'POST',
+        url: link,
+        data: data,
+        success: function (data) {
+            button.removeAttr('disabled');
+            if (data.r) {
+                ModalManager.show_success_modal('保存成功！');
+                setTimeout(function () {
+                    window.location.reload();
+                }, 1500);
+            }
+        }
+    })
+});

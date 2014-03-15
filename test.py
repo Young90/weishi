@@ -188,5 +188,6 @@ tmp_list.sort()
 print '_validate_signature ---------- %s' % tmp_list
 print hashlib.sha1(''.join(tmp_list)).hexdigest()
 """
-a = '手机'
-print unicode(a, 'latin1')
+a = 10
+b = '号码'
+print str(a) + b

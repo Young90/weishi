@@ -346,6 +346,11 @@ class AutoManager(Base):
         return self.db.execute('insert into t_auto (date, aid, type, re_time, re_content, mkey) '
                                'values (NOW(), %s, %s, %s, %s, %s)', aid, re_type, 'click', content, mkey)
 
+    def save_card_auto_response(self, aid, mkey):
+        """保存菜单中的会员卡回复，并返回该条目的id"""
+        return self.db.execute('insert into t_auto (date, aid, type, re_time, mkey) '
+                               'values (NOW(), %s, %s, %s, %s)', aid, 'card', 'click', mkey)
+
     def save_image_article_auto(self, aid, re_type, re_img_art_id):
         """保存菜单中的图文自动，并返回该条目的id"""
         return self.db.execute('insert into t_auto (date, aid, type, re_time, re_img_art_id) '
@@ -379,7 +384,7 @@ class FormManager(Base):
 
     def get_form_list_by_aid(self, aid):
         """根据aid获取自定义表单列表"""
-        return self.db.query('select * from t_form where aid = %s', aid)
+        return self.db.query('select * from t_form where aid = %s order by id desc', aid)
 
     def save_input_to_form_content(self, fid, content):
         """将数据存储到表"""
@@ -387,4 +392,41 @@ class FormManager(Base):
 
     def list_form_content_by_fid(self, fid):
         """查询填写的表单列表"""
-        return self.db.query('select * from t_form_content where fid = %s', fid)
+        return self.db.query('select * from t_form_content where fid = %s order by id desc', fid)
+
+
+class CardManager(Base):
+    """"会员卡管理"""
+
+    def save_card(self, aid, cid, register, name, mobile, address, phone, about):
+        """公众号创建会员卡"""
+        self.db.execute(
+            'insert into t_card (date, aid, cid, register, name, mobile, address, phone, about) '
+            'values (NOW(), %s, %s, %s, %s, %s, %s, %s, %s)', aid, cid, register, name, mobile, address, phone, about)
+
+    def save_member(self, aid, cid, num, openid, name, mobile, address):
+        """保存用户的会员卡信息"""
+        self.db.execute(
+            'insert into t_card_member (date, aid, cid, num, openid, name, mobile, address) values (NOW(), %s, %s, %s, %s, %s, %s, %s)',
+            aid, cid, num, openid, name, mobile, address)
+
+    def get_user_card_info(self, cid, openid):
+        """用户是否有会员卡"""
+        return self.db.get('select * from t_card_member where cid = %s and openid = %s', cid, openid)
+
+    def list_card_member(self, aid, cid, start, end):
+        """列出公众号的所有会员信息"""
+        return self.db.query('select * from t_card_member where aid = %s and cid = %s order by id desc limit %s, %s',
+                             aid, cid, start, end)
+
+    def get_card_member_count(self, aid, cid):
+        """公众号所有会员数量"""
+        return self.db.get('select count(*) as count from t_card_member where aid = %s and cid = %s', aid, cid)['count']
+
+    def get_card_by_cid(self, cid):
+        """根据会员卡id获取会员卡"""
+        return self.db.get('select * from t_card where cid = %s', cid)
+
+    def get_card_by_aid(self, aid):
+        """获取公众账号的会员卡信息"""
+        return self.db.get('select * from t_card where aid = %s', aid)

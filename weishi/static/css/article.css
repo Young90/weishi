@@ -76,12 +76,27 @@ html {
 }
 
 body {
-    background: #f8f7f5 !important;
-    color: #222;
-    font-family: Helvetica, STHeiti STXihei, Microsoft JhengHei, Microsoft YaHei, Tohoma, Arial;
+    font-family: "Microsoft YaHei";
+    max-width: 640px;
+    margin: auto;
     height: 100%;
-    padding: 15px 15px 0;
+    width: 100%;
+    min-height: 100%;
+    font-size: 14px;
+    line-height: 1.231;
+    -webkit-touch-callout: none;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-box-align: stretch;
     position: relative;
+    padding: 0px;
+}
+
+.main-container {
+    margin-left: 10px;
+    margin-right: 10px;
+    padding-top: 20px;
+    padding-bottom: 20px;
 }
 
 body > .tips {
