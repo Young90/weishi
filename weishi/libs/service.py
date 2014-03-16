@@ -436,3 +436,20 @@ class CardManager(Base):
     def get_card_by_aid(self, aid):
         """获取公众账号的会员卡信息"""
         return self.db.get('select * from t_card where aid = %s', aid)
+
+
+class ImpactManager(Base):
+    """用户印象管理"""
+
+    def save_impact(self, aid, name, num):
+        """公众号创建印象条目"""
+        self.db.execute('insert into t_impact (date, aid, name, num) values (NOW(), %s, %s, %s, %s)', aid, name, num)
+
+    def vote_to_impact(self, _id):
+        """用户为印象投票"""
+        self.db.execute('update t_impact set num = num + 1 where id = %s', _id)
+
+    def list_impact(self, aid):
+        """公众号列出印象条目"""
+        return self.db.query('select * from t_impact where aid = %s', aid)
+

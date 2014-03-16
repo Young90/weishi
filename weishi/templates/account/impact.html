@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>用户印象 - {{account.wei_name}}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="shortcut icon" href="{{static_url('img/favicon.ico')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.adjust.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/index.css')}}">
+</head>
+<body>
+{% include nav.html %}
+<div class="container">
+    <div class="content">
+        <div class="main">
+            <div class="main-inner">
+                {% if not impacts %}
+                <div class="new-edit">
+                    <div class="alert alert-info">最少添加三个印象，最多添加6个用户印象</div>
+                    <div class="input-group card-create">
+                        印象1: <br>
+                        <input type="text" name="name" class="form-control impact-input"placeholder="印象名称">
+                        <input type="text" name="num" class="form-control impact-input"placeholder="初始数量">
+                     </div>
+                    <div class="input-group card-create">
+                        印象2: <br>
+                        <input type="text" name="name" class="form-control impact-input"placeholder="印象名称">
+                        <input type="text" name="num" class="form-control impact-input"placeholder="初始数量">
+                     </div>
+                    <div class="input-group card-create">
+                        印象3: <br>
+                        <input type="text" name="name" class="form-control impact-input"placeholder="印象名称">
+                        <input type="text" name="num" class="form-control impact-input"placeholder="初始数量">
+                     </div>
+                    <div class="input-group card-create">
+                        印象4: <br>
+                        <input type="text" name="name" class="form-control impact-input"placeholder="印象名称">
+                        <input type="text" name="num" class="form-control impact-input"placeholder="初始数量">
+                     </div>
+                    <div class="input-group card-create">
+                        印象5: <br>
+                        <input type="text" name="name" class="form-control impact-input"placeholder="印象名称">
+                        <input type="text" name="num" class="form-control impact-input"placeholder="初始数量">
+                     </div>
+                    <div class="input-group card-create">
+                        印象6: <br>
+                        <input type="text" name="name" class="form-control impact-input"placeholder="印象名称">
+                        <input type="text" name="num" class="form-control impact-input"placeholder="初始数量">
+                     </div>
+                    <div id="impacts-save-btn" class="btn btn-primary submit-btn">
+                        <span>创 建</span>
+                    </div>
+                </div>
+                {% else %}
+                {% end %}
+
+            </div>
+        </div>
+        {% include left_nav.html %}
+    </div>
+</div>
+<script src="{{static_url('js/jquery-1.10.2.min.js')}}"></script>
+<script src="{{static_url('js/bootstrap.min.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/global.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/accounts.js')}}"></script>
+</body>
+</html>

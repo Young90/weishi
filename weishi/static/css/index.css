@@ -623,3 +623,9 @@ span.add-on {
     width: 400px !important;
     margin-top: 10px;
 }
+
+.impact-input {
+    display: inline-block;
+    width: 40% !important;
+    margin-right: 10px;
+}

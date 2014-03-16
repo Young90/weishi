@@ -21,17 +21,19 @@
                     <div class="alert alert-info">如果要实现用户点击进入会员卡页面即可自动生成会员号，则勾选自动创建，如果需要用户填写个人信息，则取消勾选
                         <br><br>如果需要用户填写信息，在需要的信息前勾选（暂时支持姓名、手机号和地址），同时取消自动创建的勾选，如果勾选了自动创建，手机和地址的勾选将失效
                     </div>
+                    <div class="card-create">会员卡生成方式：</div>
                     <div class="input-group card-create">
                         <input type="checkbox" name="register" value="1" checked> 自动创建 &nbsp;&nbsp;&nbsp;
                     </div>
+                    <div class="card-create">如果会员卡需要注册，必须填写的信息：</div>
                     <div class="input-group card-create">
                         <input type="checkbox" name="name" value="1"> 填写姓名&nbsp;&nbsp;&nbsp;
                         <input type="checkbox" name="mobile" value="1"> 填写手机号&nbsp;&nbsp;&nbsp;
                         <input type="checkbox" name="address" value="1"> 填写地址&nbsp;&nbsp;&nbsp;
                     </div>
                     <div class="input-group card-create">
-                        商家电话 : <br><input type="text" name="phone" class="form-control phone-input"
-                                          placeholder="在会员卡页面显示，点击后可以直接拨打商家电话"><br>
+                        商家电话<span style="font-size: 14px;">（区号后面的横线注意使用英文的横线 -）</span> :
+                        <br><input type="text" name="phone" class="form-control phone-input"placeholder="在会员卡页面显示，点击后可以直接拨打商家电话"><br>
                         会员优惠 : <br><textarea name="about" class="form-control phone-input"
                                              placeholder="会员卡页面显示，介绍会员享有的优惠等"></textarea>
                     </div>
@@ -42,6 +44,7 @@
                 {% else %}
                 <div class="new-edit">
                     <div class="alert alert-info">修改会员卡生成方式（自动/注册）会导致已有会员注册信息不准（缺失/多余）</div>
+                    <div class="card-create">会员卡生成方式：</div>
                     <div class="input-group card-create">
                         {% if card.register %}
                         <input type="checkbox" name="register" value="1" checked> 自动创建 &nbsp;&nbsp;&nbsp;
@@ -49,6 +52,7 @@
                         <input type="checkbox" name="register" value="1"> 自动创建 &nbsp;&nbsp;&nbsp;
                         {% end %}
                     </div>
+                    <div class="card-create">如果会员卡需要注册，必须填写的信息：</div>
                     <div class="input-group card-create">
                         {% if card.name %}
                         <input type="checkbox" name="name" value="1" checked> 填写姓名&nbsp;&nbsp;&nbsp;
@@ -67,8 +71,8 @@
                         {% end %}
                     </div>
                     <div class="input-group card-create">
-                        商家电话 : <br><input type="text" name="phone" class="form-control phone-input"
-                                          placeholder="在会员卡页面显示，点击后可以直接拨打商家电话" value="{{card.phone}}"><br>
+                        商家电话<span style="font-size: 14px;">（区号后面的横线注意使用英文的横线 -）</span> :
+                        <br><input type="text" name="phone" class="form-control phone-input" placeholder="在会员卡页面显示，点击后可以直接拨打商家电话" value="{{card.phone}}"><br>
                         会员优惠 : <br><textarea name="about" class="form-control phone-input"
                                              placeholder="会员卡页面显示，介绍会员享有的优惠等">{{card.about}}</textarea>
                     </div>

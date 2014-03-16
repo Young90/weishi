@@ -9,11 +9,11 @@ from tornado.web import HTTPError, asynchronous
 
 from weishi.libs.decorators import authenticated
 from weishi.libs.handler import BaseHandler
-import weishi.libs.image as image_util
+from weishi.libs.image import list_all, upload
 from weishi.libs import wei_api
 from weishi.libs import key_util
 from weishi.libs.service import FansManager, MessageManager, ArticleManager, AccountManager, \
-    MenuManager, ImageArticleManager, AutoManager, FormManager, CardManager
+    MenuManager, ImageArticleManager, AutoManager, FormManager, CardManager, ImpactManager
 
 
 class AccountBaseHandler(BaseHandler):
@@ -32,6 +32,7 @@ class AccountBaseHandler(BaseHandler):
     auto_manager = None
     form_manager = None
     card_manager = None
+    impact_manager = None
 
     @authenticated
     @asynchronous
@@ -45,6 +46,7 @@ class AccountBaseHandler(BaseHandler):
         self.auto_manager = AutoManager(self.db)
         self.form_manager = FormManager(self.db)
         self.card_manager = CardManager(self.db)
+        self.impact_manager = ImpactManager(self.db)
 
         aid = self.request.uri.split('/')[2]
         if not aid:
@@ -316,7 +318,7 @@ class UploadImageHandler(AccountBaseHandler):
         result = {'r': 0}
         try:
             file_body = self.request.files['file'][0]['body']
-            url = image_util.upload(file_body, self.account.aid)
+            url = upload(file_body, self.account.aid)
             if not url:
                 result['error'] = u'上传出错'
                 self.write(result)
@@ -334,7 +336,7 @@ class ImageListHandler(AccountBaseHandler):
     """图片列表接口，返回图片url列表"""
 
     def get(self, *args, **kwargs):
-        urls = image_util.list_all(self.account.aid)
+        urls = list_all(self.account.aid)
         results = {'r': 1, 'count': len(urls), 'urls': urls}
         self.write(results)
         self.finish()
@@ -438,6 +440,14 @@ class CardHandler(AccountBaseHandler):
         self.finish()
 
 
+class ImpactHandler(AccountBaseHandler):
+    """公众账号管理印象"""
+
+    def get(self, aid):
+        impacts = self.impact_manager.list_impact(self.account.aid)
+        self.render('account/impact.html', account=self.account, impacts=impacts, index='impact')
+
+
 handlers = [
     (r'/account/([^/]+)', AccountIndexHandler),
     (r'/account/([^/]+)/fans', AccountFansHandler),
@@ -447,10 +457,10 @@ handlers = [
     (r'/account/([^/]+)/menu', MenuHandler),
     (r'/account/([^/]+)/image/upload', UploadImageHandler),
     (r'/account/([^/]+)/image/list', ImageListHandler),
-    (r'/account/([^/]+)/roll', ImageListHandler),
     (r'/account/([^/]+)/form', FormHandler),
     (r'/account/([^/]+)/form/new', NewFormHandler),
     (r'/account/([^/]+)/form/([^/]+)/data', FormDataHandler),
     (r'/account/([^/]+)/card', CardHandler),
+    (r'/account/([^/]+)/impact', ImpactHandler),
 ]
 

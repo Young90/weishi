@@ -30,6 +30,11 @@
         {% else %}
         <li><a href="/account/{{account.aid}}/card">会员卡</a></li>
         {% end %}
+        {% if index=='impact' %}
+        <li class="active"><a href="/account/{{account.aid}}/impact">用户印象</a></li>
+        {% else %}
+        <li><a href="/account/{{account.aid}}/impact">用户印象</a></li>
+        {% end %}
         {% if index=='fans' %}
         <li class="active"><a href="/account/{{account.aid}}/fans">粉丝</a></li>
         {% else %}
