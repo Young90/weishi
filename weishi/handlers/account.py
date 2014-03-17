@@ -385,8 +385,6 @@ class NewFormHandler(AccountBaseHandler):
         result = {'r': 0}
         name = self.get_argument('name', None)
         params = self.get_argument('params', None)
-        print name
-        print params
         if not name or not params:
             result['error'] = '参数不正确'
             self.write(result)
@@ -446,6 +444,26 @@ class ImpactHandler(AccountBaseHandler):
     def get(self, aid):
         impacts = self.impact_manager.list_impact(self.account.aid)
         self.render('account/impact.html', account=self.account, impacts=impacts, index='impact')
+
+    def post(self, *args, **kwargs):
+        """保存用户印象"""
+        result = {'r': 0}
+        params = self.get_argument('params', None)
+        print params
+        if not params:
+            result['error'] = '参数不正确'
+            self.write(result)
+            self.finish()
+        params = simplejson.loads(params, encoding='utf-8')
+        result['r'] = 1
+        self.impact_manager.truncate_impacts(self.account.aid)
+        for param in params:
+            name = param['name']
+            num = param['num']
+            if name and name != '':
+                self.impact_manager.save_impact(self.account.aid, name, int(num))
+        self.write(result)
+        self.finish()
 
 
 handlers = [

@@ -11,8 +11,12 @@ body {
     display: -webkit-box;
     position: relative;
     padding: 0px;
-	-webkit-box-orient: vertical;
-	-webkit-box-align: stretch;
+    -webkit-box-orient: vertical;
+    -webkit-box-align: stretch;
+}
+
+img {
+    width: 100%;
 }
 
 .container {
@@ -134,4 +138,87 @@ body {
 .modal-dialog {
     top: 100px;
     width: 260px;
+}
+
+.modal-input {
+    width: 200px;
+}
+
+.impress h3 {
+    font-size: 14px;
+    color: #909086;
+    text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.2);
+    padding: 5px 0;
+    font-weight: bold;
+}
+
+.impress a {
+    text-decoration: none;
+}
+
+.is_1 {
+    display: -webkit-box;
+    height: 190px;
+    margin-bottom: 5px;
+}
+
+.is_1 a, .is_2 a {
+    color: #fff;
+    text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    display: -webkit-box;
+    -webkit-box-orient: horizontal;
+    -webkit-box-pack: center;
+    -webkit-box-align: center;
+}
+
+.is_1 a span, .is_2 a span {
+    display: block;
+    margin: 0 auto;
+    font-size: 16px;
+}
+
+.is_11 {
+    margin-right: 5px;
+    -webkit-box-flex: 1;
+    background-color: #fb641c;
+}
+
+.is_12 {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+}
+
+.is_12_1 {
+    margin-bottom: 5px;
+    background-color: #aadc3b;
+}
+
+.is_12_2 {
+    background-color: #00b6ee;
+}
+
+.is_2 {
+    display: -webkit-box;
+    height: 80px;
+}
+
+.is_2 a {
+    margin-right: 5px;
+}
+
+.is_21 {
+    background-color: #c93127;
+}
+
+.is_22 {
+    background-color: #695d8f;
+}
+
+.is_23 {
+    background-color: #8c5e7a;
+}
+
+.is_24, .is_25 {
+    background-color: #eea200;
 }

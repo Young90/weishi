@@ -119,3 +119,37 @@ $('#card-save-btn').on('click', function () {
         }
     })
 });
+
+$('#impacts-save-btn').on('click', function () {
+    var button = $('#impacts-save-btn');
+    button.attr('disabled', 'disabled');
+    var link = window.location.href;
+    var c_list = $('.card-create');
+    var param = [];
+    for (var i = 0; i < c_list.length; i++) {
+        var name = $(c_list[i]).find('input[name="name"]').val();
+        var num = $(c_list[i]).find('input[name="num"]').val();
+        var p = {
+            'name': name,
+            'num': num
+        }
+        param.push(p);
+    }
+    var data = {
+        'params': JSON.stringify(param)
+    }
+    $.ajax({
+        type: 'POST',
+        url: link,
+        data: data,
+        success: function (data) {
+            button.removeAttr('disabled');
+            if (data.r) {
+                ModalManager.show_success_modal('保存成功！');
+                setTimeout(function () {
+                    window.location.reload();
+                }, 1500);
+            }
+        }
+    })
+});

@@ -443,13 +443,24 @@ class ImpactManager(Base):
 
     def save_impact(self, aid, name, num):
         """公众号创建印象条目"""
-        self.db.execute('insert into t_impact (date, aid, name, num) values (NOW(), %s, %s, %s, %s)', aid, name, num)
+        self.db.execute('insert into t_impact (date, aid, name, num) values (NOW(), %s, %s, %s)', aid, name, num)
 
     def vote_to_impact(self, _id):
         """用户为印象投票"""
         self.db.execute('update t_impact set num = num + 1 where id = %s', _id)
 
+    def get_impact_by_id(self, _id):
+        """根据id获取印象"""
+        return self.db.get('select * from t_impact where id = %s', _id)
+
     def list_impact(self, aid):
         """公众号列出印象条目"""
         return self.db.query('select * from t_impact where aid = %s', aid)
 
+    def truncate_impacts(self, aid):
+        """清空添加的印象"""
+        self.db.execute('delete from t_impact where aid = %s', aid)
+
+    def total_impact_num(self, aid):
+        """印象总数量"""
+        return self.db.get('select sum(num) as num from t_impact where aid = %s', aid)['num']

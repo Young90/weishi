@@ -3,11 +3,10 @@ __author__ = 'young'
 
 import json
 import urllib
-import string
 from tornado.web import RequestHandler
 from tornado.web import HTTPError
 
-from weishi.libs.service import FormManager, FansManager, CardManager, AccountManager
+from weishi.libs.service import FormManager, FansManager, CardManager, AccountManager, ImpactManager
 from weishi.libs.handler import BaseHandler
 from weishi.libs import key_util
 
@@ -118,15 +117,47 @@ class CardHandler(BaseHandler):
         card_id = card.id
         num = key_util.generate_digits_starts_with(str(card_id), 7)
         num = str(card_id) + num
-        self.card_manager.save_member(card.aid, card.cid, num, openid,name, mobile, address)
+        self.card_manager.save_member(card.aid, card.cid, num, openid, name, mobile, address)
         result['r'] = 1
         result['openid'] = openid
         self.write(result)
         return
 
 
+class ImpactHandler(BaseHandler):
+    impact_manager = None
+
+    def prepare(self):
+        self.impact_manager = ImpactManager(self.db)
+
+    def get(self, aid):
+        """查看用户印象"""
+        impacts = self.impact_manager.list_impact(aid)
+        total = self.impact_manager.total_impact_num(aid)
+        name = self.get_cookie('i_%s' % aid, None)
+        if name:
+            name = "".join([(len(i) > 0 and unichr(int(i, 16)) or "") for i in name.split('%u')])
+        self.render('front/impact.html', impacts=impacts, total=total, name=name, aid=aid)
+
+    def post(self, *args, **kwargs):
+        """用户添加印象"""
+        result = {'r': 0}
+        aid = args[0]
+        has = self.get_cookie('i_%s' % aid, None)
+        if has:
+            result['error'] = '已经添加过印象了~'
+            self.write(result)
+            return
+        _id = self.get_argument('id', None)
+        if _id:
+            self.impact_manager.vote_to_impact(int(_id))
+        result['r'] = 1
+        self.write(result)
+
+
 handlers = [
     (r'/index/test', IndexHandler),
     (r'/form/([^/]+)', FormHandler),
     (r'/card/([^/]+)', CardHandler),
+    (r'/impact/([^/]+)', ImpactHandler),
 ]

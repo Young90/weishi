@@ -15,46 +15,75 @@
     <div class="content">
         <div class="main">
             <div class="main-inner">
-                {% if not impacts %}
                 <div class="new-edit">
-                    <div class="alert alert-info">最少添加三个印象，最多添加6个用户印象</div>
+                    <div class="alert alert-info">必须添加6个印象</div>
+                    {% if impacts %}
                     <div class="input-group card-create">
                         印象1: <br>
-                        <input type="text" name="name" class="form-control impact-input"placeholder="印象名称">
-                        <input type="text" name="num" class="form-control impact-input"placeholder="初始数量">
-                     </div>
+                        <input type="text" name="name" class="form-control impact-input" placeholder="印象名称" value="{{impacts[0].name}}">
+                        <input type="text" name="num" class="form-control impact-input" placeholder="初始数量" value="{{impacts[0].num}}">
+                    </div>
                     <div class="input-group card-create">
                         印象2: <br>
-                        <input type="text" name="name" class="form-control impact-input"placeholder="印象名称">
-                        <input type="text" name="num" class="form-control impact-input"placeholder="初始数量">
-                     </div>
+                        <input type="text" name="name" class="form-control impact-input" placeholder="印象名称" value="{{impacts[1].name}}">
+                        <input type="text" name="num" class="form-control impact-input" placeholder="初始数量" value="{{impacts[1].num}}">
+                    </div>
                     <div class="input-group card-create">
                         印象3: <br>
-                        <input type="text" name="name" class="form-control impact-input"placeholder="印象名称">
-                        <input type="text" name="num" class="form-control impact-input"placeholder="初始数量">
-                     </div>
+                        <input type="text" name="name" class="form-control impact-input" placeholder="印象名称" value="{{impacts[2].name}}">
+                        <input type="text" name="num" class="form-control impact-input" placeholder="初始数量" value="{{impacts[2].num}}">
+                    </div>
                     <div class="input-group card-create">
                         印象4: <br>
-                        <input type="text" name="name" class="form-control impact-input"placeholder="印象名称">
-                        <input type="text" name="num" class="form-control impact-input"placeholder="初始数量">
-                     </div>
+                        <input type="text" name="name" class="form-control impact-input" placeholder="印象名称" value="{{impacts[3].name}}">
+                        <input type="text" name="num" class="form-control impact-input" placeholder="初始数量" value="{{impacts[3].num}}">
+                    </div>
                     <div class="input-group card-create">
                         印象5: <br>
-                        <input type="text" name="name" class="form-control impact-input"placeholder="印象名称">
-                        <input type="text" name="num" class="form-control impact-input"placeholder="初始数量">
-                     </div>
+                        <input type="text" name="name" class="form-control impact-input" placeholder="印象名称" value="{{impacts[4].name}}">
+                        <input type="text" name="num" class="form-control impact-input" placeholder="初始数量" value="{{impacts[4].num}}">
+                    </div>
                     <div class="input-group card-create">
                         印象6: <br>
-                        <input type="text" name="name" class="form-control impact-input"placeholder="印象名称">
-                        <input type="text" name="num" class="form-control impact-input"placeholder="初始数量">
-                     </div>
+                        <input type="text" name="name" class="form-control impact-input" placeholder="印象名称" value="{{impacts[5].name}}">
+                        <input type="text" name="num" class="form-control impact-input" placeholder="初始数量" value="{{impacts[5].num}}">
+                    </div>
+                    {% else %}
+                    <div class="input-group card-create">
+                        印象1: <br>
+                        <input type="text" name="name" class="form-control impact-input" placeholder="印象名称">
+                        <input type="text" name="num" class="form-control impact-input" placeholder="初始数量">
+                    </div>
+                    <div class="input-group card-create">
+                        印象2: <br>
+                        <input type="text" name="name" class="form-control impact-input" placeholder="印象名称">
+                        <input type="text" name="num" class="form-control impact-input" placeholder="初始数量">
+                    </div>
+                    <div class="input-group card-create">
+                        印象3: <br>
+                        <input type="text" name="name" class="form-control impact-input" placeholder="印象名称">
+                        <input type="text" name="num" class="form-control impact-input" placeholder="初始数量">
+                    </div>
+                    <div class="input-group card-create">
+                        印象4: <br>
+                        <input type="text" name="name" class="form-control impact-input" placeholder="印象名称">
+                        <input type="text" name="num" class="form-control impact-input" placeholder="初始数量">
+                    </div>
+                    <div class="input-group card-create">
+                        印象5: <br>
+                        <input type="text" name="name" class="form-control impact-input" placeholder="印象名称">
+                        <input type="text" name="num" class="form-control impact-input" placeholder="初始数量">
+                    </div>
+                    <div class="input-group card-create">
+                        印象6: <br>
+                        <input type="text" name="name" class="form-control impact-input" placeholder="印象名称">
+                        <input type="text" name="num" class="form-control impact-input" placeholder="初始数量">
+                    </div>
+                    {% end %}
                     <div id="impacts-save-btn" class="btn btn-primary submit-btn">
                         <span>创 建</span>
                     </div>
                 </div>
-                {% else %}
-                {% end %}
-
             </div>
         </div>
         {% include left_nav.html %}

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>用户印象</title>
+    <meta content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"
+          name="viewport">
+    <meta content="application/xhtml+xml;charset=UTF-8" http-equiv="Content-Type">
+    <meta content="no-cache,must-revalidate" http-equiv="Cache-Control">
+    <meta content="no-cache" http-equiv="pragma">
+    <meta content="0" http-equiv="expires">
+    <meta content="telephone=no, address=no" name="format-detection">
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <!-- apple devices fullscreen -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.css')}}" media="all">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/index.css')}}" media="all">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/front/front.css')}}" media="all">
+    <link rel="stylesheet" type="text/css" href="http://cdn.staticfile.org/font-awesome/4.0.3/css/font-awesome.css"
+          media="all">
+</head>
+<body onselectstart="return true;" ondragstart="return false;" style="background-color: #363634;">
+<div class="wrapper" style="height: 100%; padding-bottom: 10px; padding-left: 10px; padding-right: 10px;">
+    <div class="impress">
+        <h3>点击添加您的印象</h3>
+        <input type="hidden" name="aid" value="{{aid}}">
+        <div class="is_1">
+            <a href="javascript:;" onclick="javascript:add_impact('{{impacts[0].id}}', '{{impacts[0].name}}');" class="is_11" style="-webkit-box-flex: 29;"><span>{{impacts[0].name}}<br>{{impacts[0].num*100//total}}%</span></a>
+            <div class="is_12" style="-webkit-box-flex:41;">
+                <a href="javascript:;" onclick="javascript:add_impact('{{impacts[1].id}}', '{{impacts[1].name}}');" class="is_12_1" style="-webkit-box-flex:25;"><span>{{impacts[1].name}}<br>{{impacts[1].num*100//total}}%</span></a>
+                <a href="javascript:;" onclick="javascript:add_impact('{{impacts[2].id}}', '{{impacts[2].name}}');" class="is_12_2" style="-webkit-box-flex:16;"><span>{{impacts[2].name}}<br>{{impacts[2].num*100//total}}%</span></a>
+            </div>
+        </div>
+        <div class="is_2">
+            <a class="is_21" href="javascript:;" onclick="javascript:add_impact('{{impacts[3].id}}', '{{impacts[3].name}}');" style="-webkit-box-flex:11;"><span>{{impacts[3].name}}<br>{{impacts[3].num*100//total}}%</span></a>
+            <a class="is_22" href="javascript:;" onclick="javascript:add_impact('{{impacts[4].id}}', '{{impacts[4].name}}');" style="-webkit-box-flex:9;"><span>{{impacts[4].name}}<br>{{impacts[4].num*100//total}}%</span></a>
+            <a class="is_23" href="javascript:;" onclick="javascript:add_impact('{{impacts[5].id}}', '{{impacts[5].name}}');" style="-webkit-box-flex:6;"><span>{{impacts[5].name}}<br>{{impacts[5].num*100//total}}%</span></a>
+            {% if name %}
+            <a class="is_24" href="javascript:;" style="-webkit-box-flex:25;"><span>我添加的印象是<br>{{name}}</span></a>
+            {% else %}
+            <a class="is_24" href="javascript:;" onclick="javascript:add_impact_local();" style="-webkit-box-flex:25;"><span>添加你的印象</span></a>
+            {% end %}
+        </div>
+    </div>
+</div>
+<script src="http://cdn.staticfile.org/jquery/2.1.0/jquery.min.js"></script>
+<script src="http://cdn.staticfile.org/twitter-bootstrap/3.1.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="{{static_url('js/global.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/front.js')}}"></script>
+</body>
+</html>

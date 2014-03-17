@@ -45,7 +45,7 @@ function submit_reg_form(n, m, a) {
         type: 'POST',
         url: '/card/' + cid,
         data: data,
-        success: function(data) {
+        success: function (data) {
             if (data.r) {
                 ModalManager.show_success_modal('注册成功！');
                 setTimeout(function () {
@@ -58,3 +58,37 @@ function submit_reg_form(n, m, a) {
         }
     })
 };
+
+function add_impact(id, name) {
+    var link = window.location.href;
+    var data = {
+        'id': id
+    }
+    $.ajax({
+        type: 'POST',
+        data: data,
+        url: link,
+        success: function (data) {
+            if (data.r) {
+                document.cookie = 'i_' + aid + '=' + escape(input);
+                ModalManager.show_success_modal('添加成功！');
+                setTimeout(function () {
+                    window.location.reload();
+                }, 1500);
+            } else {
+                ModalManager.show_failure_modal(data.error);
+            }
+        }
+    })
+}
+
+function add_impact_local() {
+    ModalManager.show_input_modal('输入你的印象', 'input', function (input) {
+        var aid = $('input[name="aid"]').val();
+        document.cookie = 'i_' + aid + '=' + escape(input);
+        ModalManager.show_success_modal('添加成功！');
+        setTimeout(function () {
+            window.location.reload();
+        }, 1500);
+    });
+}
