@@ -16,7 +16,9 @@
         <div class="main">
             <div class="main-inner">
                 <div class="new-edit">
-                    <div class="alert alert-info">必须添加6个印象</div>
+                    <div class="alert alert-info">必须添加6个印象<br>
+                    如果要将用户印象添加到自定义菜单中，在菜单中添加链接，地址填写预览中的地址<br>
+                    请在创建之后预览，否则会出错</div>
                     {% if impacts %}
                     <div class="input-group card-create">
                         印象1: <br>
@@ -80,6 +82,9 @@
                         <input type="text" name="num" class="form-control impact-input" placeholder="初始数量">
                     </div>
                     {% end %}
+                    <a class="btn btn-primary submit-btn" href="/impact/{{account.aid}}" target="_blank">
+                        <span>预 览</span>
+                    </a>
                     <div id="impacts-save-btn" class="btn btn-primary submit-btn">
                         <span>创 建</span>
                     </div>

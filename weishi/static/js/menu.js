@@ -21,7 +21,7 @@ function add_main_menu() {
         '<span class="action"><a href="javascript:;" onclick="javascript:show_input_single_dialog(this);">单条图文</a></span>' +
         '<span class="action"><a href="javascript:;" onclick="javascript:show_input_multi_dialog(this);">多条图文</a></span>' +
         '<span class="action"><a href="javascript:;" onclick="javascript:show_input_link_dialog(this);">链接</a></span>' +
-        '<span class="action"><a href="javascript:;" onclick="javascript:add_member_card(this);">会员卡</a></span>' +
+        '<span class="action"><a href="javascript:;" onclick="javascript:add_some_with_name(this, "会员卡", "card");">会员卡</a></span>' +
         '<span class="action remove"><a href="javascript:;" onclick="javascript:remove_main_menu(this);">删除</a></span>' +
         '</div>' +
         '</div>' +
@@ -56,7 +56,7 @@ function add_sub_menu(obj) {
         '<span class="action"><a href="javascript:;" onclick="javascript:show_input_single_dialog(this);">单条图文</a></span>' +
         '<span class="action"><a href="javascript:;" onclick="javascript:show_input_multi_dialog(this);">多条图文</a></span>' +
         '<span class="action"><a href="javascript:;" onclick="javascript:show_input_link_dialog(this);">链接</a></span>' +
-        '<span class="action"><a href="javascript:;" onclick="javascript:add_member_card(this);">会员卡</a></span>' +
+        '<span class="action"><a href="javascript:;" onclick="javascript:add_some_with_name(this, "会员卡", "card");">会员卡</a></span>' +
         '<span class="action remove"><a href="javascript:;" onclick="javascript:remove_sub_menu(this);">删除</a></span>' +
         '</div>' +
         '</div>';
@@ -125,12 +125,12 @@ function show_input_link_dialog(obj) {
     });
 };
 
-function add_member_card(obj) {
+function add_some_with_name(obj, name, value) {
     var container = $(obj).parents('.op').parent();
         var result = $(container).find('.result');
-        $(container).attr('data-type', 'card');
-        $(container).attr('data-value', 'card');
-        $(result).html('会员卡');
+        $(container).attr('data-type', value);
+        $(container).attr('data-value', value);
+        $(result).html(name);
 };
 
 $('#menu-save-btn').on('click', function () {
