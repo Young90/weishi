@@ -155,9 +155,17 @@ class ImpactHandler(BaseHandler):
         self.write(result)
 
 
+class GeoHandler(BaseHandler):
+    """坐标转换工具"""
+
+    def get(self):
+        self.render('front/geo.html')
+
+
 handlers = [
     (r'/index/test', IndexHandler),
     (r'/form/([^/]+)', FormHandler),
     (r'/card/([^/]+)', CardHandler),
     (r'/impact/([^/]+)', ImpactHandler),
+    (r'/geo', GeoHandler),
 ]

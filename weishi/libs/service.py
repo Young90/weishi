@@ -455,7 +455,7 @@ class ImpactManager(Base):
 
     def list_impact(self, aid):
         """公众号列出印象条目"""
-        return self.db.query('select * from t_impact where aid = %s', aid)
+        return self.db.query('select * from t_impact where aid = %s order by num desc', aid)
 
     def truncate_impacts(self, aid):
         """清空添加的印象"""

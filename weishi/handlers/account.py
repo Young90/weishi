@@ -145,11 +145,12 @@ class MenuHandler(AccountBaseHandler):
             self.render('account/menu.html', menu=None, account=self.account, index='menu')
             return
         for item in main_menu:
-            if item.type and item.mkey:
+            if item.type:
                 # 如果一级菜单没有子菜单
                 if item.auto_id:
                     # 自动回复
                     auto = self.auto_manager.get_auto_by_id(item.auto_id)
+                    print auto
                     p = {'name': item.name, 'type': auto.type,
                          'value': auto.re_content if auto.re_content else auto.re_img_art_id}
                 else:

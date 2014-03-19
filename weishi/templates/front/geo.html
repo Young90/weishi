@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>地址坐标转换工具 - 微世</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="shortcut icon" href="{{static_url('img/favicon.ico')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.adjust.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/index.css')}}">
+</head>
+<body>
+<div class="container" style="max-width: 600px; min-height: 800px;">
+
+    <h3>地址转换工具</h3>
+
+    <div class="input-group input-group-lg account-info" style="margin-top: 10px;">
+        <span class="input-group-addon add-on">城市</span>
+        <input type="text" class="form-control" placeholder="例如，上海市" name="city">
+    </div>
+    <div class="input-group input-group-lg account-info">
+        <span class="input-group-addon add-on">地址</span>
+        <input type="text" class="form-control" placeholder="例如，南京路" name="address">
+    </div>
+    <div class="input-group input-group-lg account-info">
+        <span class="input-group-addon add-on">名称</span>
+        <input type="text" class="form-control" placeholder="想要在地图上显示的名称，例如xxx公司" name="title">
+    </div>
+    <div id="menu-save-btn" class="btn btn-primary submit-btn" style="margin-top: 10px;">
+        <span>提 交</span>
+    </div>
+    <div class="result" style="display: none;font-size: 16px;margin-top: 10px; color: #555555;">
+        <div class="alert alert-danger">点击以下链接查看效果，右键复制该链接到自定义菜单的链接地址或图文消息的链接地址，因为点开该链接会自动跳转，所以不要复制打开的网页地址</div>
+        <div><a href="http://api.map.baidu.com" target="_blank">http://api.map.baidu.com</a></div>
+    </div>
+
+</div>
+<script type="text/javascript" src="{{static_url('js/jquery-1.10.2.min.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/bootstrap.min.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/global.js')}}"></script>
+<script>
+    $('#menu-save-btn').on('click', function () {
+        var city = $('input[name="city"]').val();
+        var address = $('input[name="address"]').val();
+        var title = $('input[name="title"]').val();
+        if (city == '' || address == '' || title == '') {
+            ModalManager.show_failure_modal('数据不完整');
+            return
+        }
+        //var link = window.location.href;
+        var link = 'http://api.map.baidu.com/geocoder/v2/?ak=188272f1c03780728bd6ba4af8595163&output=json&address='
+                + address + '&city=' + city
+        var data = {
+            'city': city,
+            'address': address,
+            'title': title
+        }
+        $.ajax({
+            type: 'GET',
+            url: link,
+            dataType: "jsonp",
+            jsonp: "callback",
+            jsonpCallback: "callback",
+            success: function (data) {
+                var u = 'http://api.map.baidu.com/marker?location=' + data['result']['location']['lat'] + ','
+                        + data['result']['location']['lng'] + '&title=' + title + '&content=' + address + '&output=html';
+                console.log(u);
+                var result = $('.result');
+                var a = $(result).find('a');
+                $(a).attr('href', u);
+                $(a).html(u);
+                $(result).show();
+            }
+        })
+    });
+    function callback(data) {
+
+    }
+</script>
+</body>
+</html>
