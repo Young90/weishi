@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>自动回复 - {{account.wei_name}}</title>
+    <title>关键词回复 - {{account.wei_name}}</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="shortcut icon" href="{{static_url('img/favicon.ico')}}">
@@ -19,10 +19,23 @@
                     <li><a href="/account/{{account.aid}}/auto/follow">关注时回复</a></li>
                     <li class="active"><a href="/account/{{account.aid}}/auto/message">关键字回复</a></li>
                 </ul>
+                <div class="new-edit menu">
+                    <div class="add-main">
+                        <a href="javascript:;" onclick="javascript:add_reply();">+添加关键词回复</a>
+                    </div>
+                    <input type="hidden" name="aid" value="{{account.aid}}">
+                </div>
+                <div id="word-save-btn" class="btn btn-primary submit-btn">
+                    <span>保 存</span>
+                </div>
             </div>
         </div>
         {% include left_nav.html %}
     </div>
 </div>
+<script src="http://cdn.staticfile.org/jquery/2.1.0/jquery.min.js"></script>
+<script src="http://cdn.staticfile.org/twitter-bootstrap/3.1.1/js/bootstrap.min.js"></script>
+<script src="{{static_url('js/global.js')}}"></script>
+<script src="{{static_url('js/menu.js')}}"></script>
 </body>
 </html>

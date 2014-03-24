@@ -629,3 +629,7 @@ span.add-on {
     width: 40% !important;
     margin-right: 10px;
 }
+
+input.word {
+    width: 260px;
+}

@@ -464,3 +464,17 @@ class ImpactManager(Base):
     def total_impact_num(self, aid):
         """印象总数量"""
         return self.db.get('select sum(num) as num from t_impact where aid = %s', aid)['num']
+
+
+class AutoKeywordManager(Base):
+    """关键字回复管理"""
+
+    def save_content_auto_keyword(self, word, re_content, aid):
+        """文本回复"""
+        self.db.execute('insert into t_auto_keyword (word, re_type, re_content, aid) values (%s, %s, %s, %s)',
+                        word, 'text', re_content, aid)
+
+    def save_image_art_auto_keyword(self, word, re_img_art_id, aid):
+        """图文消息回复"""
+        self.db.execute('insert into t_auto_keyword (word, re_type, re_img_art_id, aid) values (%s, %s, %s, %s)',
+                        word, 'text', re_img_art_id, aid)

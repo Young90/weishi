@@ -74,11 +74,11 @@
                                                 {% if sub_item['type']=='text' %}
                                                 <span class="result">文本 : {{sub_item['value']}}</span>
                                                 {% elif sub_item['type']=='single' %}
-                                                <span class="result">单条图文 : <a href="/image_article/{{sub_item['value']}}/preview" target="_blank">预览</span>
+                                                <span class="result">单条图文 : <a href="/image_article/{{sub_item['value']}}/preview" target="_blank">预览</a></span>
                                                 {% elif sub_item['type']=='multi' %}
-                                                <span class="result">多条图文 : <a href="/image_article_group/{{sub_item['value']}}/preview" target="_blank">预览</span>
+                                                <span class="result">多条图文 : <a href="/image_article_group/{{sub_item['value']}}/preview" target="_blank">预览</a></span>
                                                 {% elif sub_item['type']=='link' %}
-                                                <span class="result">链接 : <a href="{{sub_item['value']}}" target="_blank">查看</span>
+                                                <span class="result">链接 : <a href="{{sub_item['value']}}" target="_blank">查看</a></span>
                                                 {% elif sub_item['type']=='card' %}
                                                 <span class="result">会员卡</span>
                                                 {% end %}
@@ -109,11 +109,11 @@
                                                 {% if item['type']=='text' %}
                                                 <span class="result">文本 : {{item['value']}}</span>
                                                 {% elif item['type']=='single' %}
-                                                <span class="result">单条图文 : <a href="/image_article/{{item['value']}}/preview" target="_blank">预览</span>
+                                                <span class="result">单条图文 : <a href="/image_article/{{item['value']}}/preview" target="_blank">预览</a></span>
                                                 {% elif item['type']=='multi' %}
-                                                <span class="result">多条图文 : <a href="/image_article_group/{{item['value']}}/preview" target="_blank">预览</span>
+                                                <span class="result">多条图文 : <a href="/image_article_group/{{item['value']}}/preview" target="_blank">预览</a></span>
                                                 {% elif item['type']=='link' %}
-                                                <span class="result">链接 : <a href="{{item['value']}}" target="_blank">查看</span>
+                                                <span class="result">链接 : <a href="{{item['value']}}" target="_blank">查看</a></span>
                                                 {% elif item['type']=='card' %}
                                                 <span class="result">会员卡</span>
                                                 {% end %}

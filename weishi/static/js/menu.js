@@ -127,10 +127,10 @@ function show_input_link_dialog(obj) {
 
 function add_member_card(obj) {
     var container = $(obj).parents('.op').parent();
-        var result = $(container).find('.result');
-        $(container).attr('data-type', 'card');
-        $(container).attr('data-value', 'card');
-        $(result).html('会员卡');
+    var result = $(container).find('.result');
+    $(container).attr('data-type', 'card');
+    $(container).attr('data-value', 'card');
+    $(result).html('会员卡');
 };
 
 $('#menu-save-btn').on('click', function () {
@@ -224,6 +224,75 @@ $('#menu-save-btn').on('click', function () {
         }
     })
 });
+
+function add_reply() {
+    var html = '<div class="menu-item">' +
+        '<div class="main-container">' +
+        '<div class="input-container">' +
+        '<input name="word" placeholder="要回复的词" class="form-control input-lg main">' +
+        '<span class="result"></span>' +
+        '</div>' +
+        '<div class="op">' +
+        '<span class="action black">回复内容 </span>' +
+        '<span class="action"><a href="javascript:;" onclick="javascript:show_input_text_dialog(this);">文本</a></span>' +
+        '<span class="action"><a href="javascript:;" onclick="javascript:show_input_single_dialog(this);">单条图文</a></span>' +
+        '<span class="action remove"><a href="javascript:;" onclick="javascript:remove_word(this);">删除</a></span>' +
+        '</div>' +
+        ' </div>' +
+        '</div>';
+    var main = $('.new-edit');
+    $(main).append(html);
+}
+
+function remove_word(obj) {
+    var container = $(obj).parents('.menu-item');
+    $(container).remove();
+}
+
+$('#word-save-btn').on('click', function () {
+    var button = $('#word-save-btn');
+    button.attr('disabled', 'disabled');
+    var aid = $('input[name="aid"]').val();
+    var list = $('.main-container');
+    if (list.length == 0) {
+        return;
+    }
+    var params = []
+    for (var i = 0; i < list.length; i++) {
+        var container = $(list[i]);
+        var word = $(container).find('input[name="word"]').val();
+        var type = $(container).attr('data-type');
+        var value = $(container).attr('data-value');
+        if (word == '' || type == '' || value == '') {
+            continue;
+        }
+        var p = {
+            'word': word,
+            'type': type,
+            'value': value
+        }
+        params.push(p);
+    }
+    var data = {
+        'params': JSON.stringify(params)
+    }
+    $.ajax({
+        type: 'POST',
+        url: '/account/' + aid + '/auto/message',
+        data: data,
+        success: function(data) {
+            if (data.r) {
+                ModalManager.show_success_modal('保存成功！');
+                setTimeout(function () {
+                    window.location.reload();
+                }, 1500);
+            } else {
+                button.removeAttr('disabled');
+                ModalManager.show_failure_modal(data.error);
+            }
+        }
+    })
+})
 
 function add_fragment() {
     var name = randomString(8);

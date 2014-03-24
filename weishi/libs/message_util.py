@@ -25,7 +25,7 @@ def card_response_to_message(card, member, from_message, path, wei_account):
     openid = from_message['FromUserName']
     link = 'http://wsmt.sinaapp.com/card/' + card.cid + '?i=' + openid
     result = {'ToUserName': openid, 'FromUserName': wei_account, 'CreateTime': int(time.time()), 'count': 1,
-              'items': [{'title': '您的会员卡', 'summary': summary, 'thumb': '', 'url': link}]}
+              'items': [{'title': '您的会员卡', 'summary': summary, 'thumb': 'http://weishi.u.qiniudn.com/card.jpg', 'url': link}]}
     return Loader(path).load('message/image_message.xml').generate(result=result)
 
 
