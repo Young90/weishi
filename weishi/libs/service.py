@@ -477,4 +477,19 @@ class AutoKeywordManager(Base):
     def save_image_art_auto_keyword(self, word, re_img_art_id, aid):
         """图文消息回复"""
         self.db.execute('insert into t_auto_keyword (word, re_type, re_img_art_id, aid) values (%s, %s, %s, %s)',
-                        word, 'text', re_img_art_id, aid)
+                        word, 'single', re_img_art_id, aid)
+
+    def list_auto(self, aid):
+        """查询关键字回复列表"""
+        return self.db.query('select * from t_auto_keyword where aid = %s order by id desc', aid)
+
+    def truncate_auto(self, aid):
+        """清空记录"""
+        self.db.execute('delete from t_auto_keyword where aid = %s', aid)
+
+    def get_auto_by_word(self, aid, word):
+        """获取记录"""
+        _list = self.db.query('select * from t_auto_keyword where aid = %s and word = %s', aid, word)
+        if _list:
+            return _list[0]
+        return None

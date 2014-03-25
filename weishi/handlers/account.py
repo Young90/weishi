@@ -13,7 +13,7 @@ from weishi.libs.image import list_all, upload
 from weishi.libs import wei_api
 from weishi.libs import key_util
 from weishi.libs.service import FansManager, MessageManager, ArticleManager, AccountManager, \
-    MenuManager, ImageArticleManager, AutoManager, FormManager, CardManager, ImpactManager
+    MenuManager, ImageArticleManager, AutoManager, FormManager, CardManager, ImpactManager, AutoKeywordManager
 
 
 class AccountBaseHandler(BaseHandler):
@@ -33,6 +33,7 @@ class AccountBaseHandler(BaseHandler):
     form_manager = None
     card_manager = None
     impact_manager = None
+    auto_keyword_manager = None
 
     @authenticated
     @asynchronous
@@ -47,6 +48,7 @@ class AccountBaseHandler(BaseHandler):
         self.form_manager = FormManager(self.db)
         self.card_manager = CardManager(self.db)
         self.impact_manager = ImpactManager(self.db)
+        self.auto_keyword_manager = AutoKeywordManager(self.db)
 
         aid = self.request.uri.split('/')[2]
         if not aid:
@@ -309,8 +311,33 @@ class AutoResponseMessageHandler(AccountBaseHandler):
     """自动回复设置"""
 
     def get(self, aid):
-        self.render('account/auto_response_message.html', account=self.account, index='auto')
+        """获取列表"""
+        auto_list = self.auto_keyword_manager.list_auto(self.account.aid)
+        print auto_list
+        self.render('account/auto_response_message.html', account=self.account, index='auto', auto_list=auto_list)
 
+    def post(self, *args, **kwargs):
+        """创建关键词自动回复"""
+        result = {'r': 0}
+        params = self.get_argument('params', None)
+        params = simplejson.loads(params, encoding='utf-8')
+        if not params:
+            result['error'] = '参数不正确'
+            self.write(result)
+            self.finish()
+            return
+        self.auto_keyword_manager.truncate_auto(self.account.aid)
+        for param in params:
+            _word = param['word']
+            _type = param['type']
+            _value = param['value']
+            if _type == 'text':
+                self.auto_keyword_manager.save_content_auto_keyword(_word, _value, self.account.aid)
+            elif _type == 'single':
+                self.auto_keyword_manager.save_image_art_auto_keyword(_word, int(_value), self.account.aid)
+        result['r'] = 1
+        self.write(result)
+        self.finish()
 
 class UploadImageHandler(AccountBaseHandler):
     """上传图片接口，返回图片的url"""

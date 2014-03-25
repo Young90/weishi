@@ -3,7 +3,8 @@ __author__ = 'Young'
 
 from weishi import db
 from weishi.libs import wei_api
-from weishi.libs.service import ImageArticleManager, FansManager, AutoManager, MessageManager, CardManager
+from weishi.libs.service import ImageArticleManager, FansManager, AutoManager, MessageManager, CardManager, \
+    AutoKeywordManager
 from weishi.libs import message_util
 
 db.connect()
@@ -14,13 +15,14 @@ fans_manager = FansManager(db)
 auto_manager = AutoManager(db)
 message_manager = MessageManager(db)
 card_manager = CardManager(db)
+auto_keyword_manager = AutoKeywordManager(db)
 
 
 def process_message(account, message, path):
     """根据消息类型，处理消息"""
     msg_type = message['MsgType'].lower()
     if msg_type == 'text':
-        return _process_text_message(account.aid, message)
+        return _process_text_message(account, message, path)
     if msg_type == 'image':
         return _process_image_message(account.aid, message)
     if msg_type == 'voice':
@@ -52,9 +54,19 @@ def _add_single_fan(user, aid):
         fans_manager.save_single_fans(user, aid)
 
 
-def _process_text_message(aid, message):
-    """接受用户发送的文本消息"""
-    message_manager.receive_text_message(message, aid)
+def _process_text_message(account, message, path):
+    """接受用户发送的文本消息
+       1. 保存到数据库
+       2. 匹配有没有定义的回复，有则回复
+    """
+    message_manager.receive_text_message(message, account.aid)
+    auto = auto_keyword_manager.get_auto_by_word(account.aid, message['Content'])
+    if auto:
+        if auto.re_type == 'text':
+            return message_util.text_response_to_message(auto.re_content, message, path, account.wei_account)
+        elif auto.re_type == 'single':
+            image_article = image_article_manager.get_image_article_by_id(auto.re_img_art_id)
+            return message_util.image_article_group_to_message([image_article], message, path, account.wei_account)
 
 
 def _process_image_message(aid, message):

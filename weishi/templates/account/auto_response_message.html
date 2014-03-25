@@ -24,6 +24,32 @@
                         <a href="javascript:;" onclick="javascript:add_reply();">+添加关键词回复</a>
                     </div>
                     <input type="hidden" name="aid" value="{{account.aid}}">
+                    {% if auto_list %}
+                    {% for auto in auto_list %}
+                    <div class="menu-item">
+                        {% if auto.re_type == 'text' %}
+                        <div class="main-container" data-type="text" data-value="{{auto.re_content}}">
+                            <div class="input-container">
+                                <input name="word" placeholder="要回复的词" class="form-control input-lg main" value="{{auto.word}}">
+                                <span class="result">文本：{{auto.re_content}}</span>
+                            </div>
+                        {% elif auto.re_type == 'single' %}
+                        <div class="main-container" data-type="single" data-value="{{auto.re_img_art_id}}">
+                            <div class="input-container">
+                                <input name="word" placeholder="要回复的词" class="form-control input-lg main" value="{{auto.word}}">
+                                <span class="result">单条图文：<a target="_blank" href="/image_article/{{auto.re_img_art_id}}/preview">预览</a></span>
+                            </div>
+                        {% end %}
+                            <div class="op">
+                                <span class="action black">回复内容 </span>
+                                <span class="action"><a href="javascript:;" onclick="javascript:show_input_text_dialog(this);">文本</a></span>
+                                <span class="action"><a href="javascript:;" onclick="javascript:show_input_single_dialog(this);">单条图文</a></span>
+                                <span class="action remove"><a href="javascript:;" onclick="javascript:remove_word(this);">删除</a></span>
+                            </div>
+                        </div>
+                    </div>
+                    {% end %}
+                    {% end %}
                 </div>
                 <div id="word-save-btn" class="btn btn-primary submit-btn">
                     <span>保 存</span>
