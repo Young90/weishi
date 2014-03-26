@@ -479,6 +479,11 @@ class AutoKeywordManager(Base):
         self.db.execute('insert into t_auto_keyword (word, re_type, re_img_art_id, aid) values (%s, %s, %s, %s)',
                         word, 'single', re_img_art_id, aid)
 
+    def save_image_art_group_auto_keyword(self, word, re_img_art_id, aid):
+        """多条图文消息回复"""
+        self.db.execute('insert into t_auto_keyword (word, re_type, re_img_art_id, aid) values (%s, %s, %s, %s)',
+                        word, 'multi', re_img_art_id, aid)
+
     def list_auto(self, aid):
         """查询关键字回复列表"""
         return self.db.query('select * from t_auto_keyword where aid = %s order by id desc', aid)

@@ -335,9 +335,12 @@ class AutoResponseMessageHandler(AccountBaseHandler):
                 self.auto_keyword_manager.save_content_auto_keyword(_word, _value, self.account.aid)
             elif _type == 'single':
                 self.auto_keyword_manager.save_image_art_auto_keyword(_word, int(_value), self.account.aid)
+            elif _type == 'multi':
+                self.auto_keyword_manager.save_image_art_group_auto_keyword(_word, int(_value), self.account.aid)
         result['r'] = 1
         self.write(result)
         self.finish()
+
 
 class UploadImageHandler(AccountBaseHandler):
     """上传图片接口，返回图片的url"""

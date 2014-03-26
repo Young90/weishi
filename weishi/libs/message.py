@@ -67,6 +67,18 @@ def _process_text_message(account, message, path):
         elif auto.re_type == 'single':
             image_article = image_article_manager.get_image_article_by_id(auto.re_img_art_id)
             return message_util.image_article_group_to_message([image_article], message, path, account.wei_account)
+        elif auto.re_type == 'multi':
+            image_article_group = image_article_manager.get_multi_image_article_by_id(auto.re_img_art_id)
+            if not image_article_group:
+                return None
+            id_list = [image_article_group.id1, image_article_group.id2, image_article_group.id3, image_article_group.id4,
+                       image_article_group.id5]
+            id_list = filter(lambda a: a != 0, id_list)
+            article_list = []
+            for _id in id_list:
+                article_list.append(image_article_manager.get_image_article_by_id(_id))
+            print article_list
+            return message_util.image_article_group_to_message(article_list, message, path, account.wei_account)
 
 
 def _process_image_message(aid, message):
@@ -118,7 +130,6 @@ def _process_subscribe_event(account, message, path):
         article_list = []
         for _id in id_list:
             article_list.append(image_article_manager.get_image_article_by_id(_id))
-        print article_list
         return message_util.image_article_group_to_message(article_list, message, path, account.wei_account)
 
 

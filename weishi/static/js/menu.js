@@ -236,6 +236,7 @@ function add_reply() {
         '<span class="action black">回复内容 </span>' +
         '<span class="action"><a href="javascript:;" onclick="javascript:show_input_text_dialog(this);">文本</a></span>' +
         '<span class="action"><a href="javascript:;" onclick="javascript:show_input_single_dialog(this);">单条图文</a></span>' +
+        '<span class="action"><a href="javascript:;" onclick="javascript:show_input_multi_dialog(this);">多条图文</a></span>' +
         '<span class="action remove"><a href="javascript:;" onclick="javascript:remove_word(this);">删除</a></span>' +
         '</div>' +
         ' </div>' +
