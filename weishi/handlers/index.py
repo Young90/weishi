@@ -13,7 +13,7 @@ from weishi.libs import key_util
 
 class IndexHandler(RequestHandler):
     def get(self):
-        self.render('account/article.html')
+        self.render('event/shake.html')
 
 
 class FormHandler(BaseHandler):

@@ -18,11 +18,13 @@ class ImageArticleHandler(AccountBaseHandler):
     def get(self, aid):
         start = self.get_argument('start', 0)
         page_size = 10
-        total = 5
-        total_page = 1
+        total = self.image_article_manager.get_image_article_count_by_aid(self.account.aid)
+        total_page = math.ceil(float(total) / page_size)
         articles = self.image_article_manager.list_single_image_article(aid, start, page_size)
+        print 'total : %s' % total
+        print 'total_page : %s' % total_page
         self.render('account/material_image_article_single.html', account=self.account, total=total, start=int(start),
-                    total_page=total_page, page_size=page_size, prefix='/account/%s/image_article_single' % aid,
+                    total_page=total_page, page_size=page_size, prefix='/account/%s/image_article/single' % aid,
                     index='material', top='image_article', articles=articles)
 
 
@@ -32,11 +34,11 @@ class ImageArticleGroupHandler(AccountBaseHandler):
     def get(self, aid):
         start = self.get_argument('start', 0)
         page_size = 10
-        total = 5
-        total_page = 1
+        total = self.image_article_manager.get_image_article_group_count_by_aid(self.account.aid)
+        total_page = math.ceil(float(total) / page_size)
         articles = self.image_article_manager.list_multi_image_article(aid, start, page_size)
         self.render('account/material_image_article_multi.html', account=self.account, total=total, start=int(start),
-                    total_page=total_page, page_size=page_size, prefix='/account/%s/image_article_multi' % aid,
+                    total_page=total_page, page_size=page_size, prefix='/account/%s/image_article/multi' % aid,
                     index='material', top='image_article', articles=articles)
 
 

@@ -293,10 +293,18 @@ class ImageArticleManager(Base):
         return self.db.query('select * from t_image_article where aid = %s and type = 0 order by id desc limit %s, %s',
                              aid, int(start), int(end))
 
+    def get_image_article_count_by_aid(self, aid):
+        """"获取单条图文总数量"""
+        return self.db.get('select count(*) as count from t_image_article where aid = %s and type = 0', aid)['count']
+
     def list_group_image_article(self, aid, start, end):
         """获取多条图文列表"""
         return self.db.query('select * from t_image_article_group where aid = %s order by id desc limit %s, %s',
                              aid, int(start), int(end))
+
+    def get_image_article_group_count_by_aid(self, aid):
+        """"获取多条图文总数量"""
+        return self.db.get('select count(*) as count from t_image_article_group where aid = %s', aid)['count']
 
     def save_single_image_article(self, title, summary, link, image, aid):
         """保存到条图文"""
