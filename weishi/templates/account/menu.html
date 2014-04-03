@@ -29,8 +29,8 @@
                             <div class="menu-item">
                                 <div class="main-container" data-type="" data-value="">
                                     <div class="input-container">
-                                        <input type="text" name="main" class="form-control input-lg main"
-                                               placeholder="一级菜单名称">
+                                        <span class="action remove"><a href="javascript:;" onclick="javascript:remove_main_menu(this);">删除</a></span>
+                                        <input type="text" name="main" class="form-control input-lg main" placeholder="一级菜单名称">
                                         <span class="result"></span>
                                     </div>
                                     <div class="op">
@@ -54,6 +54,7 @@
                                     <div class="menu-item">
                                         <div class="main-container" data-type="button" data-value="">
                                             <div class="input-container">
+                                                <span class="action remove"><a href="javascript:;" onclick="javascript:remove_main_menu(this);">删除</a></span>
                                                 <input type="text" name="main" class="form-control input-lg main"
                                                      value="{{item['name']}}"  placeholder="一级菜单名称">
                                                 <span class="result"></span>
@@ -104,6 +105,7 @@
                                     <div class="menu-item">
                                         <div class="main-container" data-type="{{item['type']}}" data-value="{{item['value']}}">
                                             <div class="input-container">
+                                                <span class="action remove"><a href="javascript:;" onclick="javascript:remove_main_menu(this);">删除</a></span>
                                                 <input type="text" name="main" class="form-control input-lg main"
                                                      value="{{item['name']}}"  placeholder="一级菜单名称">
                                                 {% if item['type']=='text' %}

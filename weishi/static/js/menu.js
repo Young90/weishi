@@ -12,6 +12,7 @@ function add_main_menu() {
         '<div class="menu-item">' +
         '<div class="main-container" data-type="" data-value="">' +
         '<div class="input-container">' +
+        '<span class="action remove"><a href="javascript:;" onclick="javascript:remove_main_menu(this);">删除</a></span>' +
         '<input type="text" name="main" class="form-control input-lg main" placeholder="一级菜单名称">' +
         '<span class="result"></span>' +
         '</div>' +
@@ -62,6 +63,15 @@ function add_sub_menu(obj) {
         '</div>';
     var main = $(container).find('.menu-item');
     $(main).append(sub_html);
+}
+
+function remove_main_menu(obj) {
+    var main_container = $(obj).parents('.edit-menu');
+    ModalManager.show_confirm_modal('所有的二级菜单将被移除，确定吗？', function(result) {
+       if (result) {
+           main_container.remove();
+       }
+    });
 }
 
 function remove_sub_menu(obj) {

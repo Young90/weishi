@@ -221,6 +221,28 @@ class ImageArticleGroupPreviewHandler(BaseHandler):
         self.render('article/image_article_group_preview.html', main_article=main_article, article_list=article_list)
 
 
+class DeleteMaterialHandler(AccountBaseHandler):
+    """删除素材的handler"""
+
+    def post(self, *args, **kwargs):
+        result = {'r': 1}
+        _type = self.get_argument('type', None)
+        _id = self.get_argument('id', 0)
+        if not _type or not _id:
+            result['r'] = 0
+            result['error'] = '参数不正确'
+            self.write(result)
+            self.finish()
+            return
+        if _type == 'single':
+            self.image_article_manager.remove_single_image_article(_id, self.account.aid)
+        if _type == 'multi':
+            self.image_article_manager.remove_image_article_grouo(_id, self.account.aid)
+        self.write(result)
+        self.finish()
+        return
+
+
 handlers = [
     (r'/image_article/([^/]+)/preview', ImageArticlePreviewHandler),
     (r'/image_article_group/([^/]+)/preview', ImageArticleGroupPreviewHandler),
@@ -231,4 +253,5 @@ handlers = [
     (r'/account/([^/]+)/article', ArticleHandler),
     (r'/account/([^/]+)/article/new', NewArticleHandler),
     (r'/account/([^/]+)/article/([^/]+)/edit', EditArticleHandler),
+    (r'/account/([^/]+)/delete_material', DeleteMaterialHandler),
 ]

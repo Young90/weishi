@@ -226,3 +226,26 @@ $('#multi-save-btn').on('click', function (e) {
         }
     })
 });
+
+function delete_material(type, id) {
+    // 删除图文消息
+    var aid = $.cookie('aid');
+    ModalManager.show_confirm_modal('确定删除？', function(result) {
+        if (!result) {
+            return;
+        }
+        $.ajax({
+            type:'POST',
+            url: '/account/' + aid + '/delete_material',
+            data: {type: type, id: id},
+            success: function(data) {
+                if (data.r) {
+                    window.location.reload();
+                } else {
+                    ModalManager.show_failure_modal(data.error);
+                }
+            }
+        })
+    })
+
+}

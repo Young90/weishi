@@ -38,9 +38,7 @@
                                     {{article.title}}</a></td>
                                 <td class="date">{{article.date}}</td>
                                 <td class="op">
-                                    <a href="#">编辑</a>
-                                    <a href="#">群发</a>
-                                    <a href="#">删除</a>
+                                    <a href="javascript:;" onclick="javascript:delete_material('single', '{{article.id}}')">删除</a>
                                 </td>
                             </tr>
                             {% end %}
@@ -53,5 +51,10 @@
         {% include left_nav.html %}
     </div>
 </div>
+<script src="http://cdn.staticfile.org/jquery/2.1.1-beta1/jquery.min.js"></script>
+<script src="http://cdn.staticfile.org/jquery-cookie/1.4.0/jquery.cookie.min.js"></script>
+<script src="http://cdn.staticfile.org/twitter-bootstrap/3.1.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="{{static_url('js/global.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/material.js')}}"></script>
 </body>
 </html>

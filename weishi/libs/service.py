@@ -330,6 +330,15 @@ class ImageArticleManager(Base):
         """根据id获取image_article_group"""
         return self.db.get('select * from t_image_article_group where id = %s', _id)
 
+    def remove_single_image_article(self, _id, aid):
+        """根据id删除image_article"""
+        self.db.execute('delete from t_image_article where id = %s and aid = %s', int(_id), aid)
+
+    def remove_image_article_grouo(self, _id, aid):
+        """根据id删除image_article_group"""
+        self.db.execute('delete from t_image_article where group_id = %s and aid = %s', int(_id), aid)
+        self.db.execute('delete from t_image_article_group where id = %s and aid = %s', int(_id), aid)
+
 
 class AutoManager(Base):
     def get_auto_by_id(self, _id):

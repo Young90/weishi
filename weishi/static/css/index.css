@@ -534,11 +534,11 @@ span.add-on {
 }
 
 .input-container span.result {
-    display: block;
     width: 300px;
     padding-left: 10px;
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .menu-item input.main {
