@@ -16,7 +16,6 @@
         <div class="main">
             <div class="main-inner">
                 <div class="new-edit">
-                    {% if not account.app_id or not account.app_secret %}
                     <div class="alert alert-success">复制以下信息到微信管理后台</div>
                     <div class="input-group input-group-lg account-info">
                         <span class="input-group-addon add-on">接口URL</span>
@@ -28,14 +27,19 @@
                     </div>
                     <div class="alert alert-danger" style="margin-top: 10px;">微信后台校验成功后，填入AppId和AppSecret，点击保存
                         <br>如果后台没有这些信息，说明微信账号是没有通过认证的订阅号
+                        <br>请保证以下信息与微信后台一致，否则可能导致发送消息不成功
                     </div>
                     <div class="input-group input-group-lg account-info">
                         <span class="input-group-addon add-on">AppId</span>
-                        <input type="text" name="app_id" class="form-control" placeholder="AppId">
+                        <input type="text" name="app_id" value="{{account.app_id}}" class="form-control" placeholder="AppId">
                     </div>
                     <div class="input-group input-group-lg account-info">
                         <span class="input-group-addon add-on">AppSecret</span>
-                        <input type="text" name="app_secret" class="form-control" placeholder="AppSecret">
+                        <input type="text" name="app_secret" value="{{account.app_secret}}" class="form-control" placeholder="AppSecret">
+                    </div>
+                    <div class="input-group input-group-lg account-info">
+                        <span class="input-group-addon add-on">微信号</span>
+                        <input type="text" class="form-control" value="{{account.wei_account}}" name="wei_account">
                     </div>
                     <div class="input-group input-group-lg" style="margin-top: 10px;">
                         <div>
@@ -44,35 +48,14 @@
                             </div>
                         </div>
                     </div>
-                    {% else %}
-                    <input type="hidden" name="aid" value="{{account.aid}}">
-                    <div class="alert alert-success">复制以下信息到微信管理后台</div>
-                    <div class="input-group input-group-lg account-info">
-                        <span class="input-group-addon add-on">接口URL</span>
-                        <input type="text" class="form-control" value="http://wsmt.sinaapp.com/api/{{account.aid}}">
-                    </div>
-                    <div class="input-group input-group-lg account-info">
-                        <span class="input-group-addon add-on">Token</span>
-                        <input type="text" class="form-control" value="{{account.token}}">
-                    </div>
-                    <div class="alert alert-success" style="margin-top: 10px;">app_id和app_secret</div>
-                    <div class="input-group input-group-lg account-info">
-                        <span class="input-group-addon add-on">AppId</span>
-                        <input type="text" name="app_id" class="form-control" placeholder="AppId" value="{{account.app_id}}">
-                    </div>
-                    <div class="input-group input-group-lg account-info">
-                        <span class="input-group-addon add-on">AppSecret</span>
-                        <input type="text" name="app_secret" class="form-control" placeholder="AppSecret" value="{{account.app_secret}}">
-                    </div>
-                    {% end %}
                 </div>
             </div>
         </div>
         {% include left_nav.html %}
     </div>
 </div>
-<script src="{{static_url('js/jquery-1.10.2.min.js')}}"></script>
-<script src="{{static_url('js/bootstrap.min.js')}}"></script>
+<script src="http://cdn.staticfile.org/jquery/2.1.0/jquery.min.js"></script>
+<script src="http://cdn.staticfile.org/twitter-bootstrap/3.1.1/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="{{static_url('js/global.js')}}"></script>
 <script type="text/javascript" src="{{static_url('js/accounts.js')}}"></script>
 </body>

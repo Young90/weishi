@@ -59,14 +59,16 @@ $('#app-save-btn').on('click', function () {
     button.attr('disabled', 'disabled');
     var app_id = $('input[name="app_id"]').val();
     var app_secret = $('input[name="app_secret"]').val();
-    if (app_id == '' || app_secret == '') {
+    var wei_account = $('input[name="wei_account"]').val();
+    if (app_id == '' || app_secret == '' || wei_account == '') {
         button.removeAttr('disabled');
         ModalManager.show_failure_modal('信息没有填入！');
         return
     }
     var data = {
         'app_id': app_id,
-        'app_secret': app_secret
+        'app_secret': app_secret,
+        'wei_account': wei_account
     }
     $.ajax({
         type: 'POST',

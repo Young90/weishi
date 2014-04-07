@@ -57,9 +57,10 @@ class AccountManager(Base):
                         "values (NOW(), %s, %s, %s, %s, %s, %s, %s)", wei_id, wei_name, wei_account, token, aid, avatar,
                         user_id)
 
-    def update_account_app_info(self, aid, app_id, app_secret):
+    def update_account_app_info(self, aid, app_id, app_secret, wei_account):
         """更新账号app信息"""
-        self.db.execute('update t_account set app_id = %s, app_secret = %s where aid = %s', app_id, app_secret, aid)
+        self.db.execute('update t_account set app_id = %s, app_secret = %s, wei_account = %s where aid = %s',
+                        app_id, app_secret, wei_account, aid)
 
     def delete_account(self, aid, user_id):
         """删除公众账号"""

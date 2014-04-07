@@ -103,13 +103,14 @@ class UpdateAppHandler(FrontBaseHandler):
     def post(self, *args, **kwargs):
         """更新账号的app_id和app_secret"""
         aid = self.get_cookie('aid', '')
-        app_id = self.get_argument('app_id', '')
-        app_secret = self.get_argument('app_secret', '')
+        app_id = self.get_argument('app_id', None)
+        app_secret = self.get_argument('app_secret', None)
         account = self.account_manager.get_account_by_aid(aid)
+        wei_account = self.get_argument('wei_account', None)
         if not account or account.user_id != self.current_user.id:
             result = {'r': 0, 'error': '账号错误'}
             self.write(result)
-        self.account_manager.update_account_app_info(aid, app_id, app_secret)
+        self.account_manager.update_account_app_info(aid, app_id, app_secret, wei_account)
         result = {'r': 1}
         self.write(result)
 
