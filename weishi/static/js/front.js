@@ -61,6 +61,7 @@ function submit_reg_form(n, m, a) {
 
 function add_impact(id, name) {
     var link = window.location.href;
+    var aid = $('input[name="aid"]').val();
     var data = {
         'id': id
     }
@@ -70,7 +71,7 @@ function add_impact(id, name) {
         url: link,
         success: function (data) {
             if (data.r) {
-                document.cookie = 'i_' + aid + '=' + escape(input);
+                document.cookie = 'i_' + aid + '=' + escape(name);
                 ModalManager.show_success_modal('添加成功！');
                 setTimeout(function () {
                     window.location.reload();

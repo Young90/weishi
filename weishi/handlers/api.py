@@ -87,7 +87,6 @@ class APIHandler(APIBaseHandler):
         if not message:
             raise HTTPError(404)
         result = message_util.process_message(account, message, self.get_template_path())
-        print 'rsult _____ %s ' % result
         if result:
             self.write(result)
 

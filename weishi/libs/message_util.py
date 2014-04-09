@@ -9,7 +9,8 @@ def image_article_group_to_message(article_list, from_message, path, wei_account
     """将图文消息转换为微信需要的数据格式"""
     items = []
     for article in article_list:
-        item = {'title': article.title, 'summary': article.summary, 'thumb': article.image, 'url': article.link}
+        item = {'title': article.title, 'summary': '' if not article.summary else article.summary,
+                'thumb': article.image, 'url': article.link}
         items.append(item)
     result = {'ToUserName': from_message['FromUserName'], 'FromUserName': wei_account,
               'CreateTime': int(time.time()), 'count': len(items), 'items': items}

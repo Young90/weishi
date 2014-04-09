@@ -136,7 +136,10 @@ class ImpactHandler(BaseHandler):
         total = self.impact_manager.total_impact_num(aid)
         name = self.get_cookie('i_%s' % aid, None)
         if name:
-            name = "".join([(len(i) > 0 and unichr(int(i, 16)) or "") for i in name.split('%u')])
+            try:
+                name = "".join([(len(i) > 0 and unichr(int(i, 16)) or "") for i in name.split('%u')])
+            except ValueError:
+                name = None
         self.render('front/impact.html', impacts=impacts, total=total, name=name, aid=aid)
 
     def post(self, *args, **kwargs):

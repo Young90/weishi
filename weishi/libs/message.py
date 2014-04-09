@@ -166,5 +166,7 @@ def _process_menu_click_event(account, message, path):
         id_list = [image_article_group.id1, image_article_group.id2, image_article_group.id3, image_article_group.id4,
                    image_article_group.id5]
         id_list = filter(lambda a: a != 0, id_list)
-        article_list = image_article_manager.get_image_article_by_id_list(','.join(str(x) for x in id_list))
+        print id_list
+        article_list = image_article_manager.get_image_article_by_id_list(id_list)
+        print 'article list ---------- %s ' % article_list
         return message_util.image_article_group_to_message(article_list, message, path, account.wei_account)

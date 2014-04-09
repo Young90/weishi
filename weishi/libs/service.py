@@ -287,7 +287,10 @@ class ImageArticleManager(Base):
 
     def get_image_article_by_id_list(self, id_list):
         """根据多个id获取图文消息"""
-        return self.db.query('select * from t_image_article where id in (%s)', id_list)
+        rows = []
+        for _id in id_list:
+            rows.append(self.db.get('select * from t_image_article where id = %s', _id))
+        return rows
 
     def list_single_image_article(self, aid, start, end):
         """获取单条图文列表"""
