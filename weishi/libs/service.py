@@ -41,6 +41,10 @@ class UserManager(Base):
             return True
         return False
 
+    def get_user_by_id(self, _id):
+        """根据id获取用户"""
+        return self.db.get('select * from t_user where id = %s', int(_id))
+
     def get_user_by_email(self, email):
         """根据邮箱获取用户"""
         return self.db.get('select * from t_user where email = %s', email)
@@ -49,8 +53,17 @@ class UserManager(Base):
         """根据用户名获取用户"""
         return self.db.get('select * from t_user where username = %s', username)
 
+    def list_users(self, start, end):
+        """列出用户"""
+        return self.db.query('select * from t_user order by id limit %s, %s', int(start), int(end))
+
 
 class AccountManager(Base):
+
+    def list_accounts(self, start, end):
+        """列出所有的微信账号"""
+        return self.db.query('select * from t_account limit %s, %s', start, end)
+
     def create_account(self, wei_id, wei_name, wei_account, token, aid, avatar, user_id):
         """添加微信公众账号"""
         self.db.execute("insert into t_account (date, wei_id, wei_name, wei_account, token, aid, avatar, user_id) "
@@ -65,6 +78,14 @@ class AccountManager(Base):
     def delete_account(self, aid, user_id):
         """删除公众账号"""
         self.db.execute('delete from t_account where aid = %s and user_id = %s', aid, user_id)
+
+    def change_account_user(self, aid, user_id):
+        """修改公众号的用户"""
+        self.db.execute('update t_account set user_id = %s where aid = %s', int(user_id), aid)
+
+    def get_account_by_id(self, _id):
+        """根据id获取公众账号"""
+        return self.db.get('select * from t_account where id = %s', _id)
 
     def get_account_by_aid(self, aid):
         """根据aid获取公众账号"""

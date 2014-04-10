@@ -359,6 +359,10 @@ span.comment {
     background-color: #f5f5f5;
 }
 
+table.fans td.id {
+    width: 10px;
+}
+
 table.fans td.avatar {
     width: 60px;
 }

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>公众号列表 - 系统管理</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="shortcut icon" href="{{static_url('img/favicon.ico')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.adjust.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/index.css')}}">
+</head>
+<body>
+{% include ../nav.html %}
+<div class="container">
+    <div class="content">
+        <div class="main">
+            <div class="main-inner">
+                <div class="fans">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">公众账号列表</div>
+                        <table class="table fans">
+                            <thead>
+                            <tr>
+                                <th>id</th>
+                                <th>添加时间</th>
+                                <th>头像</th>
+                                <th>名称</th>
+                                <th>微信号</th>
+                                <th>所属用户</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for account in accounts %}
+                            <tr>
+                                <td class="id">{{account.id}}</td>
+                                <td class="time">{{account.date}}</td>
+                                <td class="avatar">
+                                    {% if account.avatar %}
+                                    <img src="{{account.avatar}}?imageView/1/w/50/h/50" width="50" height="50" />
+                                    {% else %}
+                                    <img src="{{static_url('img/default-logo-200.png')}}" width="50" height="50"/>
+                                    {% end %}
+                                </td>
+                                <td class="nickname">{{account.wei_name}}</td>
+                                <td class="nickname">{{account.wei_account}}</td>
+                                <td class="country">{{account.user_id}}</td>
+                                <td><a href="javascript:;" onclick="javascript:change_user('{{account.id}}');">更改用户</a></td>
+                            </tr>
+                            {% end %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% include left_nav.html %}
+    </div>
+</div>
+<script src="http://cdn.staticfile.org/jquery/2.1.0/jquery.min.js"></script>
+<script src="http://cdn.staticfile.org/twitter-bootstrap/3.1.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="{{static_url('js/global.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/admin.js')}}"></script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+<div class="sidebar">
+    <ul class="nav nav-sidebar">
+        {% if index=='users' %}
+        <li class="active"><a href="/admin">用户管理</a></li>
+        {% else %}
+        <li><a href="/admin">用户管理</a></li>
+        {% end %}
+        {% if index=='new_user' %}
+        <li class="active"><a href="/admin/new_user">新增用户</a></li>
+        {% else %}
+        <li><a href="/admin/new_user">新增用户</a></li>
+        {% end %}
+        {% if index=='accounts' %}
+        <li class="active"><a href="/admin/accounts">微信账号管理</a></li>
+        {% else %}
+        <li><a href="/admin/accounts">微信账号管理</a></li>
+        {% end %}
+    </ul>
+</div>

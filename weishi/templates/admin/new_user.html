@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>新增用户 - 系统管理</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="shortcut icon" href="{{static_url('img/favicon.ico')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.adjust.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/index.css')}}">
+</head>
+<body>
+{% include ../nav.html %}
+<div class="container">
+    <div class="content">
+        <div class="main">
+            <div class="main-inner">
+                <div class="new-edit">
+                    <div class="input-group card-create">
+                        用户名 <input type="text" name="username" class="form-control phone-input"placeholder="全网唯一"><br>
+                        邮&nbsp;&nbsp;&nbsp;&nbsp;箱 <input type="text" name="email" class="form-control phone-input"placeholder="全网唯一"><br>
+                        手机号 <input type="text" name="phone" class="form-control phone-input"placeholder="选填"><br>
+                        密&nbsp;&nbsp;&nbsp;&nbsp;码 <input type="text" name="password" class="form-control phone-input"placeholder="请记录密码，尽量不要使用简单密码"><br>
+                    </div>
+                    <div class="btn btn-primary submit-btn" onclick="javascript:save_user();">
+                        <span>创 建</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% include left_nav.html %}
+    </div>
+</div>
+<script src="http://cdn.staticfile.org/jquery/2.1.0/jquery.min.js"></script>
+<script src="http://cdn.staticfile.org/twitter-bootstrap/3.1.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="{{static_url('js/global.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/admin.js')}}"></script>
+</body>
+</html>

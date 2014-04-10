@@ -12,7 +12,11 @@
     <body>
         <div class="index-top-nav">
             <a href="/" class="top-left-logo">weishi 微世</a>
-            <p class="rt">{{ current_user.username }}&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;<a href="/logout">退出</a></p>
+            <p class="rt">{{ current_user.username }}&nbsp;&nbsp;&nbsp;|
+                {% if current_user.role==1 %}
+                &nbsp;&nbsp;&nbsp;<a href="/admin">管理</a>&nbsp;&nbsp;&nbsp;|
+                {% end %}
+                &nbsp;&nbsp;&nbsp;<a href="/logout">退出</a></p>
         </div>
         <div class="wx-account-container">
             <div class="head">
@@ -31,9 +35,11 @@
                 </a>
                 {% end %}
                 {% end %}
+                {% if current_user.role==1 %}
                 <a class="wx-account" href="/accounts">
                     <div class="add">添加微信公众账号</div>
                 </a>
+                {% end %}
             </div>
         </div>
         <script src="http://cdn.staticfile.org/jquery/2.1.0/jquery.min.js"></script>
