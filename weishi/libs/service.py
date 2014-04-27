@@ -59,7 +59,6 @@ class UserManager(Base):
 
 
 class AccountManager(Base):
-
     def list_accounts(self, start, end):
         """列出所有的微信账号"""
         return self.db.query('select * from t_account limit %s, %s', start, end)
@@ -102,10 +101,34 @@ class AccountManager(Base):
 
 
 class FansManager(Base):
-    def get_fans(self, aid, start, end):
+    def get_fans(self, aid, group_id, start, end):
         """获取账号的粉丝"""
+        if group_id:
+            return self.db.query('select * from t_fans where aid = %s and group_id = %s order by id desc limit %s, %s',
+                                 aid, group_id, int(start), int(end))
         return self.db.query('select * from t_fans where aid = %s order by id desc limit %s, %s', aid, int(start),
                              int(end))
+
+    def get_fans_group_by_id(self, aid, _id):
+        """根据id获取分组"""
+        return self.db.get('select * from t_fans_group where aid = %s and id = %s', aid, _id)
+
+    def get_fans_group_by_name(self, aid, name):
+        """根据name获取分组"""
+        print name
+        return self.db.get('select * from t_fans_group where aid = %s and name = %s', aid, name)
+
+    def new_fans_group(self, aid, name):
+        """新建fans分组"""
+        return self.db.execute('insert into t_fans_group (name, aid) values (%s, %s)', name, aid)
+
+    def change_fans_group(self, fans_id, group):
+        """修改fans分组"""
+        self.db.execute('update t_fans set group_id = %s, group_name = %s where id = %s', group.id, group.name, fans_id)
+
+    def get_fans_group(self, aid):
+        """获取账号所有的粉丝分组"""
+        return self.db.query('select * from t_fans_group where aid = %s', aid)
 
     def get_fans_by_id(self, fans_id):
         """根据id获取粉丝对象"""
@@ -115,8 +138,11 @@ class FansManager(Base):
         """根据openid获取粉丝"""
         return self.db.get('select * from t_fans where openid = %s limit 1', openid)
 
-    def get_fans_count(self, aid):
+    def get_fans_count(self, aid, group_id):
         """获取粉丝数量"""
+        if group_id:
+            return self.db.get('select count(*) as count from t_fans where aid = %s and group_id = %s',
+                               aid, group_id)['count']
         return self.db.get('select count(*) as count from t_fans where aid = %s', aid)['count']
 
     def save_single_fans(self, user, aid):
@@ -511,20 +537,22 @@ class ImpactManager(Base):
 class AutoKeywordManager(Base):
     """关键字回复管理"""
 
-    def save_content_auto_keyword(self, word, re_content, aid):
+    def save_content_auto_keyword(self, word, re_content, aid, wild):
         """文本回复"""
-        self.db.execute('insert into t_auto_keyword (word, re_type, re_content, aid) values (%s, %s, %s, %s)',
-                        word, 'text', re_content, aid)
+        self.db.execute('insert into t_auto_keyword (word, re_type, re_content, aid, wild) values (%s, %s, %s, %s, %s)',
+                        word, 'text', re_content, aid, wild)
 
-    def save_image_art_auto_keyword(self, word, re_img_art_id, aid):
+    def save_image_art_auto_keyword(self, word, re_img_art_id, aid, wild):
         """图文消息回复"""
-        self.db.execute('insert into t_auto_keyword (word, re_type, re_img_art_id, aid) values (%s, %s, %s, %s)',
-                        word, 'single', re_img_art_id, aid)
+        self.db.execute(
+            'insert into t_auto_keyword (word, re_type, re_img_art_id, aid, wild) values (%s, %s, %s, %s, %s)',
+            word, 'single', re_img_art_id, aid, wild)
 
-    def save_image_art_group_auto_keyword(self, word, re_img_art_id, aid):
+    def save_image_art_group_auto_keyword(self, word, re_img_art_id, aid, wild):
         """多条图文消息回复"""
-        self.db.execute('insert into t_auto_keyword (word, re_type, re_img_art_id, aid) values (%s, %s, %s, %s)',
-                        word, 'multi', re_img_art_id, aid)
+        self.db.execute(
+            'insert into t_auto_keyword (word, re_type, re_img_art_id, aid, wild) values (%s, %s, %s, %s, %s)',
+            word, 'multi', re_img_art_id, aid, wild)
 
     def list_auto(self, aid):
         """查询关键字回复列表"""
@@ -536,7 +564,12 @@ class AutoKeywordManager(Base):
 
     def get_auto_by_word(self, aid, word):
         """获取记录"""
-        _list = self.db.query('select * from t_auto_keyword where aid = %s and word = %s', aid, word)
+        _list = self.db.query('select * from t_auto_keyword where aid = %s and word = %s and wild = 0', aid, word)
         if _list:
             return _list[0]
         return None
+
+    def list_auto_by_wild(self, aid):
+        """获取所有模糊匹配的回复列表"""
+        _list = self.db.query('select * from t_auto_keyword where aid = %s and wild = 1 order by id desc', aid)
+        return _list

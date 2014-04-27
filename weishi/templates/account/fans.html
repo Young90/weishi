@@ -15,9 +15,21 @@
     <div class="content">
         <div class="main">
             <div class="main-inner">
+                <input type="hidden" name="aid" value="{{account.aid}}"/>
+                 <ul class="nav nav-pills">
+                    <li{% if not group_id %} class="disabled"{% end %}><a href="/account/{{account.aid}}/fans">所有粉丝</a></li>
+                     {% for _g in groups %}
+                     {% if int(group_id) == _g.id %}
+                    <li class="disabled"><a href="/account/{{account.aid}}/fans?group_id={{_g.id}}">{{_g.name}}</a></li>
+                     {% else %}
+                     <li><a href="/account/{{account.aid}}/fans?group_id={{_g.id}}">{{_g.name}}</a></li>
+                     {% end %}
+                     {% end %}
+                     <li><a href="javascript:;" id="new-fans-group">+新建分组</a></li>
+                </ul>
                 <div class="fans">
                     <div class="panel panel-default">
-                        <div class="panel-heading">粉丝列表</div>
+                        <div class="panel-heading">粉丝列表（总数：{{total}}）</div>
                         <table class="table fans">
                             <thead>
                             <tr>
@@ -41,7 +53,19 @@
                                 <td class="province">{{fan.province}}</td>
                                 <td class="city">{{fan.city}}</td>
                                 <td class="time">{{fan.subscribe_time}}</td>
-                                <td class="op"><a href="/account/{{account.aid}}/message/fans/{{fan.id}}">消息</a></td>
+                                <td class="op">
+                                    <a href="/account/{{account.aid}}/message/fans/{{fan.id}}">消息</a>
+                                    <div class="btn-group  btn-group-sm">
+                                      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                                        {% if fan.group_id==0 %}修改分组{% else %}{{fan.group_name}}{% end %} <span class="caret"></span>
+                                      </button>
+                                        <ul class="dropdown-menu" role="menu">
+                                            {% for g in groups %}
+                                            <li><a href="javascript:;" onclick="javascript:change_group('{{fan.id}}', '{{g.id}}');">{{g.name}}</a></li>
+                                            {% end %}
+                                      </ul>
+                                    </div>
+                                </td>
                             </tr>
                             {% end %}
                             </tbody>
@@ -54,5 +78,6 @@
         {% include left_nav.html %}
     </div>
 </div>
+{% include _js.html %}
 </body>
 </html>

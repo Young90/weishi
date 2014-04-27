@@ -60,7 +60,13 @@ def _process_text_message(account, message, path):
        2. 匹配有没有定义的回复，有则回复
     """
     message_manager.receive_text_message(message, account.aid)
-    auto = auto_keyword_manager.get_auto_by_word(account.aid, message['Content'])
+    content = message['Content']
+    auto = auto_keyword_manager.get_auto_by_word(account.aid, content)
+    if not auto:
+        _list = auto_keyword_manager.list_auto_by_wild(account.aid)
+        for _l in _list:
+            if _l.word in content:
+                auto = _l
     if auto:
         if auto.re_type == 'text':
             return message_util.text_response_to_message(auto.re_content, message, path, account.wei_account)
@@ -71,7 +77,8 @@ def _process_text_message(account, message, path):
             image_article_group = image_article_manager.get_multi_image_article_by_id(auto.re_img_art_id)
             if not image_article_group:
                 return None
-            id_list = [image_article_group.id1, image_article_group.id2, image_article_group.id3, image_article_group.id4,
+            id_list = [image_article_group.id1, image_article_group.id2, image_article_group.id3,
+                       image_article_group.id4,
                        image_article_group.id5]
             id_list = filter(lambda a: a != 0, id_list)
             article_list = []

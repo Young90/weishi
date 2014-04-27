@@ -20,6 +20,12 @@
                     <li class="active"><a href="/account/{{account.aid}}/auto/message">关键字回复</a></li>
                 </ul>
                 <div class="new-edit menu">
+                    <div class="alert alert-danger" style="margin-top: 10px;">
+                        完全匹配选中后，用户发来的消息必须完全符合才会回复<br>
+                        完全匹配没选中，如果用户发来的消息包含关键字就会回复<br>
+                        如果对同一个关键词添加了完全匹配和不完全匹配，则优先响应完全匹配<br>
+                        如果用户的消息包含两条以上的关键词，则优先响应后添加的
+                    </div>
                     <div class="add-main">
                         <a href="javascript:;" onclick="javascript:add_reply();">+添加关键词回复</a>
                     </div>
@@ -47,6 +53,7 @@
                             </div>
                         {% end %}
                             <div class="op">
+                                <span class="action black">完全匹配 </span><input type="checkbox" name="wild"{%if not auto.wild%} checked{%end%}>
                                 <span class="action black">回复内容 </span>
                                 <span class="action"><a href="javascript:;" onclick="javascript:show_input_text_dialog(this);">文本</a></span>
                                 <span class="action"><a href="javascript:;" onclick="javascript:show_input_single_dialog(this);">单条图文</a></span>

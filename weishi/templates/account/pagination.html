@@ -3,29 +3,29 @@
     {% if start==0 %}
     <li class="disabled"><a href="#">&laquo;</a></li>
     {% else %}
-    <li><a href="{{prefix}}?start={{start-page_size}}">&laquo;</a></li>
+    <li><a href="{{prefix}}start={{start-page_size}}">&laquo;</a></li>
     {% end %}
     {% if start>2*page_size %}
-    <li><a href="{{prefix}}?start={{start-page_size}}">{{start/page_size-2}}</a></li>
+    <li><a href="{{prefix}}start={{start-page_size}}">{{start/page_size-2}}</a></li>
     {% end %}
     {% if start>page_size %}
-    <li><a href="{{prefix}}?start={{start-page_size}}">{{start/page_size-1}}</a></li>
+    <li><a href="{{prefix}}start={{start-page_size}}">{{start/page_size-1}}</a></li>
     {% end %}
     {% if start>0 %}
-    <li><a href="{{prefix}}?start={{start-page_size}}">{{start/page_size}}</a></li>
+    <li><a href="{{prefix}}start={{start-page_size}}">{{start/page_size}}</a></li>
     {% end %}
-    <li class="active"><a href="{{prefix}}?start={{start}}">{{start/page_size+1}}</a></li>
+    <li class="active"><a href="{{prefix}}start={{start}}">{{start/page_size+1}}</a></li>
     {% if start+page_size < total %}
-    <li><a href="{{prefix}}?start={{start+page_size}}">{{start/page_size+2}}</a></li>
+    <li><a href="{{prefix}}start={{start+page_size}}">{{start/page_size+2}}</a></li>
     {% end %}
     {% if start+2*page_size < total %}
-    <li><a href="{{prefix}}?start={{start+2*page_size}}">{{start/page_size+3}}</a></li>
+    <li><a href="{{prefix}}start={{start+2*page_size}}">{{start/page_size+3}}</a></li>
     {% end %}
     {% if start+3*page_size < total %}
-    <li><a href="{{prefix}}?start={{start+3*page_size}}">{{start/page_size+4}}</a></li>
+    <li><a href="{{prefix}}start={{start+3*page_size}}">{{start/page_size+4}}</a></li>
     {% end %}
     {% if start+page_size < total %}
-    <li><a href="{{prefix}}?start={{start+page_size}}">&raquo;</a></li>
+    <li><a href="{{prefix}}start={{start+page_size}}">&raquo;</a></li>
     {% else %}
     <li class="disabled"><a href="#">&raquo;</a></li>
     {% end %}

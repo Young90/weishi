@@ -243,6 +243,7 @@ function add_reply() {
         '<span class="result"></span>' +
         '</div>' +
         '<div class="op">' +
+        '<span class="action black">完全匹配 </span><input type="checkbox" name="wild" checked>'+
         '<span class="action black">回复内容 </span>' +
         '<span class="action"><a href="javascript:;" onclick="javascript:show_input_text_dialog(this);">文本</a></span>' +
         '<span class="action"><a href="javascript:;" onclick="javascript:show_input_single_dialog(this);">单条图文</a></span>' +
@@ -274,13 +275,15 @@ $('#word-save-btn').on('click', function () {
         var word = $(container).find('input[name="word"]').val();
         var type = $(container).attr('data-type');
         var value = $(container).attr('data-value');
+        var wild = $(container).find('input[name=wild]').is(':checked')?0:1;
         if (word == '' || type == '' || value == '') {
             continue;
         }
         var p = {
             'word': word,
             'type': type,
-            'value': value
+            'value': value,
+            'wild': wild
         }
         params.push(p);
     }
@@ -392,4 +395,39 @@ function randomString(length) {
         str += chars[Math.floor(Math.random() * chars.length)];
     }
     return str;
+}
+
+
+$('#new-fans-group').click(function(){
+    ModalManager.show_input_modal('输入分组名称', 'input', function(input){
+       if (input == '') {
+         return false;
+       }
+        $.ajax({
+            type: 'POST',
+            url: '/account/' + $('input[name=aid]').val() + '/fans/group',
+            data: {name:input},
+            success: function(data) {
+                if (data.r) {
+                    var html = '<li><a href="/account/' + data.aid + '/fans?group_id=' + data.id + '">' + data.name +'</a></li>'
+                    $('#new-fans-group').parent().before(html);
+                } else {
+                    ModalManager.show_failure_modal(data.e);
+                }
+            }
+        })
+    });
+});
+
+function change_group(fans_id, group_id) {
+    $.ajax({
+        type: 'POST',
+        url: '/account/' + $('input[name=aid]').val() + '/fans',
+        data: {'fans_id': fans_id, 'group_id': group_id},
+        success: function(data) {
+            if (data.r) {
+                window.location.reload()
+            }
+        }
+    })
 }

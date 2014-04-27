@@ -85,13 +85,57 @@ class AccountFansHandler(AccountBaseHandler):
 
     def get(self, aid):
         start = self.get_argument('start', 0)
+        group_id = self.get_argument('group_id', 0)
+        groups = self.fans_manager.get_fans_group(aid)
         page_size = 10
-        fans = self.fans_manager.get_fans(aid, start, page_size)
-        total = self.fans_manager.get_fans_count(aid)
+        fans = self.fans_manager.get_fans(aid, group_id, start, page_size)
+        total = self.fans_manager.get_fans_count(aid, group_id)
         total_page = math.ceil(float(total) / page_size)
+        if group_id:
+            prefix = '/account/%s/fans?group_id=%s&' % (aid, group_id)
+        else:
+            prefix = '/account/%s/fans?' % aid
         self.render('account/fans.html', fans=fans, account=self.account, total=total,
-                    start=int(start), total_page=total_page, page_size=page_size, prefix='/account/%s/fans' % aid,
-                    index='fans')
+                    start=int(start), total_page=total_page, page_size=page_size, prefix=prefix,
+                    index='fans', groups=groups, group_id=group_id)
+
+    def post(self, *args, **kwargs):
+        """修改粉丝分组"""
+        aid = self.get_cookie('aid')
+        fans_id = self.get_argument('fans_id', 0)
+        group_id = self.get_argument('group_id', 0)
+        group = self.fans_manager.get_fans_group_by_id(aid, group_id)
+        fans = self.fans_manager.get_fans_by_id(fans_id)
+        if not fans or not group:
+            result = {'r': 0, 'e': u'参数不正确'}
+            self.write(result)
+            self.finish()
+            return
+        self.fans_manager.change_fans_group(fans_id, group)
+        result = {'r': 1}
+        self.write(result)
+        self.finish()
+        return
+
+
+class FansGroupHandler(AccountBaseHandler):
+    """新建粉丝分组"""
+
+    def post(self, *args, **kwargs):
+        aid = self.get_cookie('aid')
+        name = self.get_argument('name', None)
+        group = self.fans_manager.get_fans_group_by_name(aid, name)
+        if not name or group:
+            result = {'r': 0, 'e': u'名称错误或已经存在'}
+            self.write(result)
+            self.finish()
+            return
+        self.fans_manager.new_fans_group(aid, name)
+        group = self.fans_manager.get_fans_group_by_name(aid, name)
+        result = {'r': 1, 'name': group.name, 'id': int(group.id), 'aid': aid}
+        self.write(result)
+        self.finish()
+        return
 
 
 class MessageHandler(AccountBaseHandler):
@@ -331,12 +375,13 @@ class AutoResponseMessageHandler(AccountBaseHandler):
             _word = param['word']
             _type = param['type']
             _value = param['value']
+            _wild = param['wild']
             if _type == 'text':
-                self.auto_keyword_manager.save_content_auto_keyword(_word, _value, self.account.aid)
+                self.auto_keyword_manager.save_content_auto_keyword(_word, _value, self.account.aid, _wild)
             elif _type == 'single':
-                self.auto_keyword_manager.save_image_art_auto_keyword(_word, int(_value), self.account.aid)
+                self.auto_keyword_manager.save_image_art_auto_keyword(_word, int(_value), self.account.aid, _wild)
             elif _type == 'multi':
-                self.auto_keyword_manager.save_image_art_group_auto_keyword(_word, int(_value), self.account.aid)
+                self.auto_keyword_manager.save_image_art_group_auto_keyword(_word, int(_value), self.account.aid, _wild)
         result['r'] = 1
         self.write(result)
         self.finish()
@@ -500,6 +545,7 @@ class ImpactHandler(AccountBaseHandler):
 handlers = [
     (r'/account/([^/]+)', AccountIndexHandler),
     (r'/account/([^/]+)/fans', AccountFansHandler),
+    (r'/account/([^/]+)/fans/group', FansGroupHandler),
     (r'/account/([^/]+)/message/fans/([^/]+)', MessageHandler),
     (r'/account/([^/]+)/auto/follow', AutoResponseHandler),
     (r'/account/([^/]+)/auto/message', AutoResponseMessageHandler),
