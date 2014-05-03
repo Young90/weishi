@@ -33,7 +33,7 @@ class ImageUploadHandler(BaseHandler):
                 self.write(result)
                 return
             _file = {'url': url, 'name': file_name, 'size': len(file_body),
-                     'thumbnailUrl': url + '?imageView2/1/w/160/h/100'}
+                     'thumbnailUrl': url + '?imageView2/1/w/100/h/60'}
             files = [_file]
             result['files'] = files
             self.write(result)

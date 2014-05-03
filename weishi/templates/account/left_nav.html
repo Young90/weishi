@@ -40,6 +40,11 @@
         {% else %}
         <li><a href="/account/{{account.aid}}/fans">粉丝</a></li>
         {% end %}
+        {% if index=='site' %}
+        <li class="active"><a href="/account/{{account.aid}}/site">微官网</a></li>
+        {% else %}
+        <li><a href="/account/{{account.aid}}/site">微官网</a></li>
+        {% end %}
         {% if index=='message' %}
         <li class="active"><a href="#">历史消息</a></li>
         {% else %}

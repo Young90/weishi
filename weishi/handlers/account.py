@@ -13,7 +13,8 @@ from weishi.libs.image import list_all, upload
 from weishi.libs import wei_api
 from weishi.libs import key_util
 from weishi.libs.service import FansManager, MessageManager, ArticleManager, AccountManager, \
-    MenuManager, ImageArticleManager, AutoManager, FormManager, CardManager, ImpactManager, AutoKeywordManager
+    MenuManager, ImageArticleManager, AutoManager, FormManager, CardManager, ImpactManager, AutoKeywordManager, \
+    SiteManager
 
 
 class AccountBaseHandler(BaseHandler):
@@ -34,6 +35,7 @@ class AccountBaseHandler(BaseHandler):
     card_manager = None
     impact_manager = None
     auto_keyword_manager = None
+    site_manager = None
 
     @authenticated
     @asynchronous
@@ -49,6 +51,7 @@ class AccountBaseHandler(BaseHandler):
         self.card_manager = CardManager(self.db)
         self.impact_manager = ImpactManager(self.db)
         self.auto_keyword_manager = AutoKeywordManager(self.db)
+        self.site_manager = SiteManager(self.db)
 
         aid = self.request.uri.split('/')[2]
         if not aid:
@@ -542,6 +545,53 @@ class ImpactHandler(AccountBaseHandler):
         self.finish()
 
 
+class SiteHandler(AccountBaseHandler):
+    """微官网"""
+
+    def get(self, aid):
+        site = self.site_manager.get_site(aid)
+        site_ul = self.site_manager.get_site_ul(aid)
+        images = None
+        if site:
+            images = [site.img1 if site.img1 else None, site.img2 if site.img2 else None,
+                      site.img3 if site.img3 else None,
+                      site.img4 if site.img4 else None, site.img5 if site.img5 else None]
+        self.render('account/site.html', account=self.account, site=site, site_ul=site_ul, images=images, index='site')
+
+    def post(self, *args, **kwargs):
+        params = self.get_argument('params', None)
+        if not params:
+            result = {'r': 0, 'e': u'参数不正确'}
+            self.write(result)
+            self.finish()
+        ps = simplejson.loads(params, encoding='utf-8')
+        title = ps['title']
+        phone = ps['phone']
+        images = ps['images']
+        img1 = None
+        img2 = None
+        img3 = None
+        img4 = None
+        img5 = None
+        if images:
+            img1 = images[0] if len(images) > 0 else None
+            img2 = images[1] if len(images) > 1 else None
+            img3 = images[2] if len(images) > 2 else None
+            img4 = images[3] if len(images) > 3 else None
+            img5 = images[4] if len(images) > 4 else None
+        self.site_manager.initial(self.account.aid)
+        self.site_manager.save_site(aid=self.account.aid, title=title, phone=phone, img1=img1, img2=img2, img3=img3,
+                                    img4=img4, img5=img5)
+        links = ps['links']
+        if links:
+            for link in links:
+                self.site_manager.save_site_ul(aid=self.account.aid, name=link['name'], icon=link['icon'],
+                                               link=link['link'])
+        result = {'r': 1}
+        self.write(result)
+        self.finish()
+
+
 handlers = [
     (r'/account/([^/]+)', AccountIndexHandler),
     (r'/account/([^/]+)/fans', AccountFansHandler),
@@ -557,5 +607,6 @@ handlers = [
     (r'/account/([^/]+)/form/([^/]+)/data', FormDataHandler),
     (r'/account/([^/]+)/card', CardHandler),
     (r'/account/([^/]+)/impact', ImpactHandler),
+    (r'/account/([^/]+)/site', SiteHandler),
 ]
 

@@ -6,7 +6,7 @@ import urllib
 from tornado.web import RequestHandler
 from tornado.web import HTTPError
 
-from weishi.libs.service import FormManager, FansManager, CardManager, AccountManager, ImpactManager
+from weishi.libs.service import FormManager, FansManager, CardManager, AccountManager, ImpactManager, SiteManager
 from weishi.libs.handler import BaseHandler
 from weishi.libs import key_util
 
@@ -165,10 +165,28 @@ class GeoHandler(BaseHandler):
         self.render('front/geo.html')
 
 
+class SiteHandler(BaseHandler):
+    site_manager = None
+
+    def prepare(self):
+        self.site_manager = SiteManager(self.db)
+
+    def get(self, aid):
+        site = self.site_manager.get_site(aid)
+        openid = self.get_argument('i', '')
+        if not site:
+            raise HTTPError(404)
+        site_ul = self.site_manager.get_site_ul(aid)
+        images = [site.img1 if site.img1 else None, site.img2 if site.img2 else None, site.img3 if site.img3 else None,
+                  site.img4 if site.img4 else None, site.img5 if site.img5 else None]
+        self.render('front/site.html', site=site, site_ul=site_ul, images=images, openid=openid)
+
+
 handlers = [
     (r'/index/test', IndexHandler),
     (r'/form/([^/]+)', FormHandler),
     (r'/card/([^/]+)', CardHandler),
     (r'/impact/([^/]+)', ImpactHandler),
+    (r'/site/([^/]+)', SiteHandler),
     (r'/geo', GeoHandler),
 ]

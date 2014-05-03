@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>微官网 - {{account.wei_name}}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="shortcut icon" href="{{static_url('img/favicon.ico')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.adjust.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/index.css')}}">
+    <link rel="stylesheet" type="text/css" href="http://cdn.staticfile.org/font-awesome/4.0.3/css/font-awesome.css" media="all">
+</head>
+<body>
+{% include nav.html %}
+<div class="container">
+    <div class="content">
+        <div class="main">
+            <div class="main-inner">
+                <input type="hidden" name="aid" value="{{account.aid}}"/>
+                {% if site %}
+                 <div class="new-edit">
+                     <div class="alert alert-success"><a href="/site/{{account.aid}}" target="_blank">点击预览官网</a></div>
+                    <div class="new-item new-item-site">
+                        <div class="input-group edit-group">
+                            <span class="input-group-addon">网站标题</span>
+                            <input name="title" value="{{site.title}}" type="text" class="form-control" placeholder="标题字数少于10">
+                        </div>
+                        <div class="alert alert-warning">例如：微世传媒，显示在最上方</div>
+                        <div class="input-group edit-group">
+                            <span class="input-group-addon">商家电话</span>
+                            <input name="phone" value="{{site.phone}}" type="text" class="form-control" placeholder="输入正确的电话号码">
+                        </div>
+                        <div class="alert alert-warning">例如：400820820，用户点击后直接拨打，不能包含任何中文字符</div>
+                        <div class="btn btn-success fileinput-button">
+                            <i class="glyphicon glyphicon-plus"></i>
+                            <span>上传焦点图 <span class="tip">(最多上传五张)</span></span>
+                            <input id="fileupload" type="file" name="file" multiple>
+                        </div>
+                        <div class="alert alert-warning">按上传顺序显示，所有图片尺寸要保持一致，建议尺寸640x425，小于500Kb</div>
+                        <div class="progress progress-striped active">
+                            <div class="progress-bar progress-bar-success"></div>
+                        </div>
+                        <div class="files">
+                            {% for i in images %}
+                            {% if i %}
+                            <div class="img-container">
+                            <a class="img-result" href="{{i}}" target="_blank"><img src="{{i}}?imageView2/1/w/100/h/60"><p>图片</p></a>
+                            <p class="fa fa-minus-circle rm"></p>
+                            </div>
+                            {% end %}
+                            {% end %}
+                        </div>
+                        <div class="alert alert-warning">导航名称：显示的文字例如：联系我们
+                            <br>导航图标：显示在文字上方，可以到 <a href="http://fontawesome.io/icons/" target="_blank">这个链接</a>
+                            查看全部可用图标，将图标后缀粘贴在此，例如：电话对应的图标为fa-phone
+                            <br>导航链接：点击后跳转的地址，地址可以从文章列表获取
+                        </div>
+                        {% for u in site_ul %}
+                        <div class="input-group edit-group links">
+                            <p class="fa fa-minus-circle rm-n"></p>
+                            <input name="name" value="{{u.name}}" type="text" class="form-control site-ipt-s" placeholder="导航名称">
+                            <input name="icon" value="{{u.icon}}" type="text" class="form-control site-ipt-s" placeholder="导航图标">
+                            <input name="link" value="{{u.url}}" type="text" class="form-control site-ipt-l" placeholder="地址链接">
+                        </div>
+                        {% end %}
+                        <a href="javascript:;" onclick="add_site_link(this);">+添加一个导航</a>
+
+                    </div>
+
+                </div>
+                <div class="btn btn-primary submit-btn" onclick="save_site(this);">
+                    <span>保 存</span>
+                </div>
+            </div>
+            {% else %}
+            <div class="new-edit">
+                    <div class="new-item new-item-site">
+                        <div class="input-group edit-group">
+                            <span class="input-group-addon">网站标题</span>
+                            <input name="title" type="text" class="form-control" placeholder="标题字数少于10">
+                        </div>
+                        <div class="alert alert-warning">例如：微世传媒，显示在最上方</div>
+                        <div class="input-group edit-group">
+                            <span class="input-group-addon">商家电话</span>
+                            <input name="phone" type="text" class="form-control" placeholder="输入正确的电话号码">
+                        </div>
+                        <div class="alert alert-warning">例如：400820820，用户点击后直接拨打，不能包含任何中文字符</div>
+                        <div class="btn btn-success fileinput-button">
+                            <i class="glyphicon glyphicon-plus"></i>
+                            <span>上传焦点图 <span class="tip">(最多上传五张)</span></span>
+                            <input id="fileupload" type="file" name="file" multiple>
+                        </div>
+                        <div class="alert alert-warning">按上传顺序显示，所有图片尺寸要保持一致，建议尺寸640x425，小于500Kb</div>
+                        <div class="progress progress-striped active">
+                            <div class="progress-bar progress-bar-success"></div>
+                        </div>
+                        <div class="files"></div>
+                        <div class="alert alert-warning">导航名称：显示的文字例如：联系我们
+                            <br>导航图标：显示在文字上方，可以到 <a href="http://fontawesome.io/icons/" target="_blank">这个链接</a>
+                            查看全部可用图标，将图标后缀粘贴在此，例如：电话对应的图标为fa-phone
+                            <br>导航链接：点击后跳转的地址，地址可以从文章列表获取
+                        </div>
+                        <div class="input-group edit-group links">
+                            <p class="fa fa-minus-circle rm-n"></p>
+                            <input name="name" type="text" class="form-control site-ipt-s" placeholder="导航名称">
+                            <input name="icon" type="text" class="form-control site-ipt-s" placeholder="导航图标">
+                            <input name="link" type="text" class="form-control site-ipt-l" placeholder="地址链接">
+                        </div>
+                        <a href="javascript:;" onclick="add_site_link(this);">+添加一个导航</a>
+
+                    </div>
+
+                </div>
+                <div class="btn btn-primary submit-btn" onclick="save_site(this);">
+                    <span>保 存</span>
+                </div>
+            </div>
+            {% end %}
+            </div>
+        </div>
+        {% include left_nav.html %}
+    </div>
+</div>
+<script type="text/javascript" src="http://cdn.staticfile.org/jquery/2.1.1-rc2/jquery.min.js"></script>
+<script type="text/javascript" src="http://cdn.staticfile.org/twitter-bootstrap/3.1.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="{{static_url('js/global.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/material.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/jquery.ui.widget.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/jquery.iframe-transport.js')}}"></script>
+<script type="text/javascript" src="http://cdn.staticfile.org/blueimp-file-upload/9.5.2/jquery.fileupload.min.js"></script>
+<script type="text/javascript" src="{{static_url('js/load-image.min.js')}}"></script>
+<script type="text/javascript" src="http://cdn.staticfile.org/blueimp-file-upload/9.5.2/jquery.fileupload-process.min.js"></script>
+<script type="text/javascript" src="http://cdn.staticfile.org/blueimp-file-upload/9.5.2/jquery.fileupload-image.min.js"></script>
+<script>
+    $(function () {
+        var url = '/upload';
+        $('#fileupload').fileupload({
+            url: url,
+            dataType: 'json',
+            done: function (e, data) {
+                $.each(data.result.files, function (index, file) {
+                    var html = '<div class="img-container"><a class="img-result" href="' + file.url + '" target="_blank"><img src="'
+                            + file.thumbnailUrl + '"><p>' + file.name + '</p></a><p class="fa fa-minus-circle rm"></p></div>';
+                    $('.files').append(html);
+                    $('#progress').removeClass('progress-striped active');
+                });
+            },
+            progressall: function (e, data) {
+                var progress = parseInt(data.loaded / data.total * 100, 10);
+                $('#progress .progress-bar').css(
+                        'width',
+                        progress + '%'
+                );
+            }
+        }).prop('disabled', !$.support.fileInput)
+                .parent().addClass($.support.fileInput ? undefined : 'disabled');
+    });
+</script>
+</body>
+</html>

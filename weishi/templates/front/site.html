@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>{{site.title}}</title>
+    <meta content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+    <meta content="application/xhtml+xml;charset=UTF-8" http-equiv="Content-Type">
+    <meta content="no-cache,must-revalidate" http-equiv="Cache-Control">
+    <meta content="no-cache" http-equiv="pragma">
+    <meta content="0" http-equiv="expires">
+    <meta content="telephone=no, address=no" name="format-detection">
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.css')}}" media="all">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/index.css')}}" media="all">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/front/front.css')}}" media="all">
+    <link rel="stylesheet" type="text/css" href="http://cdn.staticfile.org/font-awesome/4.0.3/css/font-awesome.css" media="all">
+</head>
+<body onselectstart="return true;" ondragstart="return false;">
+<div class="banner">
+<ul>
+{% for i in images %}
+{% if i %}
+<li><img src="{{i}}" width="100%"/></li>
+{% end %}
+{% end %}
+</ul>
+</div>
+<section>
+<a href="tel:{{site.phone}}" class="link_tel fa fa-phone">{{site.phone}}</a>
+</section>
+<section style="margin-bottom: 20px;">
+<ul class="list_font">
+{% for li in site_ul %}
+<li><a href="{{li.url}}?i={{openid}}"><div><span class="fa {{li.icon}}"></span></div><div><p>{{li.name}}</p></div></a></li>
+{% end %}
+</ul>
+</section>
+<script src="http://cdn.staticfile.org/jquery/2.1.0/jquery.min.js"></script>
+<script src="{{static_url('js/unslider.min.js')}}"></script>
+<script>
+    $(function() {
+    $('.banner').unslider({
+        speed: 500,
+	    delay: 3000,
+        dots: true
+    });
+});
+</script>
+</body>
+</html>

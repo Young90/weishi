@@ -247,5 +247,85 @@ function delete_material(type, id) {
             }
         })
     })
+}
 
+function add_site_link(e) {
+    var html = '<div class="input-group edit-group links">' +
+        '<p class="fa fa-minus-circle rm-n"></p>' +
+        '<input name="name" type="text" class="form-control site-ipt-s" placeholder="导航名称">' +
+        '<input name="icon" type="text" class="form-control site-ipt-s" placeholder="导航图标">' +
+        '<input name="link" type="text" class="form-control site-ipt-l" placeholder="地址链接">' +
+        '</div>';
+    $(e).before(html);
+}
+
+$(document).on('click', 'p.rm, p.rm-n', function(){
+    var that = $(this);
+    ModalManager.show_confirm_modal('确定删除吗？', function(result){
+        if (result) {
+            var target = that.parent();
+            target.remove();
+        }
+    })
+} );
+
+function save_site(e) {
+    $(e).attr('disabled', 'disabled');
+    var aid = $('input[name=aid]').val();
+    var title = $('input[name=title]').val();
+    if (title == '') {
+        $(e).removeAttr('disabled');
+        ModalManager.show_failure_modal('输入标题!');
+        return false;
+    }
+    var phone = $('input[name=phone]').val();
+    if (phone == '') {
+        $(e).removeAttr('disabled');
+        ModalManager.show_failure_modal('输入电话!');
+        return false;
+    }
+    var img_containers = $('.img-result');
+    var images = [];
+    for (var i = 0; i< img_containers.length; i++) {
+        images.push($(img_containers[i]).attr('href'));
+    }
+    if (images.length == 0) {
+        $(e).removeAttr('disabled');
+        ModalManager.show_failure_modal('请上传焦点图!');
+        return false;
+    }
+    var links = $('.links');
+    var ls = [];
+    for (var i = 0; i < links.length; i++) {
+        var c = $(links[i]);
+        var name = c.find('input[name=name]').val();
+        var icon = c.find('input[name=icon]').val();
+        var link = c.find('input[name=link]').val();
+        if (name != '' && icon != '' && link != '') {
+            var p = {name: name, icon: icon, link: link};
+            ls.push(p);
+        }
+    }
+    if (ls.length == 0) {
+        $(e).removeAttr('disabled');
+        ModalManager.show_failure_modal('请上传焦点图!');
+        return false;
+    }
+    var ps = {title: title, phone: phone, images: images, links:ls}
+    $.ajax({
+        url: '/account/' + aid + '/site',
+        type: 'POST',
+        data: {params:JSON.stringify(ps)},
+        success: function(data) {
+            $(e).removeAttr('disabled');
+            if (data.r) {
+                ModalManager.show_success_modal('保存成功！')
+                setTimeout(function () {
+                    window.location.reload();
+                }, 1500);
+            } else {
+                ModalManager.show_failure_modal(data.error);
+            }
+        }
+    })
 }

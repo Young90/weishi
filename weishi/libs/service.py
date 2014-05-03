@@ -573,3 +573,24 @@ class AutoKeywordManager(Base):
         """获取所有模糊匹配的回复列表"""
         _list = self.db.query('select * from t_auto_keyword where aid = %s and wild = 1 order by id desc', aid)
         return _list
+
+
+class SiteManager(Base):
+    """微官网"""
+
+    def initial(self, aid):
+        self.db.execute('delete from t_site where aid = %s', aid)
+        self.db.execute('delete from t_site_ul where aid = %s', aid)
+
+    def save_site(self, aid, title, phone, img1, img2, img3, img4, img5):
+        self.db.execute('insert into t_site (aid, title, phone, img1, img2, img3, img4, img5) values (%s, %s, %s, '
+                        '%s, %s, %s, %s, %s)', aid, title, phone, img1, img2, img3, img4, img5)
+
+    def save_site_ul(self, aid, name, icon, link):
+        self.db.execute('insert into t_site_ul (aid, name, icon, url) values (%s, %s, %s, %s)', aid, name, icon, link)
+
+    def get_site(self, aid):
+        return self.db.get('select * from t_site where aid = %s', aid)
+
+    def get_site_ul(self, aid):
+        return self.db.query('select * from t_site_ul where aid = %s', aid)
