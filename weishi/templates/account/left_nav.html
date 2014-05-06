@@ -15,35 +15,45 @@
         {% else %}
         <li><a href="/account/{{account.aid}}/auto/follow">自动回复</a></li>
         {% end %}
+        {% if account.menu %}
         {% if index=='menu' %}
         <li class="active"><a href="/account/{{account.aid}}/menu">自定义菜单</a></li>
         {% else %}
         <li><a href="/account/{{account.aid}}/menu">自定义菜单</a></li>
         {% end %}
+        {% end %}
+        {% if account.form %}
         {% if index=='form' %}
         <li class="active"><a href="/account/{{account.aid}}/form">自定义表单</a></li>
         {% else %}
         <li><a href="/account/{{account.aid}}/form">自定义表单</a></li>
         {% end %}
+        {% end %}
+        {% if account.card %}
         {% if index=='card' %}
         <li class="active"><a href="/account/{{account.aid}}/card">会员卡</a></li>
         {% else %}
         <li><a href="/account/{{account.aid}}/card">会员卡</a></li>
         {% end %}
+        {% end %}
+        {% if account.impact %}
         {% if index=='impact' %}
         <li class="active"><a href="/account/{{account.aid}}/impact">用户印象</a></li>
         {% else %}
         <li><a href="/account/{{account.aid}}/impact">用户印象</a></li>
+        {% end %}
         {% end %}
         {% if index=='fans' %}
         <li class="active"><a href="/account/{{account.aid}}/fans">粉丝</a></li>
         {% else %}
         <li><a href="/account/{{account.aid}}/fans">粉丝</a></li>
         {% end %}
+        {% if account.site %}
         {% if index=='site' %}
         <li class="active"><a href="/account/{{account.aid}}/site">微官网</a></li>
         {% else %}
         <li><a href="/account/{{account.aid}}/site">微官网</a></li>
+        {% end %}
         {% end %}
         {% if index=='message' %}
         <li class="active"><a href="#">历史消息</a></li>

@@ -28,6 +28,66 @@ def admin(method):
     def wrapper(self, *args, **kwargs):
         if self.current_user.role != 1:
             raise HTTPError(404)
-            return
         return method(self, *args, **kwargs)
+
+    return wrapper
+
+
+def form_auth(method):
+    """自定义表单权限"""
+
+    @functools.wraps(method)
+    def wrapper(self, *args, **kwargs):
+        if not self.account.form:
+            raise HTTPError(404)
+        return method(self, *args, **kwargs)
+
+    return wrapper
+
+
+def menu_auth(method):
+    """自定义菜单权限"""
+
+    @functools.wraps(method)
+    def wrapper(self, *args, **kwargs):
+        if not self.account.menu:
+            raise HTTPError(404)
+        return method(self, *args, **kwargs)
+
+    return wrapper
+
+
+def card_auth(method):
+    """会员卡权限"""
+
+    @functools.wraps(method)
+    def wrapper(self, *args, **kwargs):
+        if not self.account.card:
+            raise HTTPError(404)
+        return method(self, *args, **kwargs)
+
+    return wrapper
+
+
+def site_auth(method):
+    """微官网权限"""
+
+    @functools.wraps(method)
+    def wrapper(self, *args, **kwargs):
+        if not self.account.site:
+            raise HTTPError(404)
+        return method(self, *args, **kwargs)
+
+    return wrapper
+
+
+def impact_auth(method):
+    """用户印象权限"""
+
+    @functools.wraps(method)
+    def wrapper(self, *args, **kwargs):
+        if not self.account.impact:
+            raise HTTPError(404)
+        return method(self, *args, **kwargs)
+
     return wrapper

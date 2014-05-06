@@ -1,7 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
+    {% if not ia %}
     <title>新建单条图文消息 - {{account.wei_name}}</title>
+    {% else %}
+    <title>编辑单条图文消息 - {{account.wei_name}}</title>
+    {% end %}
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="shortcut icon" href="{{static_url('img/favicon.ico')}}">
@@ -24,7 +28,8 @@
                 </ul>
                 <div class="new-edit">
                     <input name="aid" type="hidden" value="{{account.aid}}">
-
+                    {% if not ia %}
+                    <input name="iid" type="hidden" value="0"/>
                     <div class="input-group input-group-lg edit-group">
                         <span class="input-group-addon">标题</span>
                         <input name="title" type="text" class="form-control" placeholder="标题字数要少于30">
@@ -52,7 +57,39 @@
                     </div>
 
                     <div id="files" class="files"></div>
+                    {% else %}
+                    <div class="alert alert-warning">如果你正在编辑会员卡或微官网等自动生成的单条图文，请不要修改链接地址</div>
+                    <input name="iid" type="hidden" value="{{ia.id}}"/>
+                    <div class="input-group input-group-lg edit-group">
+                        <span class="input-group-addon">标题</span>
+                        <input name="title" value="{{ia.title}}" type="text" class="form-control" placeholder="标题字数要少于30">
+                    </div>
 
+                    <div class="input-group input-group-lg edit-group">
+                        <span class="input-group-addon">摘要</span>
+                        <textarea name="summary" type="text" class="form-control summary"
+                                  placeholder="摘要长度在120个字以内">{{ia.summary}}</textarea>
+                    </div>
+
+                    <div class="input-group input-group-lg edit-group">
+                        <span class="input-group-addon">链接</span>
+                        <input name="link" value="{{ia.link}}" type="text" class="form-control" placeholder="以http://开头">
+                    </div>
+
+                    <div class="btn btn-success fileinput-button">
+                        <i class="glyphicon glyphicon-plus"></i>
+                        <span>选择封面 <span class="tip">(建议图片尺寸640x360，大小控制在500Kb以内)</span></span>
+                        <input id="fileupload" type="file" name="file">
+                    </div>
+
+                    <div id="progress" class="progress progress-striped active">
+                        <div class="progress-bar progress-bar-success"></div>
+                    </div>
+
+                    <div id="files" class="files">
+                        <a href="{{ia.image}}" target="_blank"><img src="{{ia.image}}?imageView2/1/w/100/h/60"><p>封面</p></a>
+                    </div>
+                    {% end %}
                     <div id="single-save-btn" class="btn btn-primary submit-btn">
                         <span>保 存</span>
                     </div>
@@ -81,6 +118,7 @@
             dataType: 'json',
             done: function (e, data) {
                 $.each(data.result.files, function (index, file) {
+                    $('.files').html('');
                     $('.files').append('<a href="' + file.url + '" target="_blank"><img src="'
                             + file.thumbnailUrl + '"><p>' + file.name + '</p></a>');
                     $('#progress').removeClass('progress-striped active');

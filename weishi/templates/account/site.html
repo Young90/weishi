@@ -21,29 +21,29 @@
                  <div class="new-edit">
                      <div class="alert alert-success"><a href="/site/{{account.aid}}" target="_blank">点击预览官网</a></div>
                     <div class="new-item new-item-site">
+                        <div class="alert alert-warning">例如：微世传媒，显示在最上方</div>
                         <div class="input-group edit-group">
                             <span class="input-group-addon">网站标题</span>
                             <input name="title" value="{{site.title}}" type="text" class="form-control" placeholder="标题字数少于10">
                         </div>
-                        <div class="alert alert-warning">例如：微世传媒，显示在最上方</div>
+                        <div class="alert alert-warning">例如：400820820，用户点击后直接拨打，不能包含任何中文字符</div>
                         <div class="input-group edit-group">
                             <span class="input-group-addon">商家电话</span>
                             <input name="phone" value="{{site.phone}}" type="text" class="form-control" placeholder="输入正确的电话号码">
                         </div>
-                        <div class="alert alert-warning">例如：400820820，用户点击后直接拨打，不能包含任何中文字符</div>
+                        <div class="alert alert-warning">按上传顺序显示，所有图片尺寸要保持一致，建议尺寸640x425，小于500Kb</div>
                         <div class="btn btn-success fileinput-button">
                             <i class="glyphicon glyphicon-plus"></i>
                             <span>上传焦点图 <span class="tip">(最多上传五张)</span></span>
-                            <input id="fileupload" type="file" name="file" multiple>
+                            <input class="fileupload" type="file" name="file" multiple>
                         </div>
-                        <div class="alert alert-warning">按上传顺序显示，所有图片尺寸要保持一致，建议尺寸640x425，小于500Kb</div>
                         <div class="progress progress-striped active">
                             <div class="progress-bar progress-bar-success"></div>
                         </div>
-                        <div class="files">
+                        <div class="files images focus">
                             {% for i in images %}
                             {% if i %}
-                            <div class="img-container">
+                            <div class="img-container" data-href="{{i}}">
                             <a class="img-result" href="{{i}}" target="_blank"><img src="{{i}}?imageView2/1/w/100/h/60"><p>图片</p></a>
                             <p class="fa fa-minus-circle rm"></p>
                             </div>
@@ -75,26 +75,39 @@
             {% else %}
             <div class="new-edit">
                     <div class="new-item new-item-site">
+                        <div class="alert alert-warning">创建微官网后会自动新建一条标题为“微官网”的单条图文消息
+                            <br>自定义菜单中要回复微官网，请选择 单条图文 -> 输入该图文id
+                            <br>微官网图文消息的封面图片
+                        </div>
+                        <div class="btn btn-success fileinput-button">
+                            <i class="glyphicon glyphicon-plus"></i>
+                            <span>微官网图文封面 <span class="tip">(建议图片尺寸640x360，大小控制在500Kb以内)</span></span>
+                            <input class="fileupload" type="file" name="file">
+                        </div>
+                        <div class="progress progress-striped active">
+                            <div class="progress-bar progress-bar-success"></div>
+                        </div>
+                        <div class="files thumb"></div>
+                        <div class="alert alert-warning">例如：微世传媒，显示在最上方</div>
                         <div class="input-group edit-group">
                             <span class="input-group-addon">网站标题</span>
                             <input name="title" type="text" class="form-control" placeholder="标题字数少于10">
                         </div>
-                        <div class="alert alert-warning">例如：微世传媒，显示在最上方</div>
+                        <div class="alert alert-warning">例如：400820820，用户点击后直接拨打，不能包含任何中文字符</div>
                         <div class="input-group edit-group">
                             <span class="input-group-addon">商家电话</span>
                             <input name="phone" type="text" class="form-control" placeholder="输入正确的电话号码">
                         </div>
-                        <div class="alert alert-warning">例如：400820820，用户点击后直接拨打，不能包含任何中文字符</div>
+                        <div class="alert alert-warning">按上传顺序显示，所有图片尺寸要保持一致，建议尺寸640x425，小于500Kb</div>
                         <div class="btn btn-success fileinput-button">
                             <i class="glyphicon glyphicon-plus"></i>
                             <span>上传焦点图 <span class="tip">(最多上传五张)</span></span>
-                            <input id="fileupload" type="file" name="file" multiple>
+                            <input class="fileupload" type="file" name="file" multiple>
                         </div>
-                        <div class="alert alert-warning">按上传顺序显示，所有图片尺寸要保持一致，建议尺寸640x425，小于500Kb</div>
                         <div class="progress progress-striped active">
                             <div class="progress-bar progress-bar-success"></div>
                         </div>
-                        <div class="files"></div>
+                        <div class="files focus"></div>
                         <div class="alert alert-warning">导航名称：显示的文字例如：联系我们
                             <br>导航图标：显示在文字上方，可以到 <a href="http://fontawesome.io/icons/" target="_blank">这个链接</a>
                             查看全部可用图标，将图标后缀粘贴在此，例如：电话对应的图标为fa-phone
@@ -134,26 +147,34 @@
 <script>
     $(function () {
         var url = '/upload';
-        $('#fileupload').fileupload({
-            url: url,
-            dataType: 'json',
-            done: function (e, data) {
-                $.each(data.result.files, function (index, file) {
-                    var html = '<div class="img-container"><a class="img-result" href="' + file.url + '" target="_blank"><img src="'
-                            + file.thumbnailUrl + '"><p>' + file.name + '</p></a><p class="fa fa-minus-circle rm"></p></div>';
-                    $('.files').append(html);
-                    $('#progress').removeClass('progress-striped active');
-                });
-            },
-            progressall: function (e, data) {
-                var progress = parseInt(data.loaded / data.total * 100, 10);
-                $('#progress .progress-bar').css(
-                        'width',
-                        progress + '%'
-                );
-            }
-        }).prop('disabled', !$.support.fileInput)
-                .parent().addClass($.support.fileInput ? undefined : 'disabled');
+        $('.fileupload').each(function (input_index) {
+            $(this).fileupload({
+                dropZone: $(this),
+                url: url,
+                dataType: 'json',
+                done: function (e, data) {
+                    $.each(data.result.files, function (index, file) {
+                        var zone = $('.files')[input_index];
+                        var html = '<div class="img-container" data-href="' + file.url +
+                                '"><a class="img-result" href="' + file.url +
+                                '" target="_blank"><img src="' + file.thumbnailUrl +
+                                '"><p>' + file.name + '</p></a><p class="fa fa-minus-circle rm"></p></div>';
+                        $(zone).append(html);
+                        var pro_zone = $('.progress')[input_index];
+                        $(pro_zone).removeClass('progress-striped active');
+                    });
+                },
+                progressall: function (e, data) {
+                    var progress = parseInt(data.loaded / data.total * 100, 10);
+                    var pro_zone = $('.progress .progress-bar')[input_index]
+                    $(pro_zone).css(
+                            'width',
+                            progress + '%'
+                    );
+                }
+            }).prop('disabled', !$.support.fileInput)
+                    .parent().addClass($.support.fileInput ? undefined : 'disabled');
+        });
     });
 </script>
 </body>

@@ -45,7 +45,15 @@
                                 <td class="nickname">{{account.wei_name}}</td>
                                 <td class="nickname">{{account.wei_account}}</td>
                                 <td class="country">{{account.user_id}}</td>
-                                <td><a href="javascript:;" onclick="javascript:change_user('{{account.id}}');">更改用户</a></td>
+                                <td>
+                                    <a href="javascript:;" onclick="javascript:change_user('{{account.id}}');">更改用户</a>
+                                    <input type="checkbox" name="form"{% if account.form %} checked{% end %}/> 表单
+                                    <input type="checkbox" name="site"{% if account.site %} checked{% end %}/> 微官网
+                                    <input type="checkbox" name="card"{% if account.card %} checked{% end %}/> 会员卡
+                                    <input type="checkbox" name="menu"{% if account.menu %} checked{% end %}/> 菜单
+                                    <input type="checkbox" name="impact"{% if account.impact %} checked{% end %}/> 用户印象
+                                    <div class="btn btn-primary btn-sm" onclick="change_auth(this, '{{account.id}}');">保存</div>
+                                </td>
                             </tr>
                             {% end %}
                             </tbody>

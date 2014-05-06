@@ -116,6 +116,7 @@ function delete_article(aid, slug) {
 $('#single-save-btn').on('click', function (e) {
     var button = $('#single-save-btn');
     button.attr('disabled', 'disabled');
+    var id = $('input[name=id]').val();
     var aid = $('input[name="aid"]').val();
     var title = $('input[name="title"]').val();
     var summary = $('textarea[name="summary"]').val();
@@ -149,6 +150,7 @@ $('#single-save-btn').on('click', function (e) {
         }
     }
     var params = {
+        'id': id,
         'title': title,
         'summary': summary,
         'link': link,
@@ -156,7 +158,7 @@ $('#single-save-btn').on('click', function (e) {
     }
     $.ajax({
         type: 'POST',
-        url: '/account/' + aid + '/image_article/new/single',
+        url: window.location.href,
         data: params,
         success: function (data) {
             if (data.r) {
@@ -180,9 +182,10 @@ $('#multi-save-btn').on('click', function (e) {
     button.attr('disabled', 'disabled');
     var aid = $('input[name="aid"]').val();
     var items = $('.new-item');
-    var params = []
+    var params = [];
     for (var i = 0; i < items.length; i++) {
         var item = $(items[i]);
+        var id = item.find('input[name=id]').val();
         var title = item.find('input[name="title"]').val();
         var link = item.find('input[name="link"]').val();
         var image_link = item.find('a[href]');
@@ -194,6 +197,7 @@ $('#multi-save-btn').on('click', function (e) {
             continue;
         }
         var _p = {
+            'id': id,
             'title': title,
             'link': link,
             'image': image
@@ -209,8 +213,8 @@ $('#multi-save-btn').on('click', function (e) {
         params: JSON.stringify(params)
     }
     $.ajax({
-        type: "POST",
-        url: "/account/" + aid + '/image_article/new/multi',
+        type: 'POST',
+        url: window.location.href,
         data: data,
         success: function (data) {
             button.removeAttr('disabled');
@@ -272,6 +276,11 @@ $(document).on('click', 'p.rm, p.rm-n', function(){
 function save_site(e) {
     $(e).attr('disabled', 'disabled');
     var aid = $('input[name=aid]').val();
+    var thumb_container = $('div.thumb > div.img-container');
+    var thumb = '';
+    if (thumb_container.length > 0) {
+        thumb = thumb_container.data('href');
+    }
     var title = $('input[name=title]').val();
     if (title == '') {
         $(e).removeAttr('disabled');
@@ -284,10 +293,10 @@ function save_site(e) {
         ModalManager.show_failure_modal('输入电话!');
         return false;
     }
-    var img_containers = $('.img-result');
+    var img_containers = $('div.focus > div.img-container');
     var images = [];
     for (var i = 0; i< img_containers.length; i++) {
-        images.push($(img_containers[i]).attr('href'));
+        images.push($(img_containers[i]).data('href'));
     }
     if (images.length == 0) {
         $(e).removeAttr('disabled');
@@ -308,10 +317,10 @@ function save_site(e) {
     }
     if (ls.length == 0) {
         $(e).removeAttr('disabled');
-        ModalManager.show_failure_modal('请上传焦点图!');
+        ModalManager.show_failure_modal('请添加导航!');
         return false;
     }
-    var ps = {title: title, phone: phone, images: images, links:ls}
+    var ps = {thumb: thumb, title: title, phone: phone, images: images, links:ls};
     $.ajax({
         url: '/account/' + aid + '/site',
         type: 'POST',

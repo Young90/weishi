@@ -133,5 +133,16 @@ var ModalManager = {
             '</div>' +
             '</div>');
         $modal.modal();
+    },
+
+    show_custom_modal: function(html) {
+        var $modal = $('<div id="process-modal" class="modal fade" tablindex="-1" role="dialog" aria-labelledby="myModalLabel" ' +
+            'aria-hidden="true">' +
+            '<div class="modal-dialog modal-sm">' +
+            '<div class="modal-content" style="height: 160px;padding-left: 30px; padding-right: 30px; padding-top: 66px;">' +
+            '<div>' + html  +'</div>' +
+            '</div>' +
+            '</div>');
+        $modal.modal();
     }
 };

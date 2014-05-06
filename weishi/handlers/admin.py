@@ -74,8 +74,24 @@ class AccountHandler(AdminBaseHandler):
         return
 
 
+class AuthHandler(AdminBaseHandler):
+    """修改账号权限"""
+
+    def post(self, *args, **kwargs):
+        _id = self.get_argument('id', 0)
+        form = self.get_argument('form', 0)
+        menu = self.get_argument('menu', 0)
+        card = self.get_argument('card', 0)
+        site = self.get_argument('site', 0)
+        impact = self.get_argument('impact', 0)
+        self.account_manager.change_auth(int(_id), int(menu), int(card), int(form), int(site), int(impact))
+        self.write({'r': 1})
+        return
+
+
 handlers = [
     (r'/admin', IndexHandler),
     (r'/admin/accounts', AccountHandler),
-    (r'/admin/new_user', NewUserHandler)
+    (r'/admin/new_user', NewUserHandler),
+    (r'/admin/auth', AuthHandler)
 ]

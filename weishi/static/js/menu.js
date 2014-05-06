@@ -1,7 +1,3 @@
-/**
- * Created by young on 14-2-21.
- */
-
 function add_main_menu() {
     var items = $('.edit-menu');
     if (items.length >= 3) {
@@ -22,7 +18,6 @@ function add_main_menu() {
         '<span class="action"><a href="javascript:;" onclick="javascript:show_input_single_dialog(this);">单条图文</a></span>' +
         '<span class="action"><a href="javascript:;" onclick="javascript:show_input_multi_dialog(this);">多条图文</a></span>' +
         '<span class="action"><a href="javascript:;" onclick="javascript:show_input_link_dialog(this);">链接</a></span>' +
-        '<span class="action"><a href="javascript:;" onclick="javascript:add_member_card(this);">会员卡</a></span>' +
         '<span class="action remove"><a href="javascript:;" onclick="javascript:remove_main_menu(this);">删除</a></span>' +
         '</div>' +
         '</div>' +
@@ -57,7 +52,6 @@ function add_sub_menu(obj) {
         '<span class="action"><a href="javascript:;" onclick="javascript:show_input_single_dialog(this);">单条图文</a></span>' +
         '<span class="action"><a href="javascript:;" onclick="javascript:show_input_multi_dialog(this);">多条图文</a></span>' +
         '<span class="action"><a href="javascript:;" onclick="javascript:show_input_link_dialog(this);">链接</a></span>' +
-        '<span class="action"><a href="javascript:;" onclick="javascript:add_member_card(this);">会员卡</a></span>' +
         '<span class="action remove"><a href="javascript:;" onclick="javascript:remove_sub_menu(this);">删除</a></span>' +
         '</div>' +
         '</div>';

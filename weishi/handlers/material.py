@@ -70,6 +70,32 @@ class NewSingleImageArticleHandler(AccountBaseHandler):
         return
 
 
+class EditSingleImageArticleHandler(AccountBaseHandler):
+    """编辑单条图文消息"""
+
+    def get(self, aid, iid):
+        image_article = self.image_article_manager.get_image_article_by_id(iid)
+        if image_article.aid != self.account.aid:
+            raise HTTPError(404)
+        self.render('account/material_image_article_new_single.html', account=self.account,
+                    index='material', top='image_article', ia=image_article)
+
+    def post(self, *args, **kwargs):
+        aid = self.account.aid
+        _id = int(args[1])
+        title = self.get_argument('title', None)
+        summary = self.get_argument('summary', None)
+        image = self.get_argument('image', None)
+        link = self.get_argument('link', None)
+        image_article = self.image_article_manager.get_image_article_by_id(_id)
+        if image_article.aid != self.account.aid:
+            raise HTTPError(404)
+        self.image_article_manager.update_single_image_article(title, summary, link, image, _id, aid)
+        self.write({'r': 1, 'aid': aid})
+        self.finish()
+        return
+
+
 class NewMultiImageArticleHandler(AccountBaseHandler):
     """新建多条图文"""
 
@@ -105,6 +131,64 @@ class NewMultiImageArticleHandler(AccountBaseHandler):
                                                             id_list[3] if len(id_list) > 3 else 0,
                                                             id_list[4] if len(id_list) > 4 else 0,
                                                             title, aid)
+        result['r'] = 1
+        self.write(result)
+        self.finish()
+        return
+
+
+class EditMultiImageArticleHandler(AccountBaseHandler):
+    """编辑多条图文"""
+
+    def get(self, aid, iid):
+        group = self.image_article_manager.get_multi_image_article_by_id(iid)
+        if not group:
+            raise HTTPError(404, 'image article not exists')
+        id_list = [group.id1, group.id2, group.id3, group.id4, group.id5]
+        id_list = filter(lambda a: a != 0, id_list)
+        article_list = []
+        for _id in id_list:
+            article_list.append(self.image_article_manager.get_image_article_by_id(_id))
+        self.render('account/material_image_article_new_multi.html', account=self.account,
+                    index='material', top='image_article', article_list=article_list, more=(5 - len(id_list)))
+
+    def post(self, *args, **kwargs):
+        aid = self.account.aid
+        iid = args[1]
+        multi_article = self.image_article_manager.get_multi_image_article_by_id(iid)
+        if not multi_article or multi_article.aid != aid:
+            raise HTTPError(404)
+        result = {'r': 0, 'aid': aid}
+        params = self.get_argument('params', None)
+        if not params:
+            result['error'] = u'参数不正确'
+            self.write(result)
+            self.finish()
+            return
+        params = simplejson.loads(params, encoding='utf-8')
+        id_list = []
+        title = ''
+        for index, param in enumerate(params):
+            _id = int(param['id'])
+            print _id
+            _title = param['title']
+            _link = param['link']
+            _image = param['image']
+            if len(_image) == 0:
+                _image = None
+            if index == 0:
+                title = _title
+            if _id:
+                self.image_article_manager.update_single_image_article(_title, None, _link, _image, _id, aid)
+            else:
+                _id = self.image_article_manager.save_single_image_article_with_type(_title, None, _link, _image, aid)
+            id_list.append(_id)
+        self.image_article_manager.update_multi_image_article(id_list[0] if len(id_list) > 0 else 0,
+                                                              id_list[1] if len(id_list) > 1 else 0,
+                                                              id_list[2] if len(id_list) > 2 else 0,
+                                                              id_list[3] if len(id_list) > 3 else 0,
+                                                              id_list[4] if len(id_list) > 4 else 0,
+                                                              title, iid)
         result['r'] = 1
         self.write(result)
         self.finish()
@@ -250,6 +334,8 @@ handlers = [
     (r'/account/([^/]+)/image_article/multi', ImageArticleGroupHandler),
     (r'/account/([^/]+)/image_article/new/single', NewSingleImageArticleHandler),
     (r'/account/([^/]+)/image_article/new/multi', NewMultiImageArticleHandler),
+    (r'/account/([^/]+)/image_article/single/([^/]+)/edit', EditSingleImageArticleHandler),
+    (r'/account/([^/]+)/image_article/multi/([^/]+)/edit', EditMultiImageArticleHandler),
     (r'/account/([^/]+)/article', ArticleHandler),
     (r'/account/([^/]+)/article/new', NewArticleHandler),
     (r'/account/([^/]+)/article/([^/]+)/edit', EditArticleHandler),

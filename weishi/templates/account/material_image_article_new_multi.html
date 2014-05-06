@@ -1,7 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
+    {% if not article_list %}
     <title>新建多条图文消息 - {{account.wei_name}}</title>
+    {% else %}
+    <title>编辑多条图文消息 - {{account.wei_name}}</title>
+    {% end %}
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="shortcut icon" href="{{static_url('img/favicon.ico')}}">
@@ -22,9 +26,11 @@
                     <li><a href="/account/{{account.aid}}/image_article/new/single">+新建单条图文</a></li>
                     <li class="disabled"><a href="/account/{{account.aid}}/image_article/new/multi">+新建多条图文</a></li>
                 </ul>
+                {% if not article_list %}
                 <div class="new-edit">
                     <input type="hidden" name="aid" value="{{account.aid}}">
                     <div class="new-item">
+                        <input type="hidden" name="id" value="0">
                         <div class="input-group edit-group">
                             <span class="input-group-addon">标题</span>
                             <input name="title" type="text" class="form-control" placeholder="标题字数要少于30">
@@ -48,6 +54,7 @@
                         <div class="files"></div>
                     </div>
                     <div class="new-item">
+                        <input type="hidden" name="id" value="0">
                         <div class="input-group edit-group">
                             <span class="input-group-addon">标题</span>
                             <input name="title" type="text" class="form-control" placeholder="标题字数要少于30">
@@ -71,6 +78,7 @@
                         <div class="files"></div>
                     </div>
                     <div class="new-item">
+                        <input type="hidden" name="id" value="0">
                         <div class="input-group edit-group">
                             <span class="input-group-addon">标题</span>
                             <input name="title" type="text" class="form-control" placeholder="标题字数要少于30">
@@ -94,6 +102,7 @@
                         <div class="files"></div>
                     </div>
                     <div class="new-item">
+                        <input type="hidden" name="id" value="0">
                         <div class="input-group edit-group">
                             <span class="input-group-addon">标题</span>
                             <input name="title" type="text" class="form-control" placeholder="标题字数要少于30">
@@ -117,6 +126,7 @@
                         <div class="files"></div>
                     </div>
                     <div class="new-item">
+                        <input type="hidden" name="id" value="0">
                         <div class="input-group edit-group">
                             <span class="input-group-addon">标题</span>
                             <input name="title" type="text" class="form-control" placeholder="标题字数要少于30">
@@ -139,7 +149,64 @@
 
                         <div class="files"></div>
                     </div>
+                    </div>
+                    {% else %}
+                    <div class="new-edit">
+                    {% for ia in article_list %}
+                    <div class="new-item">
+                        <input type="hidden" name="id" value="{{ia.id}}">
+                        <div class="input-group edit-group">
+                            <span class="input-group-addon">标题</span>
+                            <input value="{{ia.title}}" name="title" type="text" class="form-control" placeholder="标题字数要少于30">
+                        </div>
 
+                        <div class="input-group edit-group">
+                            <span class="input-group-addon">链接</span>
+                            <input value="{{ia.link}}" name="link" type="text" class="form-control" placeholder="以http://开头">
+                        </div>
+
+                        <div class="btn btn-success fileinput-button">
+                            <i class="glyphicon glyphicon-plus"></i>
+                            <span>选择封面 <span class="tip">(建议图片尺寸640x360，大小控制在500Kb以内)</span></span>
+                            <input class="fileupload" type="file" name="file">
+                        </div>
+
+                        <div class="progress progress-striped active">
+                            <div class="progress-bar progress-bar-success"></div>
+                        </div>
+
+                        <div class="files">
+                            <a href="{{ia.image}}" target="_blank"><img src="{{ia.image}}?imageView2/1/w/100/h/60"><p>封面</p></a>
+                        </div>
+                    </div>
+                    {% end %}
+                    {% for i in range(0, more) %}
+                    <div class="new-item">
+                        <input type="hidden" name="id" value="0">
+                        <div class="input-group edit-group">
+                            <span class="input-group-addon">标题</span>
+                            <input name="title" type="text" class="form-control" placeholder="标题字数要少于30">
+                        </div>
+
+                        <div class="input-group edit-group">
+                            <span class="input-group-addon">链接</span>
+                            <input name="link" type="text" class="form-control" placeholder="以http://开头">
+                        </div>
+
+                        <div class="btn btn-success fileinput-button">
+                            <i class="glyphicon glyphicon-plus"></i>
+                            <span>选择封面 <span class="tip">(建议图片尺寸640x360，大小控制在500Kb以内)</span></span>
+                            <input class="fileupload" type="file" name="file">
+                        </div>
+
+                        <div class="progress progress-striped active">
+                            <div class="progress-bar progress-bar-success"></div>
+                        </div>
+
+                        <div class="files"></div>
+                    </div>
+                    {% end %}
+                    {% end %}
                 </div>
                 <div id="multi-save-btn" class="btn btn-primary submit-btn">
                     <span>保 存</span>
@@ -171,6 +238,7 @@
                 done: function (e, data) {
                     $.each(data.result.files, function (index, file) {
                         var zone = $('.files')[input_index];
+                        $(zone).html('');
                         $(zone).append('<a href="' + file.url + '" target="_blank"><img src="'
                                 + file.thumbnailUrl + '"><p>' + file.name + '</p></a>');
                         var pro_zone = $('.progress')[input_index];

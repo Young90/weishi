@@ -1,6 +1,3 @@
-/*accounts js in weishi project by shenguan*/
-
-// bind submit handler to #addAccountForm
 $('#addAccountForm').on('submit', function (e) {
     e.preventDefault(); // prevent native submit
     var submitBtn = $('#addAccountBtn'),
@@ -98,9 +95,13 @@ $('#card-save-btn').on('click', function () {
     var address = $('input[name="address"]').is(':checked') ? 1 : 0;
     var phone = $('input[name="phone"]').val();
     var about = $('textarea[name="about"]').val();
+    var thumb = $('.thumb>a').attr('href');
+    var cover = $('.cover>a').attr('href');
     var data = {
         'register': register,
         'name': name,
+        'thumb': thumb,
+        'cover': cover,
         'mobile': mobile,
         'address': address,
         'phone': phone,

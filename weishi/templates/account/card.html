@@ -17,10 +17,38 @@
             <div class="main-inner">
                 {% if not card %}
                 <div class="new-edit">
-                    <div class="alert alert-danger" style="margin-top: 10px;">还没会员卡，勾选以下选项后，点击创建即可</div>
+                    <div class="alert alert-danger" style="margin-top: 10px;">还没会员卡，勾选选项，上传图片，点击创建即可</div>
                     <div class="alert alert-info">如果要实现用户点击进入会员卡页面即可自动生成会员号，则勾选自动创建，如果需要用户填写个人信息，则取消勾选
                         <br><br>如果需要用户填写信息，在需要的信息前勾选（暂时支持姓名、手机号和地址），同时取消自动创建的勾选，如果勾选了自动创建，手机和地址的勾选将失效
                     </div>
+
+                    <div class="alert alert-warning">会员卡图文消息封面，回复会员卡图文消息时的封面
+                        <br>创建自会员卡后，在单条图文消息中会自动生成标题为“会员卡”的单条图文
+                        <br>自定义菜单中如果要回复会员卡，请选择 单条图文 -> 输入该图文id
+                    </div>
+                    <div class="btn btn-success fileinput-button">
+                        <i class="glyphicon glyphicon-plus"></i>
+                        <span>会员卡图文消息封面 <span class="tip">(建议尺寸640x360，500Kb以内)</span></span>
+                        <input class="fileupload" type="file" name="file">
+                    </div>
+                    <div class="progress progress-striped active">
+                        <div class="progress-bar progress-bar-success"></div>
+                    </div>
+                    <div class="files thumb"></div>
+
+                    <div class="alert alert-warning">会员卡样式图片，显示在会员卡页面</div>
+                    <div class="btn btn-success fileinput-button">
+                        <i class="glyphicon glyphicon-plus"></i>
+                        <span>会员卡样式图片 <span class="tip">(建议图片尺寸640x360，大小控制在500Kb以内)</span></span>
+                        <input class="fileupload" type="file" name="file">
+                    </div>
+
+                    <div class="progress progress-striped active">
+                        <div class="progress-bar progress-bar-success"></div>
+                    </div>
+
+                    <div class="files cover"></div>
+
                     <div class="card-create">会员卡生成方式：</div>
                     <div class="input-group card-create">
                         <input type="checkbox" name="register" value="1" checked> 自动创建 &nbsp;&nbsp;&nbsp;
@@ -44,6 +72,26 @@
                 {% else %}
                 <div class="new-edit">
                     <div class="alert alert-info">修改会员卡生成方式（自动/注册）会导致已有会员注册信息不准（缺失/多余）</div>
+                    <div class="alert alert-warning">会员卡图文消息封面，回复会员卡图文消息时的封面
+                        <br>创建自会员卡后，在单条图文消息中会自动生成标题为“会员卡”的单条图文
+                        <br>自定义菜单中如果要回复会员卡，请选择 单条图文 -> 输入该图文id
+                    </div>
+
+                    <div class="alert alert-warning">会员卡样式图片，显示在会员卡页面</div>
+                    <div class="btn btn-success fileinput-button">
+                        <i class="glyphicon glyphicon-plus"></i>
+                        <span>会员卡样式图片 <span class="tip">(建议图片尺寸640x360，大小控制在500Kb以内)</span></span>
+                        <input class="fileupload" type="file" name="file">
+                    </div>
+
+                    <div class="progress progress-striped active">
+                        <div class="progress-bar progress-bar-success"></div>
+                    </div>
+
+                    <div class="files cover">
+                        <a href="{{card.cover}}" target="_blank"><img src="{{card.cover}}?imageView2/1/w/100/h/60"><p>封面</p></a>
+                    </div>
+
                     <div class="card-create">会员卡生成方式：</div>
                     <div class="input-group card-create">
                         {% if card.register %}
@@ -76,7 +124,7 @@
                         会员优惠 : <br><textarea name="about" class="form-control phone-input"
                                              placeholder="会员卡页面显示，介绍会员享有的优惠等">{{card.about}}</textarea>
                     </div>
-                    <div id="card-save-btn" class="btn btn-primary submit-btn" onclick="javascript:submit_form();" style="margin-bottom: 10px;">
+                    <div id="card-save-btn" class="btn btn-primary submit-btn" onclick="submit_form();" style="margin-bottom: 10px;">
                         <span>更 新</span>
                     </div>
                 </div>
@@ -114,9 +162,47 @@
         {% include left_nav.html %}
     </div>
 </div>
-<script src="{{static_url('js/jquery-1.10.2.min.js')}}"></script>
-<script src="{{static_url('js/bootstrap.min.js')}}"></script>
+<script type="text/javascript" src="http://cdn.staticfile.org/jquery/2.1.1-rc2/jquery.min.js"></script>
+<script type="text/javascript" src="http://cdn.staticfile.org/twitter-bootstrap/3.1.1/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="{{static_url('js/global.js')}}"></script>
 <script type="text/javascript" src="{{static_url('js/accounts.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/jquery.ui.widget.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/jquery.iframe-transport.js')}}"></script>
+<script type="text/javascript" src="http://cdn.staticfile.org/blueimp-file-upload/9.5.2/jquery.fileupload.min.js"></script>
+<script type="text/javascript" src="{{static_url('js/load-image.min.js')}}"></script>
+<script type="text/javascript" src="http://cdn.staticfile.org/blueimp-file-upload/9.5.2/jquery.fileupload-process.min.js"></script>
+<script type="text/javascript" src="http://cdn.staticfile.org/blueimp-file-upload/9.5.2/jquery.fileupload-image.min.js"></script>
+<script>
+
+    $(function () {
+        var url = '/upload';
+        $('.fileupload').each(function (input_index) {
+            $(this).fileupload({
+                dropZone: $(this),
+                url: url,
+                dataType: 'json',
+                done: function (e, data) {
+                    $.each(data.result.files, function (index, file) {
+                        var zone = $('.files')[input_index];
+                        $(zone).html('');
+                        $(zone).append('<a href="' + file.url + '" target="_blank"><img src="'
+                                + file.thumbnailUrl + '"><p>' + file.name + '</p></a>');
+                        var pro_zone = $('.progress')[input_index];
+                        $(pro_zone).removeClass('progress-striped active');
+                    });
+                },
+                progressall: function (e, data) {
+                    var progress = parseInt(data.loaded / data.total * 100, 10);
+                    var pro_zone = $('.progress .progress-bar')[input_index]
+                    $(pro_zone).css(
+                            'width',
+                            progress + '%'
+                    );
+                }
+            }).prop('disabled', !$.support.fileInput)
+                    .parent().addClass($.support.fileInput ? undefined : 'disabled');
+        });
+    });
+</script>
 </body>
 </html>

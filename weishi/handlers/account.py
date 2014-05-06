@@ -7,7 +7,7 @@ import json
 import simplejson
 from tornado.web import HTTPError, asynchronous
 
-from weishi.libs.decorators import authenticated
+from weishi.libs.decorators import authenticated, menu_auth, card_auth, site_auth, impact_auth, form_auth
 from weishi.libs.handler import BaseHandler
 from weishi.libs.image import list_all, upload
 from weishi.libs import wei_api
@@ -186,6 +186,7 @@ class MessageHandler(AccountBaseHandler):
 class MenuHandler(AccountBaseHandler):
     """自定义菜单"""
 
+    @menu_auth
     def get(self, aid):
         """设置自定义菜单的页面"""
         menu = []
@@ -225,6 +226,7 @@ class MenuHandler(AccountBaseHandler):
                 menu.append(p)
         self.render('account/menu.html', menu=menu, account=self.account, index='menu')
 
+    @menu_auth
     def post(self, *args, **kwargs):
         """设置自定义菜单"""
         aid = self.account.aid
@@ -276,11 +278,6 @@ class MenuHandler(AccountBaseHandler):
                         self.menu_manager.save_sub_menu_item(aid=aid, name=sub_name, t='view', url=sub_value, auto_id=0,
                                                              parent_id=_id, mkey=None)
                         sub_menu = {'type': 'view', 'name': sub_name, 'url': sub_value}
-                    elif sub_type == 'card':
-                        auto_id = self.auto_manager.save_card_auto_response(aid, mkey)
-                        self.menu_manager.save_sub_menu_item(aid=aid, name=sub_name, t='card', url='', auto_id=auto_id,
-                                                             parent_id=_id, mkey=mkey)
-                        sub_menu = {'type': 'click', 'name': sub_name, 'key': mkey}
                     sub_buttons.append(sub_menu)
                 menu['sub_button'] = sub_buttons
             elif _type == 'text':
@@ -288,12 +285,6 @@ class MenuHandler(AccountBaseHandler):
                 mkey = key_util.generate_hexdigits_lower(8)
                 auto_id = self.auto_manager.save_text_auto_response(aid=aid, content=value, mkey=mkey, re_type='text')
                 self.menu_manager.save_main_menu_item_response(aid=aid, name=name, t='click', url=None, auto_id=auto_id,
-                                                               mkey=mkey)
-                menu = {'type': 'click', 'name': name, 'key': mkey}
-            elif _type == 'card':
-                mkey = key_util.generate_hexdigits_lower(8)
-                auto_id = self.auto_manager.save_card_auto_response(aid, mkey)
-                self.menu_manager.save_main_menu_item_response(aid=aid, name=name, t='card', url='', auto_id=auto_id,
                                                                mkey=mkey)
                 menu = {'type': 'click', 'name': name, 'key': mkey}
             elif _type == 'single':
@@ -424,6 +415,7 @@ class ImageListHandler(AccountBaseHandler):
 class FormHandler(AccountBaseHandler):
     """自定义表单管理"""
 
+    @form_auth
     def get(self, aid):
         forms = self.form_manager.get_form_list_by_aid(self.account.aid)
         self.render('account/forms.html', account=self.account, index='form', forms=forms)
@@ -432,6 +424,7 @@ class FormHandler(AccountBaseHandler):
 class FormDataHandler(AccountBaseHandler):
     """查看表单上数据"""
 
+    @form_auth
     def get(self, aid, fid):
         form = self.form_manager.get_form_by_fid(fid)
         if not form:
@@ -448,8 +441,7 @@ class FormDataHandler(AccountBaseHandler):
             c = json.loads(form_content.content)
             c['date'] = form_content.date
             forms.append(c)
-        self.render('account/form_data.html', account=self.account, index='form', contents=forms, items=items,
-                    form=form)
+        self.render('account/form_data.html', account=self.account, index='form', contents=forms, items=items,form=form)
 
 
 class NewFormHandler(AccountBaseHandler):
@@ -478,6 +470,7 @@ class NewFormHandler(AccountBaseHandler):
 class CardHandler(AccountBaseHandler):
     """会员卡管理"""
 
+    @card_auth
     def get(self, aid):
         """
         如果还没有创建会员卡，则返回创建页面
@@ -496,6 +489,7 @@ class CardHandler(AccountBaseHandler):
                     total_page=total_page, page_size=page_size, start=start, card=card)
         return
 
+    @card_auth
     def post(self, *args, **kwargs):
         """提交会员卡创建信息"""
         card = self.card_manager.get_card_by_aid(self.account.aid)
@@ -505,13 +499,19 @@ class CardHandler(AccountBaseHandler):
         address = self.get_argument('address', 0)
         phone = self.get_argument('phone', None)
         about = self.get_argument('about', None)
+        thumb = self.get_argument('thumb', None)
+        cover = self.get_argument('cover', None)
         if not card:
             # 如果还没创建，则创建
             cid = key_util.generate_hexdigits_lower(8)
-            self.card_manager.save_card(self.account.aid, cid, register, name, mobile, address, phone, about)
+            self.card_manager.save_card(self.account.aid, cid, register, name, mobile, address, phone, about, cover)
+            card = self.card_manager.get_card_by_aid(self.account.aid)
+            self.image_article_manager.save_single_image_article('会员卡', '点击查看会员卡',
+                                                                 'http://www.wsmt.cn/card/' + card.cid, thumb,
+                                                                 self.account.aid)
         else:
             # 如果已经存在，则更新信息
-            self.card_manager.update_card(card.cid, register, name, mobile, address, phone, about)
+            self.card_manager.update_card(card.cid, register, name, mobile, address, phone, about, cover)
         result = {'r': 1}
         self.write(result)
         self.finish()
@@ -520,10 +520,12 @@ class CardHandler(AccountBaseHandler):
 class ImpactHandler(AccountBaseHandler):
     """公众账号管理印象"""
 
+    @impact_auth
     def get(self, aid):
         impacts = self.impact_manager.list_impact(self.account.aid)
         self.render('account/impact.html', account=self.account, impacts=impacts, index='impact')
 
+    @impact_auth
     def post(self, *args, **kwargs):
         """保存用户印象"""
         result = {'r': 0}
@@ -548,6 +550,7 @@ class ImpactHandler(AccountBaseHandler):
 class SiteHandler(AccountBaseHandler):
     """微官网"""
 
+    @site_auth
     def get(self, aid):
         site = self.site_manager.get_site(aid)
         site_ul = self.site_manager.get_site_ul(aid)
@@ -558,6 +561,7 @@ class SiteHandler(AccountBaseHandler):
                       site.img4 if site.img4 else None, site.img5 if site.img5 else None]
         self.render('account/site.html', account=self.account, site=site, site_ul=site_ul, images=images, index='site')
 
+    @site_auth
     def post(self, *args, **kwargs):
         params = self.get_argument('params', None)
         if not params:
@@ -567,6 +571,7 @@ class SiteHandler(AccountBaseHandler):
         ps = simplejson.loads(params, encoding='utf-8')
         title = ps['title']
         phone = ps['phone']
+        thumb = ps['thumb']
         images = ps['images']
         img1 = None
         img2 = None
@@ -582,6 +587,10 @@ class SiteHandler(AccountBaseHandler):
         self.site_manager.initial(self.account.aid)
         self.site_manager.save_site(aid=self.account.aid, title=title, phone=phone, img1=img1, img2=img2, img3=img3,
                                     img4=img4, img5=img5)
+        if thumb and len(thumb) > 0:
+            self.image_article_manager.save_single_image_article('微官网', '点击查看微官网',
+                                                                 'http://www.wsmt.cn/site/' + self.account.aid,
+                                                                 thumb, self.account.aid)
         links = ps['links']
         if links:
             for link in links:
@@ -609,4 +618,6 @@ handlers = [
     (r'/account/([^/]+)/impact', ImpactHandler),
     (r'/account/([^/]+)/site', SiteHandler),
 ]
+
+
 

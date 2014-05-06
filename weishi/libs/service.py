@@ -99,10 +99,14 @@ class AccountManager(Base):
         """经过微信服务器验证的，将checked设为1"""
         self.db.execute('update t_account set checked = 1 where aid = %s', aid)
 
+    def change_auth(self, _id, menu, card, form, site, impact):
+        """修改权限"""
+        self.db.execute('update t_account set menu = %s, card = %s, form = %s, site = %s, impact = %s where id = %s',
+                        menu, card, form, site, impact, _id)
+
 
 class FansManager(Base):
     def get_fans(self, aid, group_id, start, end):
-        """获取账号的粉丝"""
         if group_id:
             return self.db.query('select * from t_fans where aid = %s and group_id = %s order by id desc limit %s, %s',
                                  aid, group_id, int(start), int(end))
@@ -362,6 +366,11 @@ class ImageArticleManager(Base):
         self.db.execute('insert into t_image_article (date, title, link, summary, image, aid) '
                         'values (NOW(), %s, %s, %s, %s, %s)', title, link, summary, image, aid)
 
+    def update_single_image_article(self, title, summary, link, image, iid, aid):
+        """更新单条图文消息"""
+        self.db.execute('update t_image_article set title = %s, summary = %s, link = %s, image = %s where aid = %s '
+                        'and id = %s', title, summary, link, image, aid, iid)
+
     def save_single_image_article_with_type(self, title, summary, link, image, aid):
         """保存到条图文"""
         return self.db.execute('insert into t_image_article (date, title, link, summary, image, type, aid) '
@@ -376,6 +385,10 @@ class ImageArticleManager(Base):
         """"保存多条图文消息"""
         return self.db.execute('insert into t_image_article_group (date, id1, id2, id3, id4, id5, title, aid) '
                                'values (NOW(), %s, %s, %s, %s, %s, %s, %s)', id1, id2, id3, id4, id5, title, aid)
+
+    def update_multi_image_article(self, id1, id2, id3, id4, id5, title, _id):
+        self.db.execute('update t_image_article_group set id1 = %s, id2 = %s, id3 = %s, id4 = %s, id5 = %s, '
+                        'title = %s where id = %s', id1, id2, id3, id4, id5, title, _id)
 
     def get_multi_image_article_by_id(self, _id):
         """根据id获取image_article_group"""
@@ -466,23 +479,23 @@ class FormManager(Base):
 class CardManager(Base):
     """"会员卡管理"""
 
-    def save_card(self, aid, cid, register, name, mobile, address, phone, about):
+    def save_card(self, aid, cid, register, name, mobile, address, phone, about, cover):
         """公众号创建会员卡"""
         self.db.execute(
-            'insert into t_card (date, aid, cid, register, name, mobile, address, phone, about) '
-            'values (NOW(), %s, %s, %s, %s, %s, %s, %s, %s)', aid, cid, register, name, mobile, address, phone, about)
+            'insert into t_card (date, aid, cid, register, name, mobile, address, phone, about, cover) '
+            'values (NOW(), %s, %s, %s, %s, %s, %s, %s, %s, %s)', aid, cid, register, name, mobile, address, phone,
+            about, cover)
 
-    def update_card(self, cid, register, name, mobile, address, phone, about):
+    def update_card(self, cid, register, name, mobile, address, phone, about, cover):
         """公众号创建会员卡"""
-        self.db.execute(
-            'update t_card set register = %s, name = %s, mobile = %s, address = %s, phone = %s, about = %s where cid = %s',
-            register, name, mobile, address, phone, about, cid)
+        self.db.execute('update t_card set register = %s, name = %s, mobile = %s, address = %s, '
+                        'phone = %s, about = %s, cover = %s where cid = %s', register, name, mobile, address, phone,
+                        about, cover, cid)
 
     def save_member(self, aid, cid, num, openid, name, mobile, address):
         """保存用户的会员卡信息"""
-        self.db.execute(
-            'insert into t_card_member (date, aid, cid, num, openid, name, mobile, address) values (NOW(), %s, %s, %s, %s, %s, %s, %s)',
-            aid, cid, num, openid, name, mobile, address)
+        self.db.execute('insert into t_card_member (date, aid, cid, num, openid, name, mobile, address) '
+                        'values (NOW(), %s, %s, %s, %s, %s, %s, %s)', aid, cid, num, openid, name, mobile, address)
 
     def get_user_card_info(self, cid, openid):
         """用户是否有会员卡"""

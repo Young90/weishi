@@ -48,3 +48,23 @@ function save_user() {
             }
         })
 }
+
+function change_auth(e, id) {
+    var p = $(e).parent();
+    var form = $(p).find('input[name=form]').is(':checked') ?1:0;
+    var site = $(p).find('input[name=site]').is(':checked') ?1:0;
+    var card = $(p).find('input[name=card]').is(':checked') ?1:0;
+    var impact = $(p).find('input[name=impact]').is(':checked') ?1:0;
+    var menu = $(p).find('input[name=menu]').is(':checked') ?1:0;
+    var ps = {form: form, site:site, card:card, impact:impact, menu:menu, id:id};
+    $.ajax({
+        url: '/admin/auth',
+        type: 'POST',
+        data: ps,
+        success: function(data) {
+            if (data.r) {
+                window.location.reload();
+            }
+        }
+    })
+};
