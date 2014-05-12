@@ -117,9 +117,13 @@ class FansManager(Base):
         """根据id获取分组"""
         return self.db.get('select * from t_fans_group where aid = %s and id = %s', aid, _id)
 
+    def remove_fans_group(self, aid, _id):
+        """删除粉丝分组"""
+        self.db.execute('update t_fans set group_id = 0 where group_id = %s', _id)
+        self.db.execute('delete from t_fans_group where id = %s', _id)
+
     def get_fans_group_by_name(self, aid, name):
         """根据name获取分组"""
-        print name
         return self.db.get('select * from t_fans_group where aid = %s and name = %s', aid, name)
 
     def new_fans_group(self, aid, name):
@@ -607,3 +611,17 @@ class SiteManager(Base):
 
     def get_site_ul(self, aid):
         return self.db.query('select * from t_site_ul where aid = %s', aid)
+
+
+class ScratchManager(Base):
+    """刮刮卡"""
+
+    def get_scratch(self, aid):
+        return self.db.get('select * from t_scratch where aid = %s', aid)
+
+    def save_scratch(self, start, end, length, aid, prize_1, prize_2, prize_3, num_1, num_2, num_3, num_sum, active,
+                     times, description):
+        self.db.execute('insert into t_scratch (date, start, end, length, aid, prize_1, prize_2, prize_3, num_1,'
+                        ' num_2, num_3, num_sum, active, times, description) values (NOW(), %s, %s, %s, %s, %s, %s, '
+                        '%s, %s, %s, %s, %s, %s, %s, %s)', start, end, length, aid, prize_1, prize_2, prize_3,
+                        num_1, num_2, num_3, num_sum, active, times, description)

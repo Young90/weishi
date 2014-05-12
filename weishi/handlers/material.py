@@ -48,7 +48,7 @@ class NewSingleImageArticleHandler(AccountBaseHandler):
     def get(self, aid):
         """返回页面"""
         self.render('account/material_image_article_new_single.html', account=self.account,
-                    index='material', top='image_article')
+                    index='material', top='image_article', ia=None)
 
     def post(self, *args, **kwargs):
         """提交创建"""
@@ -101,7 +101,7 @@ class NewMultiImageArticleHandler(AccountBaseHandler):
 
     def get(self, aid):
         self.render('account/material_image_article_new_multi.html', account=self.account,
-                    index='material', top='image_article')
+                    index='material', top='image_article', article_list=None)
 
     def post(self, *args, **kwargs):
         aid = self.account.aid

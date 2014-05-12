@@ -29,7 +29,7 @@
                 </ul>
                 <div class="fans">
                     <div class="panel panel-default">
-                        <div class="panel-heading">粉丝列表（总数：{{total}}）</div>
+                        <div class="panel-heading">粉丝列表（总数：{{total}}） {% if group_id %}<a class="rm group" href="javascript:;" onclick="remove_group('{{group_id}}');">移除该分组</a>{% end %} </div>
                         <table class="table fans">
                             <thead>
                             <tr>
@@ -41,6 +41,7 @@
                                 <th>城市</th>
                                 <th>关注时间</th>
                                 <th>消息</th>
+                                <th>分组</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -53,8 +54,10 @@
                                 <td class="province">{{fan.province}}</td>
                                 <td class="city">{{fan.city}}</td>
                                 <td class="time">{{fan.subscribe_time}}</td>
-                                <td class="op">
+                                <td class="province">
                                     <a href="/account/{{account.aid}}/message/fans/{{fan.id}}">消息</a>
+                                </td>
+                                <td class="op">
                                     <div class="btn-group  btn-group-sm">
                                       <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
                                         {% if fan.group_id==0 %}修改分组{% else %}{{fan.group_name}}{% end %} <span class="caret"></span>

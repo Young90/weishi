@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>所有文章 - {{account.wei_name}}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="shortcut icon" href="{{static_url('img/favicon.ico')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.adjust.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/index.css')}}">
+</head>
+<body>
+{% include nav.html %}
+<div class="container">
+    <div class="content">
+        <div class="main">
+            <div class="main-inner">
+                {% include event_top.html %}
+                <ul class="nav nav-pills">
+                    <li class="disabled"><a href="/account/{{account.aid}}/article">所有文章</a></li>
+                    <li><a href="/account/{{account.aid}}/article/new">+新建文章</a></li>
+                </ul>
+                <div class="panel panel-default">
+                        <table class="table image-article">
+                            <thead>
+                            <tr>
+                                <th>标题</th>
+                                <th>创建时间</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for article in articles %}
+                            <tr>
+                                <td class="title"><a href="/article/{{article.slug}}" target="_blank">{{article.title}}</a></td>
+                                <td class="date">{{article.date}}</td>
+                                <td class="op">
+                                    <a href="/account/{{account.aid}}/article/{{article.slug}}/edit">编辑</a>
+                                    <a href="javascript:;" onclick="javascript:delete_article('{{account.aid}}','{{article.slug}}');">删除</a>
+                                </td>
+                            </tr>
+                            {% end %}
+                            </tbody>
+                        </table>
+                        {% include pagination.html %}
+                    </div>
+            </div>
+        </div>
+        {% include left_nav.html %}
+    </div>
+</div>
+<script src="http://cdn.staticfile.org/jquery/2.1.0/jquery.min.js"></script>
+<script src="http://cdn.staticfile.org/twitter-bootstrap/3.1.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="{{static_url('js/global.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/material.js')}}"></script>
+</body>
+</html>

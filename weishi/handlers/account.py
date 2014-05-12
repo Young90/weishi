@@ -14,7 +14,7 @@ from weishi.libs import wei_api
 from weishi.libs import key_util
 from weishi.libs.service import FansManager, MessageManager, ArticleManager, AccountManager, \
     MenuManager, ImageArticleManager, AutoManager, FormManager, CardManager, ImpactManager, AutoKeywordManager, \
-    SiteManager
+    SiteManager, ScratchManager
 
 
 class AccountBaseHandler(BaseHandler):
@@ -36,6 +36,7 @@ class AccountBaseHandler(BaseHandler):
     impact_manager = None
     auto_keyword_manager = None
     site_manager = None
+    scratch_manager = None
 
     @authenticated
     @asynchronous
@@ -52,18 +53,16 @@ class AccountBaseHandler(BaseHandler):
         self.impact_manager = ImpactManager(self.db)
         self.auto_keyword_manager = AutoKeywordManager(self.db)
         self.site_manager = SiteManager(self.db)
+        self.scratch_manager = ScratchManager(self.db)
 
         aid = self.request.uri.split('/')[2]
         if not aid:
             raise HTTPError(404)
-            return
         account = self.account_manager.get_account_by_aid(aid)
         if not account:
             raise HTTPError(404)
-            return
         if account.user_id != self.current_user.id:
             raise HTTPError(403)
-            return
         if self.get_cookie('aid', None) != account.aid:
             self.set_cookie('aid', aid)
         if not wei_api.access_token_available(account):
@@ -122,9 +121,22 @@ class AccountFansHandler(AccountBaseHandler):
 
 
 class FansGroupHandler(AccountBaseHandler):
-    """新建粉丝分组"""
+
+    def get(self, aid):
+        """移除粉丝分组"""
+        group_id = self.get_argument('group_id', 0)
+        group = self.fans_manager.get_fans_group_by_id(aid, group_id)
+        if not group:
+            self.write({'r': 0, 'e': u'分组不存在'})
+            self.finish()
+            return
+        self.fans_manager.remove_fans_group(aid, group_id)
+        self.write({'r': 1})
+        self.finish()
+        return
 
     def post(self, *args, **kwargs):
+        """新建粉丝分组"""
         aid = self.get_cookie('aid')
         name = self.get_argument('name', None)
         group = self.fans_manager.get_fans_group_by_name(aid, name)
@@ -151,7 +163,6 @@ class MessageHandler(AccountBaseHandler):
         fans = self.fans_manager.get_fans_by_id(fans_id)
         if not fans or fans.aid != self.account.aid:
             raise HTTPError(404).message(u'粉丝不存在')
-            return
         start = self.get_argument('start', 0)
         page_size = 10
         messages = self.message_manager.get_message_by_openid_aid(aid, fans.openid, start, page_size)
@@ -441,7 +452,8 @@ class FormDataHandler(AccountBaseHandler):
             c = json.loads(form_content.content)
             c['date'] = form_content.date
             forms.append(c)
-        self.render('account/form_data.html', account=self.account, index='form', contents=forms, items=items,form=form)
+        self.render('account/form_data.html', account=self.account, index='form', contents=forms, items=items,
+                    form=form)
 
 
 class NewFormHandler(AccountBaseHandler):
@@ -618,6 +630,3 @@ handlers = [
     (r'/account/([^/]+)/impact', ImpactHandler),
     (r'/account/([^/]+)/site', SiteHandler),
 ]
-
-
-

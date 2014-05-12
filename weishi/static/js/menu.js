@@ -424,4 +424,22 @@ function change_group(fans_id, group_id) {
             }
         }
     })
+};
+
+function remove_group(id){
+    ModalManager.show_confirm_modal('移除该分组后，粉丝将不会有分组，确定吗？', function(result){
+        if (result) {
+            var aid = $('input[name=aid]').val();
+            $.ajax({
+                type: 'GET',
+                url: '/account/' + aid + '/fans/group?group_id=' + id,
+                success: function(data) {
+                    if (data.r) {
+                        window.location = '/account/' + aid + '/fans';
+                    }
+                }
+            })
+        }
+        return false;
+    })
 }
