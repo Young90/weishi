@@ -91,3 +91,15 @@ def impact_auth(method):
         return method(self, *args, **kwargs)
 
     return wrapper
+
+
+def event_auth(method):
+    """微活动权限"""
+
+    @functools.wraps(method)
+    def wrapper(self, *args, **kwargs):
+        if not self.account.event:
+            raise HTTPError(404)
+        return method(self, *args, **kwargs)
+
+    return wrapper

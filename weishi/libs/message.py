@@ -43,15 +43,16 @@ def process_message(account, message, path):
             return _process_menu_click_event(account, message, path)
 
 
-def _add_single_fan(user, aid):
+def _add_single_fan(user, aid, openid):
     """将关注的用户保存到数据库"""
-    openid = user['openid']
     if fans_manager.get_fans_by_id(openid):
         # 如果用户已经取消关注后再关注
         fans_manager.re_subscribe_fans(openid, aid)
     else:
-        # 第一次关注，保存到数据库
-        fans_manager.save_single_fans(user, aid)
+        if not user:
+            fans_manager.save_single_fans_without_info(aid, openid)
+        else:
+            fans_manager.save_single_fans(user, aid)
 
 
 def _process_text_message(account, message, path):

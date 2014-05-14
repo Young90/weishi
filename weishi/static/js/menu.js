@@ -129,14 +129,6 @@ function show_input_link_dialog(obj) {
     });
 };
 
-function add_member_card(obj) {
-    var container = $(obj).parents('.op').parent();
-    var result = $(container).find('.result');
-    $(container).attr('data-type', 'card');
-    $(container).attr('data-value', 'card');
-    $(result).html('会员卡');
-};
-
 $('#menu-save-btn').on('click', function () {
     ModalManager.show_process_modal();
     var button = $('#menu-save-btn');
@@ -431,11 +423,62 @@ function remove_group(id){
         if (result) {
             var aid = $('input[name=aid]').val();
             $.ajax({
-                type: 'GET',
+                type: 'DELETE',
                 url: '/account/' + aid + '/fans/group?group_id=' + id,
                 success: function(data) {
                     if (data.r) {
                         window.location = '/account/' + aid + '/fans';
+                    }
+                }
+            })
+        }
+        return false;
+    })
+}
+
+function change_member_group(fans_id, group_id) {
+    $.ajax({
+        type: 'POST',
+        url: '/account/' + $('input[name=aid]').val() + '/card/member',
+        data: {'fans_id': fans_id, 'group_id': group_id},
+        success: function(data) {
+            if (data.r) {
+                window.location.reload()
+            }
+        }
+    })
+};
+
+function new_member_group() {
+     ModalManager.show_input_modal('输入分组名称', 'input', function(input){
+       if (input == '') {
+         return false;
+       }
+        $.ajax({
+            type: 'POST',
+            url: '/account/' + $('input[name=aid]').val() + '/card/member/group',
+            data: {name:input},
+            success: function(data) {
+                if (data.r) {
+                    window.location.reload();
+                } else {
+                    ModalManager.show_failure_modal(data.e);
+                }
+            }
+        })
+    });
+}
+
+function remove_member_group(id){
+    ModalManager.show_confirm_modal('移除该分组后，粉丝将不会有分组，确定吗？', function(result){
+        if (result) {
+            var aid = $('input[name=aid]').val();
+            $.ajax({
+                type: 'DELETE',
+                url: '/account/' + aid + '/card/member/group?group_id=' + id,
+                success: function(data) {
+                    if (data.r) {
+                        window.location = '/account/' + aid + '/card/member';
                     }
                 }
             })

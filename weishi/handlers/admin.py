@@ -84,7 +84,8 @@ class AuthHandler(AdminBaseHandler):
         card = self.get_argument('card', 0)
         site = self.get_argument('site', 0)
         impact = self.get_argument('impact', 0)
-        self.account_manager.change_auth(int(_id), int(menu), int(card), int(form), int(site), int(impact))
+        event = self.get_argument('event', 0)
+        self.account_manager.change_auth(int(_id), int(menu), int(card), int(form), int(site), int(impact), int(event))
         self.write({'r': 1})
         return
 

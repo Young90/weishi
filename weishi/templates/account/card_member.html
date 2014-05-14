@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>会员卡 - {{account.wei_name}}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="shortcut icon" href="{{static_url('img/favicon.ico')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.adjust.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/index.css')}}">
+</head>
+<body>
+{% include nav.html %}
+<div class="container">
+    <div class="content">
+        <div class="main">
+            <div class="main-inner">
+                <input type="hidden" name="aid" value="{{account.aid}}"/>
+                {% include card_top.html %}
+                <ul class="nav nav-pills">
+                    <li{% if not group_id %} class="disabled"{% end %}><a href="/account/{{account.aid}}/card/member">所有粉丝</a></li>
+                     {% for _g in groups %}
+                     {% if int(group_id) == _g.id %}
+                    <li class="disabled"><a href="/account/{{account.aid}}/card/member?group_id={{_g.id}}">{{_g.name}}</a></li>
+                     {% else %}
+                     <li><a href="/account/{{account.aid}}/card/member?group_id={{_g.id}}">{{_g.name}}</a></li>
+                     {% end %}
+                     {% end %}
+                     <li><a onclick="new_member_group();">+新建分组</a></li>
+                </ul>
+
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        共有{{total}}个会员 {% if group_id %}<a class="rm group" href="javascript:;" onclick="remove_member_group('{{group_id}}');">移除该分组</a>{% end %}
+                    </div>
+                    <table class="table image-article">
+                        <thead>
+                        <tr>
+                            <th>时间</th>
+                            <th>姓名</th>
+                            <th>会员号</th>
+                            <th>手机</th>
+                            <th>地址</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for member in members %}
+                        <tr>
+                            <td class="date">{{member.date}}</td>
+                            <td class="name">{{member.name}}</td>
+                            <td class="num">{{member.num}}</td>
+                            <td class="mobile">{{member.mobile}}</td>
+                            <td class="address">{{member.address}}</td>
+                            <td class="op">
+                                <div class="btn-group  btn-group-sm">
+                                  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                                    {% if fan.group_id==0 %}修改分组{% else %}{{fan.group_name}}{% end %} <span class="caret"></span>
+                                  </button>
+                                    <ul class="dropdown-menu" role="menu">
+                                        {% for g in groups %}
+                                        <li><a href="javascript:;" onclick="javascript:change_member_group('{{member.id}}', '{{g.id}}');">{{g.name}}</a></li>
+                                        {% end %}
+                                  </ul>
+                                </div>
+                            </td>
+                        </tr>
+                        {% end %}
+                        </tbody>
+                    </table>
+                    {% include pagination.html %}
+                </div>
+            </div>
+        </div>
+        {% include left_nav.html %}
+    </div>
+</div>
+{% include _js.html %}
+</body>
+</html>

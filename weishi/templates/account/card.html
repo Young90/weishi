@@ -15,6 +15,7 @@
     <div class="content">
         <div class="main">
             <div class="main-inner">
+                {% include card_top.html %}
                 {% if not card %}
                 <div class="new-edit">
                     <div class="alert alert-danger" style="margin-top: 10px;">还没会员卡，勾选选项，上传图片，点击创建即可</div>
@@ -75,6 +76,7 @@
                     <div class="alert alert-warning">会员卡图文消息封面，回复会员卡图文消息时的封面
                         <br>创建自会员卡后，在单条图文消息中会自动生成标题为“会员卡”的单条图文
                         <br>自定义菜单中如果要回复会员卡，请选择 单条图文 -> 输入该图文id
+                        <br>如果您的单条图文中，没有此条，您可以新建一个单条图文，将链接地址设置为以下地址：http://www.wsmt.cn/card/{{card.cid}}
                     </div>
 
                     <div class="alert alert-warning">会员卡样式图片，显示在会员卡页面</div>
@@ -128,35 +130,7 @@
                         <span>更 新</span>
                     </div>
                 </div>
-                <div class="panel panel-default">
-                    <div class="panel-body">
-                        共有{{total}}个会员
-                    </div>
-                    <table class="table image-article">
-                        <thead>
-                        <tr>
-                            <th>时间</th>
-                            <th>姓名</th>
-                            <th>会员号</th>
-                            <th>手机</th>
-                            <th>地址</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for member in members %}
-                        <tr>
-                            <td class="date">{{member.date}}</td>
-                            <td class="name">{{member.name}}</td>
-                            <td class="num">{{member.num}}</td>
-                            <td class="mobile">{{member.mobile}}</td>
-                            <td class="address">{{member.address}}</td>
-                        </tr>
-                        {% end %}
-                        </tbody>
-                    </table>
-                </div>
                 {% end %}
-
             </div>
         </div>
         {% include left_nav.html %}

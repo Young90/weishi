@@ -99,10 +99,10 @@ class AccountManager(Base):
         """经过微信服务器验证的，将checked设为1"""
         self.db.execute('update t_account set checked = 1 where aid = %s', aid)
 
-    def change_auth(self, _id, menu, card, form, site, impact):
+    def change_auth(self, _id, menu, card, form, site, impact, event):
         """修改权限"""
-        self.db.execute('update t_account set menu = %s, card = %s, form = %s, site = %s, impact = %s where id = %s',
-                        menu, card, form, site, impact, _id)
+        self.db.execute('update t_account set menu = %s, card = %s, form = %s, site = %s, impact = %s, event = %s'
+                        ' where id = %s', menu, card, form, site, impact, event, _id)
 
 
 class FansManager(Base):
@@ -146,6 +146,10 @@ class FansManager(Base):
         """根据openid获取粉丝"""
         return self.db.get('select * from t_fans where openid = %s limit 1', openid)
 
+    def get_fans_by_openid_aid(self, openid, aid):
+        """根据openid和aid获取粉丝"""
+        return self.db.get('select * from t_fans where openid = %s and aid = %s limit 1', openid, aid)
+
     def get_fans_count(self, aid, group_id):
         """获取粉丝数量"""
         if group_id:
@@ -160,6 +164,10 @@ class FansManager(Base):
                         user['openid'], user['nickname'], user['sex'], user['country'], user['province'],
                         user['city'], user['headimgurl'], datetime.datetime.fromtimestamp(int(user['subscribe_time'])),
                         user['language'], aid)
+
+    def save_single_fans_without_info(self, aid, openid):
+        self.db.execute('insert into t_fans (date, openid, subscribe_time, aid) values (NOW(), %s, NOW(), %s)', openid,
+                        aid)
 
     def save_fans(self, users, aid):
         """将粉丝插入数据库"""
@@ -505,14 +513,21 @@ class CardManager(Base):
         """用户是否有会员卡"""
         return self.db.get('select * from t_card_member where cid = %s and openid = %s', cid, openid)
 
-    def list_card_member(self, aid, cid, start, end):
+    def list_card_member(self, aid, cid, group_id, start, end):
         """列出公众号的所有会员信息"""
-        return self.db.query('select * from t_card_member where aid = %s and cid = %s order by id desc limit %s, %s',
-                             aid, cid, start, end)
+        if not group_id:
+            return self.db.query('select * from t_card_member where aid = %s and cid = %s order by id desc limit %s, '
+                                 '%s', aid, cid, start, end)
+        return self.db.query('select * from t_card_member where aid = %s and cid = %s and group_id = %s order by id '
+                             'desc limit %s, %s', aid, cid, group_id, start, end)
 
-    def get_card_member_count(self, aid, cid):
+    def get_card_member_count(self, aid, cid, group_id):
         """公众号所有会员数量"""
-        return self.db.get('select count(*) as count from t_card_member where aid = %s and cid = %s', aid, cid)['count']
+        if not group_id:
+            return self.db.get('select count(*) as count from t_card_member where aid = %s and cid = %s', aid, cid)[
+                'count']
+        return self.db.get('select count(*) as count from t_card_member where aid = %s and cid = %s and group_id = %s',
+                           aid, cid, group_id)['count']
 
     def get_card_by_cid(self, cid):
         """根据会员卡id获取会员卡"""
@@ -521,6 +536,34 @@ class CardManager(Base):
     def get_card_by_aid(self, aid):
         """获取公众账号的会员卡信息"""
         return self.db.get('select * from t_card where aid = %s', aid)
+
+    def get_card_member_by_id(self, aid, _id):
+        """获取会员"""
+        return self.db.get('select * from t_card_member where aid = %s and id = %s', aid, _id)
+
+    def new_card_member_group(self, aid, name):
+        """新建会员分组"""
+        return self.db.execute('insert into t_card_member_group (name, aid) values (%s, %s)', name, aid)
+
+    def get_member_group_by_id(self, aid, _id):
+        """获取会员分组"""
+        return self.db.get('select * from t_card_member_group where aid = %s and id = %s', aid, _id)
+
+    def get_member_group_by_name(self, aid, name):
+        return self.db.get('select * from t_card_member_group where aid = %s and name = %s', aid, name)
+
+    def change_member_group(self, member_id, group):
+        """修改会员分组"""
+        self.db.execute('update t_card_member set group_id = %, group_name = %s where id = %s',
+                        group.id, group.name, member_id)
+
+    def remove_card_member_group(self, group_id):
+        """移除会员分组"""
+        self.db.execute('update t_card_member set group_id = 0, group_name = null where group_id = %s', group_id)
+        self.db.execute('delete from t_card_member_group where id = %s', group_id)
+
+    def list_member_groups(self, aid):
+        return self.db.query('select * from t_card_member_group where aid = %s', aid)
 
 
 class ImpactManager(Base):
@@ -625,3 +668,38 @@ class ScratchManager(Base):
                         ' num_2, num_3, num_sum, active, times, description) values (NOW(), %s, %s, %s, %s, %s, %s, '
                         '%s, %s, %s, %s, %s, %s, %s, %s)', start, end, length, aid, prize_1, prize_2, prize_3,
                         num_1, num_2, num_3, num_sum, active, times, description)
+
+    def update_scratch(self, start, end, length, aid, prize_1, prize_2, prize_3, num_1, num_2, num_3, num_sum, active,
+                       times, description):
+        self.db.execute('update t_scratch set start = %s, end = %s, length = %s, prize_1 = %s, prize_2 = %s, '
+                        'prize_3 = %s, num_1 = %s, num_2 = %s, num_3 = %s, num_sum = %s, active = %s, times = %s, '
+                        'description = %s where aid = %s', start, end, length, prize_1, prize_2, prize_3, num_1, num_2,
+                        num_3, num_sum, active, times, description, aid)
+
+    def change_status(self, aid, active):
+        self.db.execute('update t_scratch set active = %s where aid = %s', active, aid)
+
+    def get_scratch_num_by_openid(self, openid, aid):
+        return self.db.get('select count(*) as count from t_scratch_result where openid = %s and aid = %s',
+                           openid, aid)['count']
+
+    def get_hit_scratch_num_by_openid(self, openid, aid):
+        return self.db.get('select count(*) as count from t_scratch_result where openid = %s and aid = %s and prize>0',
+                           openid, aid)['count']
+
+    def hit_num_since_date(self, aid, since):
+        return self.db.get('select count(*) as count from t_scratch_result where date > %s and aid = %s and prize > 0',
+                           since, aid)['count']
+
+    def hit_num_by_pirze(self, aid, prize):
+        return self.db.get('select count(*) as count from t_scratch_result where aid = %s and prize = %s',
+                           aid, prize)['count']
+
+    def save_scratch_result(self, aid, openid, prize, sn):
+        return self.db.execute(
+            'insert into t_scratch_result (date, aid, openid, prize, sn) values (NOW(), %s, %s, %s, %s)',
+            aid, openid, prize, sn)
+
+    def update_scratch_phone(self, openid, sn, _id, phone):
+        self.db.execute('update t_scratch_result set phone = %s where openid = %s and sn = %s and id = %s', phone,
+                        openid, sn, _id)

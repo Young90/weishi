@@ -90,7 +90,7 @@ def sync_fans_list(account, *callback):
     print 'wei_api.py sync_fans_list end...'
     if callback:
         method = callback[0]
-        method(users, account.aid)
+        method(users, account.aid, openid)
 
 
 @gen.coroutine
@@ -101,6 +101,7 @@ def get_user_info(account, openid, *callback):
     url = FANS_INFO_URL % (account.access_token, openid)
     response = yield gen.Task(client.fetch, url)
     body = json.loads(response.body)
+    user = None
     try:
         subscribe = body['subscribe']
         if subscribe:

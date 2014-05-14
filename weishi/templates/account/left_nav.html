@@ -55,10 +55,12 @@
         <li><a href="/account/{{account.aid}}/site">微官网</a></li>
         {% end %}
         {% end %}
+        {% if account.event %}
         {% if index=='event' %}
         <li class="active"><a href="/account/{{account.aid}}/event/scratch">微活动</a></li>
         {% else %}
         <li><a href="/account/{{account.aid}}/event/scratch">微活动</a></li>
+        {% end %}
         {% end %}
         {% if index=='message' %}
         <li class="active"><a href="#">历史消息</a></li>

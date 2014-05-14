@@ -1,0 +1,17 @@
+<ul class="nav nav-tabs">
+    {% if top=='card' %}
+    <li class="active"><a href="/account/{{account.aid}}/card">设置</a></li>
+    {% else %}
+    <li><a href="/account/{{account.aid}}/card">设置</a></li>
+    {% end %}
+    {% if top=='member' %}
+    <li class="active"><a href="/account/{{account.aid}}/card/member">会员</a></li>
+    {% else %}
+    <li><a href="/account/{{account.aid}}/card/member">会员</a></li>
+    {% end %}
+    {% if top=='point' %}
+    <li class="active"><a href="/account/{{account.aid}}/card/rule">积分规则</a></li>
+    {% else %}
+    <li><a href="/account/{{account.aid}}/card/rule">积分规则</a></li>
+    {% end %}
+</ul>

@@ -121,8 +121,7 @@ class AccountFansHandler(AccountBaseHandler):
 
 
 class FansGroupHandler(AccountBaseHandler):
-
-    def get(self, aid):
+    def delete(self, aid):
         """移除粉丝分组"""
         group_id = self.get_argument('group_id', 0)
         group = self.fans_manager.get_fans_group_by_id(aid, group_id)
@@ -492,13 +491,7 @@ class CardHandler(AccountBaseHandler):
         if not card:
             self.render('account/card.html', account=self.account, index='card', card=None)
             return
-        start = self.get_argument('start', 0)
-        page_size = 20
-        total = self.card_manager.get_card_member_count(self.account.aid, card.cid)
-        total_page = math.ceil(float(total) / page_size)
-        card_members = self.card_manager.list_card_member(aid, card.cid, int(start), int(start) + page_size)
-        self.render('account/card.html', account=self.account, index='card', members=card_members, total=total,
-                    total_page=total_page, page_size=page_size, start=start, card=card)
+        self.render('account/card.html', account=self.account, index='card', card=card, top='card')
         return
 
     @card_auth
@@ -527,6 +520,92 @@ class CardHandler(AccountBaseHandler):
         result = {'r': 1}
         self.write(result)
         self.finish()
+
+
+class CardMemberHandler(AccountBaseHandler):
+    """会员管理"""
+
+    @card_auth
+    def get(self, aid):
+        """
+        如果还没有创建会员卡，则跳转到创建页面
+        如果已经创建，列出会员信息
+        """
+        card = self.card_manager.get_card_by_aid(self.account.aid)
+        if not card:
+            self.redirect('/account/' + aid + '/card')
+            return
+        start = self.get_argument('start', 0)
+        group_id = self.get_argument('group_id', 0)
+        page_size = 20
+        total = self.card_manager.get_card_member_count(self.account.aid, card.cid, group_id)
+        total_page = math.ceil(float(total) / page_size)
+        card_members = self.card_manager.list_card_member(aid, card.cid, group_id, int(start), int(start) + page_size)
+        groups = self.card_manager.list_member_groups(aid)
+        self.render('account/card_member.html', account=self.account, index='card', members=card_members, total=total,
+                    total_page=total_page, page_size=page_size, start=start, card=card, groups=groups, top='member',
+                    group_id=group_id)
+        return
+
+    def post(self, *args, **kwargs):
+        """
+        修改会员分组
+        """
+        aid = self.get_cookie('aid')
+        member_id = self.get_argument('fans_id', 0)
+        group_id = self.get_argument('group_id', 0)
+        fans = self.card_manager.get_card_member_by_id(aid, member_id)
+        group = self.card_manager.get_member_group_by_id(aid, group_id)
+        if not fans or not group:
+            result = {'r': 0, 'e': u'参数不正确'}
+            self.write(result)
+            self.finish()
+            return
+        self.card_manager.change_member_group(member_id, group)
+        result = {'r': 1}
+        self.write(result)
+        self.finish()
+        return
+
+
+class CardRuleHandler(AccountBaseHandler):
+
+    def get(self, aid):
+
+        self.render()
+
+
+class CardMemberGroupHandler(AccountBaseHandler):
+
+    def delete(self, aid):
+        """移除会员分组"""
+        group_id = self.get_argument('group_id', 0)
+        group = self.card_manager.get_member_group_by_id(aid, group_id)
+        if not group:
+            self.write({'r': 0, 'e': u'分组不存在'})
+            self.finish()
+            return
+        self.card_manager.remove_card_member_group(group_id)
+        self.write({'r': 1})
+        self.finish()
+        return
+
+    def post(self, *args, **kwargs):
+        """新建会员分组"""
+        aid = self.get_cookie('aid')
+        name = self.get_argument('name', None)
+        group = self.card_manager.get_member_group_by_name(aid, name)
+        if not name or group:
+            result = {'r': 0, 'e': u'名称错误或已经存在'}
+            self.write(result)
+            self.finish()
+            return
+        self.card_manager.new_card_member_group(aid, name)
+        group = self.card_manager.get_member_group_by_name(aid, name)
+        result = {'r': 1, 'name': group.name, 'id': int(group.id), 'aid': aid}
+        self.write(result)
+        self.finish()
+        return
 
 
 class ImpactHandler(AccountBaseHandler):
@@ -627,6 +706,8 @@ handlers = [
     (r'/account/([^/]+)/form/new', NewFormHandler),
     (r'/account/([^/]+)/form/([^/]+)/data', FormDataHandler),
     (r'/account/([^/]+)/card', CardHandler),
+    (r'/account/([^/]+)/card/member', CardMemberHandler),
+    (r'/account/([^/]+)/card/member/group', CardMemberGroupHandler),
     (r'/account/([^/]+)/impact', ImpactHandler),
     (r'/account/([^/]+)/site', SiteHandler),
 ]

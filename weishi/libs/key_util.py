@@ -15,3 +15,9 @@ def generate_digits_starts_with(starts, length):
     digits = '0123456789'
     return starts + ''.join([random.choice(digits) for i in range(0, length - len(starts))])
 
+
+def generate_digits(length):
+    """产生纯数字字符串，并以某几个字符开头"""
+    digits = '0123456789'
+    return ''.join([random.choice(digits) for i in range(0, length)])
+

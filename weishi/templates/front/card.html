@@ -17,12 +17,21 @@
 </head>
 <body onselectstart="return true;" ondragstart="return false;">
 <div class="container">
+    {% if not card.cover %}
     <div class="card-container">
         <div class="card">
             <div class="name">{{account.wei_name}}</div>
             <div class="num"><span class="member">会员号</span> <span class="member-num">{{member.num}}</span></div>
         </div>
     </div>
+    {% else %}
+    <div class="card-container">
+        <div class="card-cover" style="background-image: url({{card.cover}});">
+            <div class="name"></div>
+            <div class="num"><span class="member">会员号</span> <span class="member-num">{{member.num}}</span></div>
+        </div>
+    </div>
+    {% end %}
     {% if card.phone or card.about %}
     <div class="info-container">
         <div class="tele"><a href="tel:{{card.phone}}"><i class="fa fa-phone"></i>{{card.phone}}<i class="fa fa-chevron-right"></i></a></div>
