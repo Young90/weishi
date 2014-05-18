@@ -15,7 +15,7 @@ from weishi.libs import wei_api
 from weishi.libs import key_util
 from weishi.libs.service import FansManager, MessageManager, ArticleManager, AccountManager, \
     MenuManager, ImageArticleManager, AutoManager, FormManager, CardManager, ImpactManager, AutoKeywordManager, \
-    SiteManager, ScratchManager
+    SiteManager, EventManager
 
 
 class AccountBaseHandler(BaseHandler):
@@ -37,7 +37,7 @@ class AccountBaseHandler(BaseHandler):
     impact_manager = None
     auto_keyword_manager = None
     site_manager = None
-    scratch_manager = None
+    event_manager = None
 
     @authenticated
     @asynchronous
@@ -54,7 +54,7 @@ class AccountBaseHandler(BaseHandler):
         self.impact_manager = ImpactManager(self.db)
         self.auto_keyword_manager = AutoKeywordManager(self.db)
         self.site_manager = SiteManager(self.db)
-        self.scratch_manager = ScratchManager(self.db)
+        self.event_manager = EventManager(self.db)
 
         aid = self.request.uri.split('/')[2]
         if not aid:

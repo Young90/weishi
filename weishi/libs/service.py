@@ -694,57 +694,58 @@ class SiteManager(Base):
         return self.db.query('select * from t_site_ul where aid = %s', aid)
 
 
-class ScratchManager(Base):
+class EventManager(Base):
     """刮刮卡"""
 
-    def get_scratch(self, aid):
-        return self.db.get('select * from t_scratch where aid = %s', aid)
+    def get_event(self, aid, type):
+        return self.db.get('select * from t_event where aid = %s and type = %s', aid, type)
 
-    def save_scratch(self, start, end, length, aid, prize_1, prize_2, prize_3, num_1, num_2, num_3, num_sum, active,
-                     times, description):
-        self.db.execute('insert into t_scratch (date, start, end, length, aid, prize_1, prize_2, prize_3, num_1,'
-                        ' num_2, num_3, num_sum, active, times, description) values (NOW(), %s, %s, %s, %s, %s, %s, '
-                        '%s, %s, %s, %s, %s, %s, %s, %s)', start, end, length, aid, prize_1, prize_2, prize_3,
-                        num_1, num_2, num_3, num_sum, active, times, description)
+    def save_event(self, start, end, length, aid, prize_1, prize_2, prize_3, num_1, num_2, num_3, num_sum, active,
+                   times, description, type):
+        self.db.execute('insert into t_event (date, start, end, length, aid, prize_1, prize_2, prize_3, num_1,'
+                        ' num_2, num_3, num_sum, active, times, description, type) values (NOW(), %s, %s, %s, %s, %s, '
+                        '%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', start, end, length, aid, prize_1, prize_2, prize_3,
+                        num_1, num_2, num_3, num_sum, active, times, description, type)
 
-    def update_scratch(self, start, end, length, aid, prize_1, prize_2, prize_3, num_1, num_2, num_3, num_sum, active,
-                       times, description):
-        self.db.execute('update t_scratch set start = %s, end = %s, length = %s, prize_1 = %s, prize_2 = %s, '
+    def update_event(self, start, end, length, aid, prize_1, prize_2, prize_3, num_1, num_2, num_3, num_sum, active,
+                     times, description, type):
+        self.db.execute('update t_event set start = %s, end = %s, length = %s, prize_1 = %s, prize_2 = %s, '
                         'prize_3 = %s, num_1 = %s, num_2 = %s, num_3 = %s, num_sum = %s, active = %s, times = %s, '
-                        'description = %s where aid = %s', start, end, length, prize_1, prize_2, prize_3, num_1, num_2,
-                        num_3, num_sum, active, times, description, aid)
+                        'description = %s where aid = %s and type = %s', start, end, length, prize_1, prize_2, prize_3,
+                        num_1, num_2, num_3, num_sum, active, times, description, aid, type)
 
-    def change_status(self, aid, active):
-        self.db.execute('update t_scratch set active = %s where aid = %s', active, aid)
+    def change_status(self, aid, active, type):
+        self.db.execute('update t_event set active = %s where aid = %s and type = %s', active, aid, type)
 
-    def get_scratch_num_by_openid(self, openid, aid):
-        return self.db.get('select count(*) as count from t_scratch_result where openid = %s and aid = %s',
-                           openid, aid)['count']
+    def get_event_num_by_openid(self, openid, aid, type):
+        return self.db.get('select count(*) as count from t_event_result where openid = %s and aid = %s and type = %s',
+                           openid, aid, type)['count']
 
-    def get_hit_scratch_num_by_openid(self, openid, aid):
-        return self.db.get('select count(*) as count from t_scratch_result where openid = %s and aid = %s and prize>0',
-                           openid, aid)['count']
+    def get_hit_event_num_by_openid(self, openid, aid, type):
+        return self.db.get('select count(*) as count from t_event_result where openid = %s and aid = %s and type = %s'
+                           ' and prize > 0', openid, aid, type)['count']
 
-    def hit_num_since_date(self, aid, since):
-        return self.db.get('select count(*) as count from t_scratch_result where date > %s and aid = %s and prize > 0',
-                           since, aid)['count']
+    def hit_num_since_date(self, aid, since, type):
+        return self.db.get('select count(*) as count from t_event_result where date > %s and aid = %s and type = %s'
+                           ' and prize > 0', since, aid)['count']
 
-    def hit_num_by_pirze(self, aid, prize):
-        return self.db.get('select count(*) as count from t_scratch_result where aid = %s and prize = %s',
-                           aid, prize)['count']
+    def hit_num_by_pirze(self, aid, prize, type):
+        return self.db.get('select count(*) as count from t_event_result where aid = %s and prize = %s and type = %s',
+                           aid, prize, type)['count']
 
-    def save_scratch_result(self, aid, openid, prize, sn):
+    def save_event_result(self, aid, openid, prize, sn, type):
         return self.db.execute(
-            'insert into t_scratch_result (date, aid, openid, prize, sn) values (NOW(), %s, %s, %s, %s)',
-            aid, openid, prize, sn)
+            'insert into t_event_result (date, aid, openid, prize, sn, type) values (NOW(), %s, %s, %s, %s, %s)',
+            aid, openid, prize, sn, type)
 
-    def update_scratch_phone(self, openid, sn, _id, phone):
-        self.db.execute('update t_scratch_result set phone = %s where openid = %s and sn = %s and id = %s', phone,
-                        openid, sn, _id)
+    def update_event_phone(self, openid, sn, _id, phone, type):
+        self.db.execute('update t_event_result set phone = %s where openid = %s and sn = %s and id = %s and type = %s',
+                        phone, openid, sn, _id, type)
 
-    def list_scratch_history(self, aid, start, size):
-        return self.db.query('select * from t_scratch_result where aid = %s order by id desc limit %s, %s',
-                             aid, start, size)
+    def list_event_history(self, aid, start, size, type):
+        return self.db.query('select * from t_event_result where aid = %s and type = %s order by id desc limit %s, %s',
+                             aid, type, start, size)
 
-    def scratch_history_count(self, aid):
-        return self.db.get('select count(*) as count from t_scratch_result where aid = %s', aid)['count']
+    def event_history_count(self, aid, type):
+        return self.db.get(
+            'select count(*) as count from t_event_result where aid = %s and type = %s', aid, type)['count']

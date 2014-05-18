@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>创建大转盘游戏 - {{account.wei_name}}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="shortcut icon" href="{{static_url('img/favicon.ico')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.adjust.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/index.css')}}">
+    <link rel="stylesheet" href="http://cdn.staticfile.org/bootstrap-datetimepicker/3.0.0/css/bootstrap-datetimepicker.min.css"/>
+    <link rel="stylesheet" href="http://cdn.staticfile.org/font-awesome/4.0.3/css/font-awesome.min.css"/>
+</head>
+<body>
+{% include nav.html %}
+<div class="container">
+    <div class="content">
+        <div class="main">
+            <div class="main-inner">
+                {% include event_top.html %}
+                <ul class="nav nav-pills">
+                    <li class="disabled"><a href="/account/{{account.aid}}/event/lottery">游戏设置</a></li>
+                    <li><a href="/account/{{account.aid}}/event/lottery/results">游戏记录</a></li>
+                </ul>
+                <div class="new-edit">
+                     <div class="alert alert-warning">中奖规则：活动持续时间(T)/总奖品数(n) = 中奖间隔(t)
+                     <br>当用户抽奖时，如果前t段时间内的奖品没有抽出去，则该用户中最低等级的奖</div>
+                </div>
+                {% if not scratch %}
+                <div class="new-edit">
+                <div class="alert alert-warning">还没有创建游戏，填写以下内容创建
+                <br>如果没有设置二三等奖，可以留白</div>
+                <div class="input-group input-group-lg edit-group date start" data-date-format="YYYY-MM-DD HH:mm:ss">
+                    <span class="input-group-addon">开始时间</span>
+                    <input readonly name="start" size="16" type="text" class="form-control">
+                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                </div>
+                <div class="input-group input-group-lg edit-group date end" data-date-format="YYYY-MM-DD HH:mm:ss">
+                    <span class="input-group-addon">结束时间</span>
+                    <input readonly name="end" size="16" type="text" class="form-control">
+                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                </div>
+                <div class="input-group input-group-lg edit-group">
+                    <span class="input-group-addon">抽奖次数</span>
+                    <input name="times" size="16" type="text" class="form-control" placeholder="每个用户允许抽奖的次数，例如：2">
+                </div>
+                <div class="input-group input-group-lg edit-group">
+                    <span class="input-group-addon">&nbsp;&nbsp;一等奖&nbsp;&nbsp;</span>
+                    <input name="prize_1" size="16" type="text" class="form-control" placeholder="奖项设置，例如：现金1000元">
+                    <input name="num_1" size="16" type="number" class="form-control" placeholder="一等奖数量，例如：1">
+                </div>
+                <div class="input-group input-group-lg edit-group">
+                    <span class="input-group-addon">&nbsp;&nbsp;二等奖&nbsp;&nbsp;</span>
+                    <input name="prize_2" size="16" type="text" class="form-control" placeholder="奖项设置，例如：现金300元">
+                    <input name="num_2" size="16" type="number" class="form-control" placeholder="二等奖数量，例如：10">
+                </div>
+                <div class="input-group input-group-lg edit-group">
+                    <span class="input-group-addon">&nbsp;&nbsp;三等奖&nbsp;&nbsp;</span>
+                    <input name="prize_3" size="16" type="text" class="form-control" placeholder="奖项设置，例如：现金100元">
+                    <input name="num_3" size="16" type="number" class="form-control" placeholder="三等奖数量，例如：100">
+                </div>
+                <div class="input-group input-group-lg edit-group">
+                    <span class="input-group-addon">抽奖说明</span>
+                    <textarea name="description" type="text" class="form-control summary" placeholder="例如：亲，请点击进入刮刮奖活动页面，祝您好运哦！  "></textarea>
+                </div>
+                    <div id="scratch-save-btn" class="btn btn-primary submit-btn">
+                        <span>保 存</span>
+                    </div>
+                </div>
+                {% else %}
+                <div class="new-edit">
+                <div class="alert alert-warning">
+                    {% if active and scratch.start < current < scratch.end %}
+                    游戏正在进行中，点击游戏记录可以查看游戏参与记录，<a href="javascript:;" onclick="change_status(0);">点击此处</a> 暂停游戏
+                    {% elif not active and scratch.start < current < scratch.end %}
+                    游戏已被您暂停，<a href="javascript:;" onclick="change_status(1);">点击此处</a> 恢复游戏
+                    {% elif scratch.start > current %}
+                    游戏还没开始，修改起始时间控制游戏是否开始
+                    {% elif scratch.end < current %}
+                    游戏已经结束，修改结束时间控制游戏是否开始
+                    {% end %}
+                    <br>游戏必须在单条图文中回复，请新建一条单条图文，链接地址设置为：
+                    <br>http://wsmt.sinaapp.com/event/scratch/{{account.aid}}
+                </div>
+                <div class="input-group input-group-lg edit-group date start" data-date-format="YYYY-MM-DD HH:mm:ss">
+                    <span class="input-group-addon">开始时间</span>
+                    <input readonly name="start" size="16" type="text" class="form-control" value="{{start}}">
+                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                </div>
+                <div class="input-group input-group-lg edit-group date end" data-date-format="YYYY-MM-DD HH:mm:ss">
+                    <span class="input-group-addon">结束时间</span>
+                    <input readonly name="end" size="16" type="text" class="form-control" value="{{end}}">
+                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                </div>
+                <div class="input-group input-group-lg edit-group">
+                    <span class="input-group-addon">抽奖次数</span>
+                    <input name="times" size="16" value="{{scratch.times}}" type="text" class="form-control" placeholder="每个用户允许抽奖的次数，例如：2">
+                </div>
+                <div class="input-group input-group-lg edit-group">
+                    <span class="input-group-addon">&nbsp;&nbsp;一等奖&nbsp;&nbsp;</span>
+                    <input name="prize_1" size="16" value="{{scratch.prize_1}}" type="text" class="form-control" placeholder="奖项设置，例如：现金1000元">
+                    <input name="num_1" size="16" value="{{scratch.num_1}}" type="number" class="form-control" placeholder="一等奖数量，例如：1">
+                </div>
+                <div class="input-group input-group-lg edit-group">
+                    <span class="input-group-addon">&nbsp;&nbsp;二等奖&nbsp;&nbsp;</span>
+                    <input name="prize_2" size="16" type="text" value="{{scratch.prize_2}}" class="form-control" placeholder="奖项设置，例如：现金300元">
+                    <input name="num_2" size="16" type="number" value="{{scratch.num_2}}" class="form-control" placeholder="二等奖数量，例如：10">
+                </div>
+                <div class="input-group input-group-lg edit-group">
+                    <span class="input-group-addon">&nbsp;&nbsp;三等奖&nbsp;&nbsp;</span>
+                    <input name="prize_3" size="16" type="text" value="{{scratch.prize_3}}" class="form-control" placeholder="奖项设置，例如：现金100元">
+                    <input name="num_3" size="16" type="number" value="{{scratch.num_3}}" class="form-control" placeholder="三等奖数量，例如：100">
+                </div>
+                <div class="input-group input-group-lg edit-group">
+                    <span class="input-group-addon">抽奖说明</span>
+                    <textarea name="description" type="text" class="form-control summary" placeholder="例如：亲，请点击进入刮刮奖活动页面，祝您好运哦">{{scratch.description}}</textarea>
+                </div>
+                    <div id="scratch-save-btn" class="btn btn-primary submit-btn">
+                        <span>保 存</span>
+                    </div>
+                </div>
+                {% end %}
+            </div>
+        </div>
+        {% include left_nav.html %}
+    </div>
+</div>
+<script src="http://cdn.staticfile.org/jquery/2.1.0/jquery.min.js"></script>
+<script src="http://cdn.staticfile.org/moment.js/2.6.0/moment.min.js"></script>
+<script src="http://cdn.staticfile.org/moment.js/2.6.0/lang/zh-cn.js"></script>
+<script src="http://cdn.staticfile.org/twitter-bootstrap/3.1.1/js/bootstrap.min.js"></script>
+<script src="http://cdn.staticfile.org/bootstrap-datetimepicker/3.0.0/js/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript" src="{{static_url('js/global.js')}}"></script>
+<script type="text/javascript">
+    $(function () {
+        $('.date').datetimepicker({
+            useCurrent: true,
+            language: 'zh-cn'
+        });
+    });
+
+    function change_status(status) {
+         var url = window.location.href + '/status?status=' + status;
+        $.ajax({
+            url:url,
+            type:'GET',
+            success: function(data) {
+                if (data.r) {
+                    window.location.reload();
+                }
+            }
+        })
+    }
+
+    $('#scratch-save-btn').on('click', function() {
+        var button = $('#multi-save-btn');
+        button.attr('disabled', 'disabled');
+        var start = $('.start').data('DateTimePicker').getDate().toString();
+        if (start == '') {
+            ModalManager.show_failure_modal('请选择起始日期！');
+            button.removeAttr('disabled');
+            return false;
+        }
+        var end = $('.end').data("DateTimePicker").getDate();
+        if (end == '') {
+            ModalManager.show_failure_modal('请选择结束日期！');
+            button.removeAttr('disabled');
+            return false;
+        }
+        var times = $('input[name=times]').val();
+        if (times == '' || times == 0 || isNaN(times)) {
+            ModalManager.show_failure_modal('请输入正确的抽奖次数！');
+            button.removeAttr('disabled');
+            return false;
+        }
+        var prize_1 = $('input[name=prize_1]').val();
+        if (prize_1 == '') {
+            ModalManager.show_failure_modal('请输入正确的一等奖描述！');
+            button.removeAttr('disabled');
+            return false;
+        }
+        var num_1 = $('input[name=num_1]').val();
+        if (num_1 == '' || num_1 == 0 || isNaN(num_1)) {
+            ModalManager.show_failure_modal('请输入正确的一等奖数量！');
+            button.removeAttr('disabled');
+            return false;
+        }
+        var prize_2 = $('input[name=prize_2]').val();
+        var num_2 = $('input[name=num_2]').val();
+        var prize_3 = $('input[name=prize_3]').val();
+        var num_3 = $('input[name=num_3]').val();
+        var description = $('textarea[name=description]').val();
+        if (description == '') {
+            ModalManager.show_failure_modal('请输入准确的描述！');
+            button.removeAttr('disabled');
+            return false;
+        }
+        var p = {
+            start: String(start),
+            end: String(end),
+            times: times,
+            prize_1: prize_1,
+            num_1: num_1,
+            prize_2: prize_2,
+            num_2: num_2,
+            prize_3: prize_3,
+            num_3: num_3,
+            description: description
+        }
+        var url = window.location.href;
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: p,
+            success: function(data) {
+                button.removeAttr('disabled');
+                if (data.r) {
+                    window.location.reload();
+                } else {
+
+                }
+            }
+        })
+    });
+</script>
+</body>
+</html>

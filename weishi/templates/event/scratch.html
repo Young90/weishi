@@ -15,6 +15,7 @@
 <script src="http://cdn.staticfile.org/jquery/2.1.1-rc2/jquery.min.js"></script>
 <script src="{{static_url('js/wScratchPad.js')}}"></script>
 <div class="main">
+    <input type="hidden" name="aid" value="{{account.aid}}"/>
     <div class="cover">
         <img src="{{static_url('img/event/activity-scratch-card-bannerbg.png')}}">
         <div id="prize"></div>
@@ -95,6 +96,7 @@
             return
         }
         var submitData = {phone:tel,openid: '{{openid}}', id:'{{id}}', sn:'{{sn}}'};
+        var url = '/event/' + $('input[name=aid]').val() + '/scratch/hit';
         $.post(window.location.href, submitData,
             function (data) {
                 if (data.r == true) {

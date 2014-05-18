@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<link rel="stylesheet" type="text/css" href="{{static_url('css/event/activity.css')}}" media="all">
+<meta name="viewport" content=" initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="format-detection" content="telephone=no">
+<meta name="description" content="大转盘">
+<title>大转盘</title>
+<body class="activity-lottery-winning">
+<script src="http://cdn.staticfile.org/jquery/2.1.1-rc2/jquery.min.js"></script>
+<div class="main">
+    <input type="hidden" name="aid" value="{{account.aid}}"/>
+    <div id="outercont">
+        <div id="outer-cont">
+        <div id="outer">
+            <img src="{{static_url('img/event/activity-lottery-3.png')}}">
+        </div>
+        </div>
+        <div id="inner-cont">
+            <div id="inner">
+                <img src="{{static_url('img/event/activity-lottery-2.png')}}">
+            </div>
+        </div>
+    </div>
+    <div class="content">
+        <div class="boxcontent boxyellow" id="result" style="display: none">
+            <div class="box">
+                <div class="title-orange"><span>恭喜你中奖了</span></div>
+                <div class="Detail">
+                    <p>你中了：<span class="red" id="prizetype"></span></p>
+                    <p>兑奖SN码：<span class="red" id="sncode"></span></p>
+                    <p class="red" id="red">本次兑奖码已经关联你的微信号!</p>
+                    <p><input name="tel" class="px" id="tel" value="" type="text" placeholder="用户请输入您的手机号"></p>
+                    <p><input class="pxbtn" name="提 交" id="save-btn" type="button" value="用户提交"></p>
+                </div>
+            </div>
+        </div>
+            <div class="boxcontent boxyellow">
+                <div class="box">
+                    <div class="title-green"><span>奖项设置：</span></div>
+                    <div class="Detail">
+                        <p>一等奖： {{scratch.prize_1}}</p>
+                        <p>二等奖： {{scratch.prize_2}}</p>
+                        <p>三等奖： {{scratch.prize_3}}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="boxcontent boxyellow">
+                <div class="box">
+                    <div class="title-green">活动说明：</div>
+                    <div class="Detail">
+                        <p class="red">本次活动总共可以转{{scratch.times}}次转盘!你已经转了{{num}}次。如果已中奖，则不可再转！ </p>
+                        <p>{{scratch.description}}</p>
+                    </div>
+                </div>
+            </div>
+    </div>
+</div>
+<script type="text/javascript">
+$(function () {
+    window.requestAnimFrame = (function () {
+        return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame ||
+        function (callback) {
+            window.setTimeout(callback, 1000 / 60)
+        }
+    })();
+    var totalDeg = 360 * 3 + 0;
+    var steps = [];
+    var lostDeg = [36, 96, 156, 216, 276, 336];
+    var prizeDeg = [6, 66, 126, 186, 246, 306];
+    var prize, sncode;
+    var count = 0;
+    var now = 0;
+    var a = 0.01;
+    var outter, inner, timer, running = false;
+    function countSteps() {
+        var t = Math.sqrt(2 * totalDeg / a);
+        var v = a * t;
+        for (var i = 0; i < t; i++) {
+            steps.push((2 * v * i - a * i * i) / 2)
+        }
+        steps.push(totalDeg)
+    }
+    function step() {
+        outter.style.webkitTransform = 'rotate(' + steps[now++] + 'deg)';
+        outter.style.MozTransform = 'rotate(' + steps[now++] + 'deg)';
+        if (now < steps.length) {
+            running = true;
+            requestAnimFrame(step)
+        } else {
+            running = false;
+            setTimeout(function () {
+                if (prize != null) {
+                    $("#sncode").text(sncode);
+                    var type = "";
+                    if (prize == 1) {
+                        type = "一等奖"
+                    } else if (prize == 2) {
+                        type = "二等奖"
+                    } else if (prize == 3) {
+                        type = "三等奖"
+                    } else if (prize == 4) {
+                        type = "四等奖"
+                    } else if (prize == 5) {
+                        type = "五等奖"
+                    } else if (prize == 6) {
+                        type = "六等奖"
+                    }
+                    $("#prizetype").text(type);
+                    $("#result").slideToggle(500);
+                    $("#outercont").slideUp(500)
+                } else {
+                    alert("亲，继续努力哦！")
+                }
+            }, 200)
+        }
+    }
+
+    function start(deg) {
+        deg = deg || lostDeg[parseInt(lostDeg.length * Math.random())];
+        running = true;
+        clearInterval(timer);
+        totalDeg = 360 * 2 + deg;
+        steps = [];
+        now = 0;
+        countSteps();
+        requestAnimFrame(step)
+    }
+    window.start = start;
+    outter = document.getElementById('outer');
+    inner = document.getElementById('inner');
+    var i = 10;
+
+    $("#inner").click(function () {
+        if (running) return;
+        if (count >= 4) {
+            alert("您已经抽了 5 次奖,不能再抽了,下次再来吧!");
+            return
+        }
+
+        $.ajax({
+            url: '/event/lottery/' + $('input[name=aid]').val(),
+            type: 'POST',
+            data: {openid: '{{openid}}'},
+            beforeSend: function () {
+                running = true;
+                timer = setInterval(function () {
+                    i += 5;
+                    outter.style.webkitTransform = 'rotate(' + i + 'deg)';
+                    outter.style.MozTransform = 'rotate(' + i + 'deg)'
+                },
+                1)
+            },
+            success: function (data) {
+                prize = 1;
+                if (!data.r) {
+                    alert(data.e);
+                    count = 3;
+                    clearInterval(timer);
+                    return
+                }
+                if (data.hit) {
+                    prize = data.hit;
+                    sncode = data.sn;
+                    start(prizeDeg[data.hit - 1])
+                } else {
+                    prize = null;
+                    start()
+                }
+                running = false;
+                count++
+            },
+            error: function () {
+                prize = null;
+                start();
+                running = false;
+                count++
+            },
+            timeout: 15000
+
+        })
+    })
+});
+$("#save-btn").bind("click",
+function () {
+    var btn = $(this);
+    var tel = $("#tel").val();
+    if (tel == '') {
+        alert("请输入手机号");
+        return
+    }
+
+    var submitData = {
+            id: 8733,
+            code: $("#sncode").text(),
+            tel: tel,
+            tel_rename:'手机号',
+            sdid: 17257,
+            fromUsername:'o-pbztxCqi44pjVEILVcPP8cskX0',
+            tk:'bdd00ad7a260d5b6347e993eadfc5ae1'
+    };
+    $.post('/activity/AddBigWeel', submitData,
+    function (data) {
+        if (data.success == true) {
+            alert(data.msg);
+            return
+        } else { }
+    },
+    "json")
+});
+
+$("#save-btnn").bind("click",
+function () {
+    var submitData = {
+            id: 8733,
+            code: $("#sncode").text(),
+            sdid: 17257,
+            parssword: $("#parssword").val(),
+            Confirm_pwd : '',
+            fromUsername:'o-pbztxCqi44pjVEILVcPP8cskX0',
+            tk:'bdd00ad7a260d5b6347e993eadfc5ae1'
+    };
+    $.post('/activity/AddBigWeel', submitData,
+    function (data) {
+        if (data.success == true) {
+            alert(data.msg);
+            if (data.changed == true) {
+                window.location.href = location.href;
+            }
+            return
+        } else { }
+    }, "json")
+});
+</script>
+</body>
+</html>
