@@ -135,6 +135,13 @@ var ModalManager = {
         $modal.modal();
     },
 
+    hide_process_modal: function() {
+        var modal = $('#process-modal');
+        if (modal) {
+            modal.modal('hide');
+        }
+    },
+
     show_custom_modal: function(html) {
         var $modal = $('<div id="process-modal" class="modal fade" tablindex="-1" role="dialog" aria-labelledby="myModalLabel" ' +
             'aria-hidden="true">' +

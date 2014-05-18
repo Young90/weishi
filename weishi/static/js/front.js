@@ -18,9 +18,9 @@ function submit_reg_form(n, m, a) {
             ModalManager.show_failure_modal('还没填写手机号呢！');
             return
         }
-        if (!(/^0?(13[0-9]|15[012356789]|18[0236789]|14[57])[0-9]{8}$/.test(mobile))) {
+        if (!(/^0?(13[0-9]|15[0-9]|18[0-9]|14[0-9]|17[0-9])[0-9]{8}$/.test(mobile))) {
             button.removeAttr('disabled');
-            ModalManager.show_failure_modal('输入的手机号码格式不正确！');
+            ModalManager.show_failure_modal('输入正确的手机号，不能包含空格横线等字符！');
             return
         }
     }

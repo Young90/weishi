@@ -7,7 +7,7 @@ import xmltodict
 from tornado.web import HTTPError
 from weishi.libs.handler import BaseHandler
 from weishi.libs import wei_api
-from weishi.libs import message as message_util
+from weishi.libs.message import Message
 from weishi.libs.service import AccountManager, FansManager
 
 
@@ -19,10 +19,12 @@ class APIBaseHandler(BaseHandler):
     account_manager = None
     fans_manager = None
     article_manager = None
+    message_util = None
 
     def prepare(self):
         self.account_manager = AccountManager(self.db)
         self.fans_manager = FansManager(self.db)
+        self.message_util = Message(self.db)
 
     def _validate_signature(self, token, signature, timestamp, nonce):
         """
@@ -86,7 +88,7 @@ class APIHandler(APIBaseHandler):
         message = self._get_message()
         if not message:
             raise HTTPError(404)
-        result = message_util.process_message(account, message, self.get_template_path())
+        result = self.message_util.process_message(account, message, self.get_template_path())
         if result:
             self.write(result)
 

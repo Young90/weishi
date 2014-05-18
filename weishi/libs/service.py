@@ -166,8 +166,8 @@ class FansManager(Base):
                         user['language'], aid)
 
     def save_single_fans_without_info(self, aid, openid):
-        self.db.execute('insert into t_fans (date, openid, subscribe_time, aid) values (NOW(), %s, NOW(), %s)', openid,
-                        aid)
+        self.db.execute('insert into t_fans (date, openid, nickname, subscribe_time, aid) values (NOW(), %s, %s, '
+                        'NOW(), %s)', openid, openid, aid)
 
     def save_fans(self, users, aid):
         """将粉丝插入数据库"""
@@ -554,8 +554,8 @@ class CardManager(Base):
 
     def change_member_group(self, member_id, group):
         """修改会员分组"""
-        self.db.execute('update t_card_member set group_id = %, group_name = %s where id = %s',
-                        group.id, group.name, member_id)
+        self.db.execute('update t_card_member set group_id = %s, group_name = %s where id = %s', group.id,
+                        group.name, member_id)
 
     def remove_card_member_group(self, group_id):
         """移除会员分组"""
@@ -564,6 +564,44 @@ class CardManager(Base):
 
     def list_member_groups(self, aid):
         return self.db.query('select * from t_card_member_group where aid = %s', aid)
+
+    def save_card_rule(self, aid, follow, time, message):
+        """会员积分规则"""
+        self.db.execute('insert into t_card_rule (date, aid, follow, time, message) values (NOW(), %s, %s, %s, %s)',
+                        aid, follow, time, message)
+
+    def update_card_rule(self, aid, follow, time, message):
+        self.db.execute('update t_card_rule set follow = %s, time = %s, message = %s where aid = %s', follow,
+                        time, message, aid)
+
+    def get_account_card_rule(self, aid):
+        return self.db.get('select * from t_card_rule where aid = %s', aid)
+
+    def list_history(self, aid, start, size):
+        return self.db.query('select * from t_card_history where aid = %s order by id desc limit %s, %s', aid, start,
+                             size)
+
+    def history_count(self, aid):
+        return self.db.get('select count(*) as count from t_card_history where aid = %s', aid)['count']
+
+    def new_history(self, aid, openid, type, point, card_num):
+        self.db.execute('insert into t_card_history (date, aid, openid, type, point, card_num) values (NOW(), %s, %s,'
+                        '%s, %s, %s)', aid, openid, type, point, card_num)
+
+    def update_history_by_type(self, openid, point, type):
+        self.db.execute('update t_card_history set point = %s where openid = %s and type = %s', point, openid, type)
+
+    def get_history_by_type(self, openid, aid, type):
+        return self.db.get('select * from t_card_history where openid = %s and aid = %s and type = %s', openid, aid,
+                           type)
+
+    def update_all_member_point(self):
+        self.db.execute('update t_card_member m set m.point = (select sum(h.point) from t_card_history h '
+                        'where m.openid = h.openid)')
+
+    def update_member_point_by_openid(self, openid):
+        self.db.execute('update t_card_member m set m.point = (select sum(h.point) from t_card_history h '
+                        'where m.openid = h.openid) where m.openid = %s', openid)
 
 
 class ImpactManager(Base):
@@ -703,3 +741,10 @@ class ScratchManager(Base):
     def update_scratch_phone(self, openid, sn, _id, phone):
         self.db.execute('update t_scratch_result set phone = %s where openid = %s and sn = %s and id = %s', phone,
                         openid, sn, _id)
+
+    def list_scratch_history(self, aid, start, size):
+        return self.db.query('select * from t_scratch_result where aid = %s order by id desc limit %s, %s',
+                             aid, start, size)
+
+    def scratch_history_count(self, aid):
+        return self.db.get('select count(*) as count from t_scratch_result where aid = %s', aid)['count']

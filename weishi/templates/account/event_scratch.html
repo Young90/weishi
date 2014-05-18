@@ -22,6 +22,10 @@
                     <li class="disabled"><a href="/account/{{account.aid}}/event/scratch">游戏设置</a></li>
                     <li><a href="/account/{{account.aid}}/event/scratch/results">游戏记录</a></li>
                 </ul>
+                <div class="new-edit">
+                     <div class="alert alert-warning">中奖规则：活动持续时间(T)/总奖品数(n) = 中奖间隔(t)
+                     <br>当用户抽奖时，如果前t段时间内的奖品没有抽出去，则该用户中最低等级的奖</div>
+                </div>
                 {% if not scratch %}
                 <div class="new-edit">
                 <div class="alert alert-warning">还没有创建游戏，填写以下内容创建
@@ -75,6 +79,8 @@
                     {% elif scratch.end < current %}
                     游戏已经结束，修改结束时间控制游戏是否开始
                     {% end %}
+                    <br>游戏必须在单条图文中回复，请新建一条单条图文，链接地址设置为：
+                    <br>http://wsmt.sinaapp.com/event/scratch/{{account.aid}}
                 </div>
                 <div class="input-group input-group-lg edit-group date start" data-date-format="YYYY-MM-DD HH:mm:ss">
                     <span class="input-group-addon">开始时间</span>

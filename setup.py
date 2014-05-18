@@ -13,6 +13,7 @@ setup(
                       "wtforms>1.0",
                       "wtforms-tornado>0",
                       "xmltodict>0.8",
-                      "simplejson>=3.3.1"
+                      "simplejson>=3.3.1",
+                      "xlwt>=0.7.5"
     ],
 )

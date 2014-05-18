@@ -3,8 +3,9 @@ __author__ = 'young'
 
 import math
 import json
-
+import xlwt
 import simplejson
+import StringIO
 from tornado.web import HTTPError, asynchronous
 
 from weishi.libs.decorators import authenticated, menu_auth, card_auth, site_auth, impact_auth, form_auth
@@ -547,36 +548,135 @@ class CardMemberHandler(AccountBaseHandler):
                     group_id=group_id)
         return
 
+    @card_auth
     def post(self, *args, **kwargs):
-        """
-        修改会员分组
-        """
         aid = self.get_cookie('aid')
-        member_id = self.get_argument('fans_id', 0)
-        group_id = self.get_argument('group_id', 0)
+        op = self.get_argument('op', None)
+        member_id = int(self.get_argument('fans_id', 0))
         fans = self.card_manager.get_card_member_by_id(aid, member_id)
-        group = self.card_manager.get_member_group_by_id(aid, group_id)
-        if not fans or not group:
+        if not fans:
             result = {'r': 0, 'e': u'参数不正确'}
             self.write(result)
             self.finish()
             return
-        self.card_manager.change_member_group(member_id, group)
-        result = {'r': 1}
-        self.write(result)
-        self.finish()
-        return
+        if op == 'group':
+            group_id = int(self.get_argument('group_id', 0))
+            group = self.card_manager.get_member_group_by_id(aid, group_id)
+            if not group:
+                result = {'r': 0, 'e': u'参数不正确'}
+                self.write(result)
+                self.finish()
+                return
+            self.card_manager.change_member_group(member_id, group)
+            result = {'r': 1}
+            self.write(result)
+            self.finish()
+            return
+        elif op == 'point':
+            try:
+                point = int(self.get_argument('point', 0))
+            except ValueError:
+                result = {'r': 0, 'e': u'参数不正确'}
+                self.write(result)
+                self.finish()
+                return
+            self.card_manager.new_history(aid, fans.openid, '管理员修改', point, fans.num)
+            self.card_manager.update_member_point_by_openid(fans.openid)
+            result = {'r': 1}
+            self.write(result)
+            self.finish()
+            return
 
 
 class CardRuleHandler(AccountBaseHandler):
 
+    @card_auth
     def get(self, aid):
+        rule = self.card_manager.get_account_card_rule(aid)
+        self.render('account/card_rule.html', account=self.account, rule=rule, index='card', top='point')
+        return
 
-        self.render()
+    @card_auth
+    def post(self, *args, **kwargs):
+        follow = self.get_argument('follow', 0)
+        times = self.get_argument('times', 0)
+        message = self.get_argument('message', 0)
+        rule = self.card_manager.get_account_card_rule(self.account.aid)
+        if not rule:
+            self.card_manager.save_card_rule(self.account.aid, follow, times, message)
+        else:
+            self.card_manager.update_card_rule(self.account.aid, follow, times, message)
+        self.write({'r': 1})
+        self.finish()
+        return
+
+
+class CardHistoryHandler(AccountBaseHandler):
+    """积分历史"""
+
+    @card_auth
+    def get(self, aid):
+        try:
+            start = int(self.get_argument('start', 0))
+        except ValueError:
+            start = 0
+        page_size = 20
+        total = self.card_manager.history_count(self.account.aid)
+        total_page = math.ceil(float(total) / page_size)
+        history_list = self.card_manager.list_history(aid, start, page_size)
+        self.render('account/card_history.html', account=self.account, index='card', top='point', total=total,
+                    start=start, total_page=total_page, history_list=history_list, page_size=page_size)
+
+
+class CardExportHandler(AccountBaseHandler):
+    """导出用户记录到excel"""
+
+    @card_auth
+    def get(self, aid):
+        group_id = int(self.get_argument('group_id', 0))
+        name = '会员信息.xls'
+        if group_id:
+            group = self.card_manager.get_member_group_by_id(aid, group_id)
+            if not group:
+                self.write({'r': 0, 'e': 'not exists'})
+                self.finish()
+                return
+            name = group.name + '.xls'
+        card = self.card_manager.get_card_by_aid(aid)
+        members = self.card_manager.list_card_member(aid, card.cid, group_id, 0, 100000)
+        m_file = xlwt.Workbook()
+        table = m_file.add_sheet(u'全部会员')
+        table.write(0, 0, 'id')
+        table.write(0, 1, u'注册日期')
+        table.write(0, 2, 'openid')
+        table.write(0, 3, u'姓名')
+        table.write(0, 4, u'会员卡号')
+        table.write(0, 5, u'电话')
+        table.write(0, 6, u'地址')
+        table.write(0, 7, u'积分')
+        table.write(0, 8, u'分组')
+        for i, m in enumerate(members):
+            table.write(i + 1, 0, m.id)
+            table.write(i + 1, 1, m.date.strftime("%Y-%m-%d %H:%M:%S"))
+            table.write(i + 1, 2, m.openid)
+            table.write(i + 1, 3, m.name)
+            table.write(i + 1, 4, m.num)
+            table.write(i + 1, 5, m.mobile)
+            table.write(i + 1, 6, m.address)
+            table.write(i + 1, 7, m.point)
+            table.write(i + 1, 8, m.group_name)
+        f = StringIO.StringIO()
+        m_file.save(f)
+        self.set_header('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset="utf-8"')
+        self.set_header('Content-Disposition', 'attachment;filename="%s";charset="utf-8";' % name)
+        self.write(f.getvalue())
+        self.finish()
+        return
 
 
 class CardMemberGroupHandler(AccountBaseHandler):
 
+    @card_auth
     def delete(self, aid):
         """移除会员分组"""
         group_id = self.get_argument('group_id', 0)
@@ -590,6 +690,7 @@ class CardMemberGroupHandler(AccountBaseHandler):
         self.finish()
         return
 
+    @card_auth
     def post(self, *args, **kwargs):
         """新建会员分组"""
         aid = self.get_cookie('aid')
@@ -707,6 +808,9 @@ handlers = [
     (r'/account/([^/]+)/form/([^/]+)/data', FormDataHandler),
     (r'/account/([^/]+)/card', CardHandler),
     (r'/account/([^/]+)/card/member', CardMemberHandler),
+    (r'/account/([^/]+)/card/rule', CardRuleHandler),
+    (r'/account/([^/]+)/card/history', CardHistoryHandler),
+    (r'/account/([^/]+)/card/export', CardExportHandler),
     (r'/account/([^/]+)/card/member/group', CardMemberGroupHandler),
     (r'/account/([^/]+)/impact', ImpactHandler),
     (r'/account/([^/]+)/site', SiteHandler),

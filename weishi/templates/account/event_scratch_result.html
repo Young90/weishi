@@ -17,27 +17,28 @@
             <div class="main-inner">
                 {% include event_top.html %}
                 <ul class="nav nav-pills">
-                    <li class="disabled"><a href="/account/{{account.aid}}/article">所有文章</a></li>
-                    <li><a href="/account/{{account.aid}}/article/new">+新建文章</a></li>
+                    <li><a href="/account/{{account.aid}}/event/scratch">游戏设置</a></li>
+                    <li class="disabled"><a href="/account/{{account.aid}}/event/scratch/results">游戏记录</a></li>
                 </ul>
                 <div class="panel panel-default">
                         <table class="table image-article">
                             <thead>
                             <tr>
-                                <th>标题</th>
-                                <th>创建时间</th>
-                                <th>操作</th>
+                                <th>openid</th>
+                                <th>抽奖时间</th>
+                                <th>中的奖</th>
+                                <th>兑奖码</th>
+                                <th>手机号</th>
                             </tr>
                             </thead>
                             <tbody>
-                            {% for article in articles %}
+                            {% for result in results %}
                             <tr>
-                                <td class="title"><a href="/article/{{article.slug}}" target="_blank">{{article.title}}</a></td>
-                                <td class="date">{{article.date}}</td>
-                                <td class="op">
-                                    <a href="/account/{{account.aid}}/article/{{article.slug}}/edit">编辑</a>
-                                    <a href="javascript:;" onclick="javascript:delete_article('{{account.aid}}','{{article.slug}}');">删除</a>
-                                </td>
+                                <td class="title">{{result.openid}}</td>
+                                <td class="date">{{result.date}}</td>
+                                <td class="op">{{result.prize}}</td>
+                                <td class="op">{{result.sn}}</td>
+                                <td class="op">{{result.phone}}</td>
                             </tr>
                             {% end %}
                             </tbody>

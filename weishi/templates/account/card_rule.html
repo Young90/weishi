@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>积分规则 - {{account.wei_name}}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="shortcut icon" href="{{static_url('img/favicon.ico')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.adjust.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/index.css')}}">
+</head>
+<body>
+{% include nav.html %}
+<div class="container">
+    <div class="content">
+        <div class="main">
+            <div class="main-inner">
+                <input type="hidden" name="aid" value="{{account.aid}}"/>
+                {% include card_top.html %}
+                <ul class="nav nav-pills">
+                    <li class="disabled"><a href="/account/{{account.aid}}/card/rule">积分设置</a></li>
+                    <li><a href="/account/{{account.aid}}/card/history">积分记录</a></li>
+                </ul>
+                {% if not rule %}
+                <div class="new-edit">
+                    <div class="alert alert-warning">填入以下选项，点击保存后创建积分规则，如果不想开启，请设置为0
+                        <br>保存后点击“刷新分数”即可刷新分数记录，进入“积分记录”即可看到积分详情
+                    </div>
+                    <div class="input-group input-group-lg edit-group">
+                    <span class="input-group-addon">起始积分</span>
+                    <input name="follow" size="16" type="number" class="form-control" placeholder="用户注册会员卡后就有的积分，例如：20">
+                    </div>
+                    <div class="alert alert-warning">关注每满30天后可以获得的积分</div>
+                    <div class="input-group input-group-lg edit-group">
+                    <span class="input-group-addon">时间积分</span>
+                    <input name="times" size="16" type="number" class="form-control" placeholder="每30天获取的积分，例如：20">
+                    </div>
+                    <div class="btn btn-primary submit-btn">
+                        <span>保 存</span>
+                    </div>
+                </div>
+                {% else %}
+                <div class="new-edit">
+                    <div class="alert alert-warning">填入以下选项，点击保存后创建积分规则，如果不想开启，请设置为0
+                        <br>保存后点击“刷新分数”即可刷新分数记录
+                    </div>
+                    <div class="input-group input-group-lg edit-group">
+                    <span class="input-group-addon">起始积分</span>
+                    <input name="follow" size="16" value="{{rule.follow}}" type="number" class="form-control" placeholder="用户注册会员卡后就有的积分，例如：20">
+                    </div>
+                    <div class="alert alert-warning">关注每满30天后可以获得的积分</div>
+                    <div class="input-group input-group-lg edit-group">
+                    <span class="input-group-addon">时间积分</span>
+                    <input name="times" size="16" value="{{rule.time}}" type="number" class="form-control" placeholder="每30天获取的积分，例如：20">
+                    </div>
+                    <div class="btn btn-primary submit-btn submit">
+                        <span>保 存</span>
+                    </div>
+                    <div class="btn btn-success submit-btn fresh">
+                        <span>刷新分数</span>
+                    </div>
+                </div>
+                {% end %}
+            </div>
+        </div>
+        {% include left_nav.html %}
+    </div>
+</div>
+{% include _js.html %}
+<script>
+    $('.submit').on('click', function(){
+        var follow = $('input[name=follow]').val();
+        var times=  $('input[name=times]').val();
+        if (follow == '') {
+            follow = 0;
+        }
+        if (times == '') {
+            times = 0;
+        }
+        $.ajax({
+            url: window.location.href,
+            type: 'POST',
+            data: {'follow': follow, 'times': times},
+            success: function(data) {
+                if (data.r) {
+                    window.location.reload();
+                }
+            }
+        })
+    });
+
+    $('.fresh').on('click', function(){
+        var aid = $('input[name=aid]').val();
+        var url = '/task/card?aid=' + aid;
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function(data) {
+                if (data.r) {
+                    ModalManager.show_success_modal('刷新分数成功！');
+                }
+            }
+        })
+    })
+</script>
+</body>
+</html>

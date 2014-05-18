@@ -16,6 +16,9 @@
         <div class="main">
             <div class="main-inner">
                 <input type="hidden" name="aid" value="{{account.aid}}"/>
+                <div class="alert alert-warning">
+                    受微信接口限制，订阅号不能获取粉丝详细信息，如果您的账号是订阅号，只能显示粉丝id
+                </div>
                  <ul class="nav nav-pills">
                     <li{% if not group_id %} class="disabled"{% end %}><a href="/account/{{account.aid}}/fans">所有粉丝</a></li>
                      {% for _g in groups %}

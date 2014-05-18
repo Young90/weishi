@@ -440,7 +440,7 @@ function change_member_group(fans_id, group_id) {
     $.ajax({
         type: 'POST',
         url: '/account/' + $('input[name=aid]').val() + '/card/member',
-        data: {'fans_id': fans_id, 'group_id': group_id},
+        data: {'op':'group', 'fans_id': fans_id, 'group_id': group_id},
         success: function(data) {
             if (data.r) {
                 window.location.reload()
@@ -448,6 +448,27 @@ function change_member_group(fans_id, group_id) {
         }
     })
 };
+
+
+function change_member_point(fans_id) {
+    ModalManager.show_input_modal('输入分数，减分用负数表示，注意是在原来基础上修改', 'input', function(result){
+        if (result == '') {
+            return;
+        }
+        $.ajax({
+            url: '/account/' + $('input[name=aid]').val() + '/card/member',
+            type: 'POST',
+            data: {op:'point', fans_id:fans_id, point: result},
+            success: function(data) {
+                if (data.r) {
+                    window.location.reload();
+                } else {
+                    ModalManager.show_failure_modal(data.e);
+                }
+            }
+        })
+    });
+}
 
 function new_member_group() {
      ModalManager.show_input_modal('输入分组名称', 'input', function(input){

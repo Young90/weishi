@@ -111,7 +111,7 @@ def get_user_info(account, openid, *callback):
     print 'wei_api.py get_user_info end...'
     if callback:
         method = callback[0]
-        method(user, account.aid)
+        method(user, account.aid, openid)
 
 
 @gen.coroutine

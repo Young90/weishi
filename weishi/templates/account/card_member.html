@@ -26,12 +26,15 @@
                      <li><a href="/account/{{account.aid}}/card/member?group_id={{_g.id}}">{{_g.name}}</a></li>
                      {% end %}
                      {% end %}
-                     <li><a onclick="new_member_group();">+新建分组</a></li>
+                     <li><a href="javascript:;" onclick="new_member_group();">+新建分组</a></li>
                 </ul>
-
+                <div class="new-edit">
+                    <div class="alert alert-warning">修改会员积分后，可以到 积分规则 -> 积分记录 查看详情
+                    </div>
+                </div>
                 <div class="panel panel-default">
                     <div class="panel-body">
-                        共有{{total}}个会员 {% if group_id %}<a class="rm group" href="javascript:;" onclick="remove_member_group('{{group_id}}');">移除该分组</a>{% end %}
+                        共有{{total}}个会员 <a class="group" href="/account/{{account.aid}}/card/export?group_id={{group_id}}"> 导出excel</a> {% if group_id %}<a class="rm group" href="javascript:;" onclick="remove_member_group('{{group_id}}');">移除该分组</a>{% end %}
                     </div>
                     <table class="table image-article">
                         <thead>
@@ -41,6 +44,7 @@
                             <th>会员号</th>
                             <th>手机</th>
                             <th>地址</th>
+                            <th>积分</th>
                             <th>操作</th>
                         </tr>
                         </thead>
@@ -52,16 +56,22 @@
                             <td class="num">{{member.num}}</td>
                             <td class="mobile">{{member.mobile}}</td>
                             <td class="address">{{member.address}}</td>
+                            <td class="address">{{member.point}}</td>
                             <td class="op">
                                 <div class="btn-group  btn-group-sm">
                                   <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                                    {% if fan.group_id==0 %}修改分组{% else %}{{fan.group_name}}{% end %} <span class="caret"></span>
+                                    {% if member.group_id==0 %}修改分组{% else %}{{member.group_name}}{% end %} <span class="caret"></span>
                                   </button>
                                     <ul class="dropdown-menu" role="menu">
                                         {% for g in groups %}
-                                        <li><a href="javascript:;" onclick="javascript:change_member_group('{{member.id}}', '{{g.id}}');">{{g.name}}</a></li>
+                                        <li><a href="javascript:;" onclick="change_member_group('{{member.id}}', '{{g.id}}');">{{g.name}}</a></li>
                                         {% end %}
                                   </ul>
+                                </div>
+                                <div class="btn-group  btn-group-sm">
+                                <div class="btn btn-primary" onclick="change_member_point('{{member.id}}')">
+                                    <span>修改积分</span>
+                                </div>
                                 </div>
                             </td>
                         </tr>

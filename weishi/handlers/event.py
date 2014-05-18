@@ -3,6 +3,7 @@ __author__ = 'houxiaohou'
 
 import time
 import datetime
+import math
 from dateutil import parser
 from tornado.web import HTTPError
 from weishi.libs.handler import BaseHandler
@@ -20,11 +21,12 @@ class ScratchAdminHandler(AccountBaseHandler):
         scratch = self.scratch_manager.get_scratch(self.account.aid)
         start = None
         end = None
+        active = 0
+        current = int(time.time())
         if scratch:
             start = datetime.datetime.fromtimestamp(scratch.start)
             end = datetime.datetime.fromtimestamp(scratch.end)
             active = scratch.active
-            current = int(time.time())
         self.render('account/event_scratch.html', index='event', top='scratch', account=self.account, scratch=scratch,
                     start=start, end=end, active=active, current=current)
 
@@ -56,6 +58,21 @@ class ScratchAdminHandler(AccountBaseHandler):
         self.write({'r': 1})
         self.finish()
         return
+
+
+class ScratchHistoryHandler(AccountBaseHandler):
+
+    @event_auth
+    def get(self, aid):
+        start = self.get_argument('start', 0)
+        page_size = 20
+        total = self.scratch_manager.scratch_history_count(aid)
+        total_page = math.ceil(float(total) / page_size)
+        prefix = '/account/' + aid + '/event/scratch/history'
+        results = self.scratch_manager.list_scratch_history(aid, int(start), page_size)
+        self.render('account/event_scratch_result.html', index='event', top='scratch', account=self.account,
+                    prefix=prefix, total=total, total_page=total_page, page_size=page_size, start=start,
+                    results=results)
 
 
 class ScratchStatusHandler(AccountBaseHandler):
@@ -144,4 +161,5 @@ handlers = [
     (r'/event/scratch/([^/]+)', ScratchHandler),
     (r'/account/([^/]+)/event/scratch', ScratchAdminHandler),
     (r'/account/([^/]+)/event/scratch/status', ScratchStatusHandler),
+    (r'/account/([^/]+)/event/scratch/results', ScratchHistoryHandler),
 ]

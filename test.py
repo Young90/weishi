@@ -207,6 +207,7 @@ import time
 ltime=time.localtime(1402066810.0)
 print ltime
 """
+"""
 import urllib2
 from BeautifulSoup import BeautifulSoup
 
@@ -219,3 +220,5 @@ f = opener.open(url).read()
 soup = BeautifulSoup(f)
 head = soup.find('span', {'class': 'metadataField metadataFieldReadonly'})
 print 'Review' in str(head)
+"""
+print int(10/6)

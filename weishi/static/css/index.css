@@ -123,4 +123,4 @@ p.rm-n{display: inline;font-size: 16px;color: #d9534f;cursor: pointer;padding-ri
 .new-item-site{padding-top: 0;padding-left: 0;}
 a.rm{color: #d9534f;}
 a.rm:hover{color: #d9534f;}
-.group{float: right;}
+.group{float: right; margin-right:10px;}
