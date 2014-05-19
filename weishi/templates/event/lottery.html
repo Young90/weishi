@@ -59,6 +59,8 @@
     </div>
 </div>
 <script type="text/javascript">
+var id = 0;
+var sn = 0;
 $(function () {
     window.requestAnimFrame = (function () {
         return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame ||
@@ -161,10 +163,12 @@ $(function () {
                     clearInterval(timer);
                     return
                 }
-                if (data.hit) {
-                    prize = data.hit;
+                if (data.hit_num) {
+                    id = data.id;
+                    sn = data.sn;
+                    prize = data.hit_num;
                     sncode = data.sn;
-                    start(prizeDeg[data.hit - 1])
+                    start(prizeDeg[data.hit_num - 1])
                 } else {
                     prize = null;
                     start()
@@ -191,47 +195,16 @@ function () {
         alert("请输入手机号");
         return
     }
-
-    var submitData = {
-            id: 8733,
-            code: $("#sncode").text(),
-            tel: tel,
-            tel_rename:'手机号',
-            sdid: 17257,
-            fromUsername:'o-pbztxCqi44pjVEILVcPP8cskX0',
-            tk:'bdd00ad7a260d5b6347e993eadfc5ae1'
-    };
-    $.post('/activity/AddBigWeel', submitData,
+    var submitData = {phone:tel,openid: '{{openid}}', id:id, sn:sn};
+    var url = '/event/' + $('input[name=aid]').val() + '/lottery/hit';
+    $.post(url, submitData,
     function (data) {
-        if (data.success == true) {
-            alert(data.msg);
+        if (data.r) {
+            alert('提交成功！');
             return
-        } else { }
+        }
     },
     "json")
-});
-
-$("#save-btnn").bind("click",
-function () {
-    var submitData = {
-            id: 8733,
-            code: $("#sncode").text(),
-            sdid: 17257,
-            parssword: $("#parssword").val(),
-            Confirm_pwd : '',
-            fromUsername:'o-pbztxCqi44pjVEILVcPP8cskX0',
-            tk:'bdd00ad7a260d5b6347e993eadfc5ae1'
-    };
-    $.post('/activity/AddBigWeel', submitData,
-    function (data) {
-        if (data.success == true) {
-            alert(data.msg);
-            if (data.changed == true) {
-                window.location.href = location.href;
-            }
-            return
-        } else { }
-    }, "json")
 });
 </script>
 </body>

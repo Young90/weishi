@@ -97,7 +97,7 @@
         }
         var submitData = {phone:tel,openid: '{{openid}}', id:'{{id}}', sn:'{{sn}}'};
         var url = '/event/' + $('input[name=aid]').val() + '/scratch/hit';
-        $.post(window.location.href, submitData,
+        $.post(url, submitData,
             function (data) {
                 if (data.r == true) {
                     alert('提交成功');

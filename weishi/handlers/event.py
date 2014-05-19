@@ -237,17 +237,18 @@ class LotteryHandler(EventFrontBase):
         if not fans:
             self.write({'r': 0, 'e': 'invalid user'})
             return
-        event = self.event_manager.get_event(aid, self.TYPE_SCRATCH)
+        event = self.event_manager.get_event(aid, self.TYPE_LOTTERY)
         if not event:
             raise HTTPError(404)
-        hit_num = self.event_manager.get_hit_event_num_by_openid(openid, aid, self.TYPE_SCRATCH)
+        hit_num = self.event_manager.get_hit_event_num_by_openid(openid, aid, self.TYPE_LOTTERY)
         # 抽奖活动持续总时间
         current = int(time.time())
         hit = 0
+        hit_class = 0
         hit_prize = ''
         sn = 0
         _id = 0
-        num = self.event_manager.get_event_num_by_openid(openid, aid, self.TYPE_SCRATCH)
+        num = self.event_manager.get_event_num_by_openid(openid, aid, self.TYPE_LOTTERY)
         if not hit_num and num < event.times and event.start < current < event.end and event.active:
             # 去抽奖
             length = event.length
@@ -256,31 +257,35 @@ class LotteryHandler(EventFrontBase):
             offset = int(length) / int(num_sum)
             count_start = current - offset
             since = datetime.datetime.fromtimestamp(count_start)
-            since_hit_num = self.event_manager.hit_num_since_date(aid, since, self.TYPE_SCRATCH)
+            since_hit_num = self.event_manager.hit_num_since_date(aid, since, self.TYPE_LOTTERY)
             if not since_hit_num:
                 # 之前的没被抽中，中奖
                 sn = generate_digits(8)
                 num_limit = [event.num_1, event.num_2, event.num_3]
                 for i in range(3, 0, -1):
-                    if num_limit[i - 1] > self.event_manager.hit_num_by_pirze(aid, i, self.TYPE_SCRATCH):
+                    if num_limit[i - 1] > self.event_manager.hit_num_by_pirze(aid, i, self.TYPE_LOTTERY):
                         hit = 1
                         if i == 3:
                             hit_prize = '三等奖'
+                            hit_class = 3
                         elif i == 2:
                             hit_prize = '二等奖'
+                            hit_class = 2
                         elif i == 1:
                             hit_prize = '一等奖'
-                        _id = int(self.event_manager.save_event_result(aid, openid, i, sn, self.TYPE_SCRATCH))
+                            hit_class = 1
+                        _id = int(self.event_manager.save_event_result(aid, openid, i, sn, self.TYPE_LOTTERY))
                         break
             else:
-                self.event_manager.save_event_result(aid, openid, 0, 0, self.TYPE_SCRATCH)
+                self.event_manager.save_event_result(aid, openid, 0, 0, self.TYPE_LOTTERY)
         if not sn:
-            self.event_manager.save_event_result(aid, openid, 0, 0, self.TYPE_SCRATCH)
-        result = {'r': 1, 'hit': hit, 'id': _id, 'sn': sn, 'hit_prize': hit_prize}
+            self.event_manager.save_event_result(aid, openid, 0, 0, self.TYPE_LOTTERY)
+        result = {'r': 1, 'hit': hit, 'id': _id, 'sn': sn, 'hit_prize': hit_prize, 'hit_num': hit_class}
         self.write(result)
 
 
 class EventHitPhoneHandler(EventFrontBase):
+
     def post(self, *args, **kwargs):
         """中奖用户提交手机号"""
         e_name = args[1]
@@ -288,6 +293,7 @@ class EventHitPhoneHandler(EventFrontBase):
         _id = self.get_argument('id', 0)
         sn = self.get_argument('sn', None)
         phone = self.get_argument('phone', None)
+        print e_name
         self.event_manager.update_event_phone(openid, int(sn), int(_id), phone, e_name)
         self.write({'r': 1})
 

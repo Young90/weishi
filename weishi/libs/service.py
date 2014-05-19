@@ -727,7 +727,7 @@ class EventManager(Base):
 
     def hit_num_since_date(self, aid, since, type):
         return self.db.get('select count(*) as count from t_event_result where date > %s and aid = %s and type = %s'
-                           ' and prize > 0', since, aid)['count']
+                           ' and prize > 0', since, aid, type)['count']
 
     def hit_num_by_pirze(self, aid, prize, type):
         return self.db.get('select count(*) as count from t_event_result where aid = %s and prize = %s and type = %s',
