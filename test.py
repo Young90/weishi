@@ -221,4 +221,9 @@ soup = BeautifulSoup(f)
 head = soup.find('span', {'class': 'metadataField metadataFieldReadonly'})
 print 'Review' in str(head)
 """
-print int(10/6)
+
+a = 10
+
+if not a:
+    pass
+print a

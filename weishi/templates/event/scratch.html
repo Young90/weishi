@@ -61,6 +61,7 @@
     var zjl = {{hit}};
     var num = 0;
     var goon = true;
+    var has_num = {{num}};
     $(function () {
         var useragent = window.navigator.userAgent.toLowerCase();
         $("#scratchpad").wScratchPad({
@@ -69,6 +70,9 @@
             color: "#a9a9a7",
             scratchMove: function () {
                 num++;
+                if (has_num >= {{scratch.times}}) {
+                    alert('已经超过次数啦~');
+                }
                 if (!zjl && num == 2) {
                     document.getElementById('prize').innerHTML = "谢谢参与";
                 }

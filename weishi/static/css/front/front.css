@@ -8,7 +8,7 @@ img { width: 100%; }
 .num {font-size: 16px;color: #ffffff;width: 280px;text-align: center;padding-left: 100px;margin-top: 30px;}
 .num .member-num {color: #fbb450;}
 .num .member-num a {color: #fbb450;text-decoration: none;}
-.info-container {color: #333333;margin-top: 10px;min-height: 100px;border-radius: 5px;background: #fff;box-shadow: 0 1px 2px 0 rgba(158, 158, 158, 0.2);}
+.info-container {color: #333333;margin-top: 10px;border-radius: 5px;background: #fff;box-shadow: 0 1px 2px 0 rgba(158, 158, 158, 0.2);padding:10px;}
 .tele {font-size: 18px;color: #333333;text-align: left;height: 40px;padding-top: 10px;border-bottom: 1px solid #f0f0f0;line-height: 1;}
 .tele a {display: block;padding-left: 20px;color: #333333;text-decoration: none;}
 .fa-phone {font-size: 20px;margin-right: 10px;}
@@ -64,3 +64,5 @@ ul {padding: 0 !important;}
 .list_font li:nth-of-type(6n-2) div:first-child { background: #bc4040; }
 .list_font li:nth-of-type(6n-1) div:first-child { background: #6f9c97; }
 .list_font li:nth-of-type(6n) div:first-child { background: #ff8b00; }
+.p_point {padding: 10px 0 10px;}
+.p_history{padding: 0 10px 10px 10px !important;}

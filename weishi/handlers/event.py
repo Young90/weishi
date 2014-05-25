@@ -30,7 +30,6 @@ class EventBaseHandler(BaseHandler):
     TYPE_SCRATCH = 'scratch'
     TYPE_LOTTERY = 'lottery'
 
-    @authenticated
     def prepare(self):
         self.fans_manager = FansManager(self.db)
         self.account_manager = AccountManager(self.db)
@@ -249,6 +248,14 @@ class LotteryHandler(EventFrontBase):
         sn = 0
         _id = 0
         num = self.event_manager.get_event_num_by_openid(openid, aid, self.TYPE_LOTTERY)
+        if hit_num:
+            result = {'r': 0, 'e': u'已经中过奖啦~'}
+            self.write(result)
+            return
+        if num >= event.times:
+            result = {'r': 0, 'e': u'超过次数限制啦~'}
+            self.write(result)
+            return
         if not hit_num and num < event.times and event.start < current < event.end and event.active:
             # 去抽奖
             length = event.length

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{fans.nickname}} - {{account.wei_name}}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="shortcut icon" href="{{static_url('img/favicon.ico')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.adjust.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/index.css')}}">
+</head>
+<body>
+{% include nav.html %}
+<div class="container">
+    <div class="content">
+        <div class="main">
+            <div class="main-inner">
+                <input type="hidden" name="aid" value="{{account.aid}}"/>
+                <input type="hidden" name="fans_id" value="{{fans.id}}"/>
+                <div class="panel panel-default">
+                    <div class="panel-body"><h4>与 {{fans.nickname}} 对话</h4></div>
+                    <table class="table image-article">
+                        <thead>
+                        <tr>
+                            <th>用户</th>
+                            <th>时间</th>
+                            <th>消息内容</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for m in messages %}
+                        <tr>
+                            <td class="name">
+                                {% if m.outgoing %}
+                                我回复：
+                                {% else %}
+                                <img src="{{m.fans.avatar}}" width="50" height="50"> {{m.fans.nickname}}
+                                {% end %}
+                            </td>
+                            <td class="date">{{m.create_time}}</td>
+                            <td class="message">{{m.content}}</td>
+                            <td class="op">
+                                {% if not m.outgoing %}
+                                <a href="javascript:response_text();">回复</a>
+                                {% end %}
+                            </td>
+                        </tr>
+                        {% end %}
+                        </tbody>
+                    </table>
+                    {% include pagination.html %}
+                </div>
+            </div>
+        </div>
+        {% include left_nav.html %}
+    </div>
+</div>
+{% include _js.html %}
+</body>
+</html>

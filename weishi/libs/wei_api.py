@@ -121,16 +121,15 @@ def send_text_message(account, message, *callback):
     url = SEND_MESSAGE % account.access_token
     response = yield gen.Task(client.fetch, url, method='POST',
                               body=simplejson.dumps(message, encoding='utf-8', ensure_ascii=False))
-    body = json.loads(response.body, encoding='UTF-8', ensure_ascii=False)
+    body = json.loads(response.body)
     result = {'r': 1}
     try:
         errcode = body['errcode']
         if errcode:
             print body
-            result['error'] = '发送失败'
+            result['e'] = body['errmsg']
             result['r'] = 0
     except KeyError:
-        print body
         result['r'] = 0
     if callback:
         method = callback[0]

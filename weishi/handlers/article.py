@@ -17,14 +17,26 @@ class ArticleHandler(BaseHandler):
         """访问地址时，返回相关文章"""
         if not slug:
             raise HTTPError(404)
-            return
         article = self._get_article_by_slug(slug)
         if not article:
             raise HTTPError(404)
-            return
-        self.render('article/article.html', article=article)
+        openid = self.get_argument('i', '')
+        self.render('article/article.html', article=article, i=openid)
+
+
+class ArticleTemplateHandler(BaseHandler):
+
+    def get(self, slug):
+        template = self.db.get('select * from t_template where slug = %s', slug)
+        if not template:
+            raise HTTPError(404)
+        openid = self.get_argument('i', '')
+        temp_file = 'article/sub_temp_%s.html' % template.type
+        lists = self.db.query('select * from t_template_list where slug = %s', slug)
+        self.render(temp_file, i=openid, t=template, lists=lists)
 
 
 handlers = [
-    (r'/article/([^/]+)', ArticleHandler)
+    (r'/article/template/([^/]+)', ArticleTemplateHandler),
+    (r'/article/([^/]+)', ArticleHandler),
 ]

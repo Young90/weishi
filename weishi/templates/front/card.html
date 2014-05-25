@@ -40,6 +40,20 @@
         </div>
     </div>
     {% end %}
+    {% if rule %}
+    <div class="info-container">
+    {% if not member.point %}
+    <p class="p_point">当前积分：0</p>
+    {% else %}
+    <p class="p_point">当前积分：{{member.point}}</p>
+    <ul class="p_history">积分记录：
+    {% for h in historys %}
+        <li>{{h.type}} {% if h.point>0 %}+{% end %}{{h.point}}</li>
+    {% end %}
+    </ul>
+    {% end %}
+    </div>
+    {% end %}
 </div>
 </body>
 </html>

@@ -263,6 +263,63 @@ function add_site_link(e) {
     $(e).before(html);
 }
 
+function initial_upload() {
+       var url = '/upload';
+        $('.fileupload').each(function (input_index) {
+            $(this).fileupload({
+                dropZone: $(this),
+                url: url,
+                dataType: 'json',
+                done: function (e, data) {
+                    $.each(data.result.files, function (index, file) {
+                        var zone = $('.files')[input_index];
+                        var html = '<div class="img-container" data-href="' + file.url +
+                                '"><a class="img-result" href="' + file.url +
+                                '" target="_blank"><img src="' + file.thumbnailUrl +
+                                '"><p>图片</p></a><p class="fa fa-minus-circle rm"></p></div>';
+                        $(zone).append(html);
+                        var pro_zone = $('.progress')[input_index];
+                        $(pro_zone).removeClass('progress-striped active');
+                    });
+                },
+                progressall: function (e, data) {
+                    var progress = parseInt(data.loaded / data.total * 100, 10);
+                    var pro_zone = $('.progress .progress-bar')[input_index]
+                    $(pro_zone).css(
+                            'width',
+                            progress + '%'
+                    );
+                }
+            }).prop('disabled', !$.support.fileInput)
+                    .parent().addClass($.support.fileInput ? undefined : 'disabled');
+        });
+    }
+
+function add_sub_site_link(e) {
+    var html = '<div class="new-item ll">' +
+        '<input type="hidden" name="id" value="0">' +
+        '<div class="input-group edit-group">' +
+        '<span class="input-group-addon">标题</span>' +
+        '<input name="title" type="text" class="form-control" placeholder="标题字数要少于30">' +
+        '</div>' +
+        '<div class="input-group edit-group">' +
+        '<span class="input-group-addon">链接</span>' +
+        '<input name="link" type="text" class="form-control" placeholder="以http://开头">' +
+        '</div>' +
+        '<div class="btn btn-success fileinput-button">' +
+        '<i class="glyphicon glyphicon-plus"></i>' +
+        '<span>选择缩略图 <span class="tip">(建议图片尺寸640x360，大小控制在500Kb以内)</span></span>' +
+        '<input class="fileupload" type="file" name="file">' +
+        '</div>' +
+        '<div class="progress progress-striped active">' +
+        '<div class="progress-bar progress-bar-success"></div>' +
+        '</div>' +
+        '<div class="files"></div>' +
+        '</div>';
+    $(e).before(html);
+    initial_upload();
+}
+
 $(document).on('click', 'p.rm, p.rm-n', function(){
     var that = $(this);
     ModalManager.show_confirm_modal('确定删除吗？', function(result){
@@ -333,7 +390,42 @@ function save_site(e) {
                     window.location.reload();
                 }, 1500);
             } else {
-                ModalManager.show_failure_modal(data.error);
+                ModalManager.show_failure_modal(data.e);
+            }
+        }
+    })
+}
+
+function save_site_list(e) {
+    $(e).attr('disabled', 'disabled');
+    var aid = $('input[name=aid]').val();
+    var type = $('input[name=type]:checked').val();
+    var title = $('input[name=title]').val();
+    var main_thumb = $('.main_thumb').find('.img-container').data('href');
+    var ll_list = $('.ll');
+    var p_list = [];
+    for (var i = 0;i < ll_list.length; i++) {
+        var ll = $(ll_list[i]);
+        var l_title = ll.find('input[name=title]').val();
+        var l_link = ll.find('input[name=link]').val();
+        var l_thumb = ll.find('.img-container').data('href');
+        var p_l = {title: l_title, link: l_link, thumb: l_thumb}
+        p_list.push(p_l);
+    }
+    var params = {type: type, title: title, thumb: main_thumb, lists: p_list};
+    $.ajax({
+        type: 'POST',
+        url: window.location.href,
+        data: {params:JSON.stringify(params)},
+        success: function(data) {
+            $(e).removeAttr('disabled');
+            if (data.r) {
+                ModalManager.show_success_modal('保存成功！')
+                setTimeout(function () {
+                    window.location = window.location.href + '/list';
+                }, 1500);
+            } else {
+                ModalManager.show_failure_modal(data.e);
             }
         }
     })

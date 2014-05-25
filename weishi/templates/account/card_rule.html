@@ -35,6 +35,11 @@
                     <span class="input-group-addon">时间积分</span>
                     <input name="times" size="16" type="number" class="form-control" placeholder="每30天获取的积分，例如：20">
                     </div>
+                    <div class="alert alert-warning">注意：此文章必须是微世平台上的文章，并且以图文消息的形式回复</div>
+                    <div class="input-group input-group-lg edit-group">
+                    <span class="input-group-addon">分享积分</span>
+                    <input name="share" size="16" type="number" class="form-control" placeholder="分享文章到朋友圈的积分，例如：20">
+                    </div>
                     <div class="btn btn-primary submit-btn submit">
                         <span>保 存</span>
                     </div>
@@ -52,6 +57,11 @@
                     <div class="input-group input-group-lg edit-group">
                     <span class="input-group-addon">时间积分</span>
                     <input name="times" size="16" value="{{rule.time}}" type="number" class="form-control" placeholder="每30天获取的积分，例如：20">
+                    </div>
+                    <div class="alert alert-warning">分享文章到朋友圈的积分<br>注意：此文章必须是微世平台上的文章，并且以图文消息的形式回复，否则统计不到</div>
+                    <div class="input-group input-group-lg edit-group">
+                    <span class="input-group-addon">分享积分</span>
+                    <input name="share" size="16" value="{{rule.share}}" type="number" class="form-control" placeholder="分享文章到朋友圈的积分，例如：20">
                     </div>
                     <div class="btn btn-primary submit-btn submit">
                         <span>保 存</span>
@@ -71,16 +81,20 @@
     $('.submit').on('click', function(){
         var follow = $('input[name=follow]').val();
         var times=  $('input[name=times]').val();
+        var share=  $('input[name=share]').val();
         if (follow == '') {
             follow = 0;
         }
         if (times == '') {
             times = 0;
         }
+        if (share == ''){
+            share = 0;
+        }
         $.ajax({
             url: window.location.href,
             type: 'POST',
-            data: {'follow': follow, 'times': times},
+            data: {'follow': follow, 'times': times, 'share': share},
             success: function(data) {
                 if (data.r) {
                     window.location.reload();

@@ -3,9 +3,10 @@ __author__ = 'young'
 
 import math
 import json
+import StringIO
+
 import xlwt
 import simplejson
-import StringIO
 from tornado.web import HTTPError, asynchronous
 
 from weishi.libs.decorators import authenticated, menu_auth, card_auth, site_auth, impact_auth, form_auth
@@ -15,7 +16,7 @@ from weishi.libs import wei_api
 from weishi.libs import key_util
 from weishi.libs.service import FansManager, MessageManager, ArticleManager, AccountManager, \
     MenuManager, ImageArticleManager, AutoManager, FormManager, CardManager, ImpactManager, AutoKeywordManager, \
-    SiteManager, EventManager
+    SiteManager, EventManager, TemplateManager
 
 
 class AccountBaseHandler(BaseHandler):
@@ -38,6 +39,7 @@ class AccountBaseHandler(BaseHandler):
     auto_keyword_manager = None
     site_manager = None
     event_manager = None
+    template_manager = None
 
     @authenticated
     @asynchronous
@@ -55,6 +57,7 @@ class AccountBaseHandler(BaseHandler):
         self.auto_keyword_manager = AutoKeywordManager(self.db)
         self.site_manager = SiteManager(self.db)
         self.event_manager = EventManager(self.db)
+        self.template_manager = TemplateManager(self.db)
 
         aid = self.request.uri.split('/')[2]
         if not aid:
@@ -158,18 +161,39 @@ class MessageHandler(AccountBaseHandler):
     与某个用户之间的消息列表.发送消息
     """
 
-    def get(self, aid, fans_id):
+    def get(self, aid):
         """与某个用户之间的消息列表"""
-        fans = self.fans_manager.get_fans_by_id(fans_id)
-        if not fans or fans.aid != self.account.aid:
-            raise HTTPError(404).message(u'粉丝不存在')
-        start = self.get_argument('start', 0)
+        fans_id = self.get_argument('openid', None)
+        start = int(self.get_argument('start', 0))
         page_size = 10
-        messages = self.message_manager.get_message_by_openid_aid(aid, fans.openid, start, page_size)
-        total = self.message_manager.get_message_count_by_aid_openid(aid, fans.openid)
+        if fans_id:
+            fans = self.fans_manager.get_fans_by_id(fans_id)
+            print fans
+            if not fans or fans.aid != self.account.aid:
+                raise HTTPError(404)
+            messages = self.message_manager.get_message_by_openid_aid(aid, fans.openid, start, page_size)
+            for m in messages:
+                m.fans = fans
+            total = self.message_manager.get_message_count_by_aid_openid(aid, fans.openid)
+        else:
+            fans = None
+            messages = self.message_manager.get_message_by_aid(aid, start, page_size)
+            for m in messages:
+                openid = m.openid
+                fan = self.fans_manager.get_fans_by_openid(openid)
+                m.fans = fan
+            total = self.message_manager.get_message_count_by_aid(aid)
         total_page = math.ceil(float(total) / page_size)
-        self.render('account/fans_message.html', fan=fans, messages=messages, account=self.account, total=total,
-                    start=start, total_page=total_page, page_size=page_size, index='message')
+        if fans:
+            prefix = '/account/%s/message?openid=%s&' % (aid, fans_id)
+            self.render('account/messages_fans.html', fans=fans, messages=messages, account=self.account, total=total,
+                        start=start, total_page=total_page, page_size=page_size, index='message', prefix=prefix)
+            return
+        else:
+            prefix = '/account/%s/message?' % aid
+            self.render('account/messages.html', messages=messages, account=self.account, total=total,
+                        start=start, total_page=total_page, page_size=page_size, index='message', prefix=prefix)
+            return
 
     def post(self, *args, **kwargs):
         """给某个用户发送消息"""
@@ -188,10 +212,10 @@ class MessageHandler(AccountBaseHandler):
         wei_api.send_text_message(self.account, message, self._callback)
 
     def _callback(self, result, content, openid):
-        self.write(result)
-        self.finish()
         if result['r']:
             self.message_manager.save_message(content, openid, self.account.aid)
+        self.write(result)
+        self.finish()
 
 
 class MenuHandler(AccountBaseHandler):
@@ -536,16 +560,17 @@ class CardMemberHandler(AccountBaseHandler):
         if not card:
             self.redirect('/account/' + aid + '/card')
             return
-        start = self.get_argument('start', 0)
+        start = int(self.get_argument('start', 0))
         group_id = self.get_argument('group_id', 0)
         page_size = 20
         total = self.card_manager.get_card_member_count(self.account.aid, card.cid, group_id)
         total_page = math.ceil(float(total) / page_size)
         card_members = self.card_manager.list_card_member(aid, card.cid, group_id, int(start), int(start) + page_size)
         groups = self.card_manager.list_member_groups(aid)
+        prefix = '/account/%s/card/member?' % aid
         self.render('account/card_member.html', account=self.account, index='card', members=card_members, total=total,
                     total_page=total_page, page_size=page_size, start=start, card=card, groups=groups, top='member',
-                    group_id=group_id)
+                    group_id=group_id, prefix=prefix)
         return
 
     @card_auth
@@ -589,7 +614,6 @@ class CardMemberHandler(AccountBaseHandler):
 
 
 class CardRuleHandler(AccountBaseHandler):
-
     @card_auth
     def get(self, aid):
         rule = self.card_manager.get_account_card_rule(aid)
@@ -600,12 +624,13 @@ class CardRuleHandler(AccountBaseHandler):
     def post(self, *args, **kwargs):
         follow = self.get_argument('follow', 0)
         times = self.get_argument('times', 0)
+        share = self.get_argument('share', 0)
         message = self.get_argument('message', 0)
         rule = self.card_manager.get_account_card_rule(self.account.aid)
         if not rule:
-            self.card_manager.save_card_rule(self.account.aid, follow, times, message)
+            self.card_manager.save_card_rule(self.account.aid, follow, times, message, share)
         else:
-            self.card_manager.update_card_rule(self.account.aid, follow, times, message)
+            self.card_manager.update_card_rule(self.account.aid, follow, times, message, share)
         self.write({'r': 1})
         self.finish()
         return
@@ -624,8 +649,9 @@ class CardHistoryHandler(AccountBaseHandler):
         total = self.card_manager.history_count(self.account.aid)
         total_page = math.ceil(float(total) / page_size)
         history_list = self.card_manager.list_history(aid, start, page_size)
+        prefix = '/account/%s/card/history?' % aid
         self.render('account/card_history.html', account=self.account, index='card', top='point', total=total,
-                    start=start, total_page=total_page, history_list=history_list, page_size=page_size)
+                    start=start, total_page=total_page, history_list=history_list, page_size=page_size, prefix=prefix)
 
 
 class CardExportHandler(AccountBaseHandler):
@@ -667,7 +693,8 @@ class CardExportHandler(AccountBaseHandler):
             table.write(i + 1, 8, m.group_name)
         f = StringIO.StringIO()
         m_file.save(f)
-        self.set_header('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset="utf-8"')
+        self.set_header('Content-Type',
+                        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset="utf-8"')
         self.set_header('Content-Disposition', 'attachment;filename="%s";charset="utf-8";' % name)
         self.write(f.getvalue())
         self.finish()
@@ -675,7 +702,6 @@ class CardExportHandler(AccountBaseHandler):
 
 
 class CardMemberGroupHandler(AccountBaseHandler):
-
     @card_auth
     def delete(self, aid):
         """移除会员分组"""
@@ -751,7 +777,8 @@ class SiteHandler(AccountBaseHandler):
             images = [site.img1 if site.img1 else None, site.img2 if site.img2 else None,
                       site.img3 if site.img3 else None,
                       site.img4 if site.img4 else None, site.img5 if site.img5 else None]
-        self.render('account/site.html', account=self.account, site=site, site_ul=site_ul, images=images, index='site')
+        self.render('account/site.html', account=self.account, site=site, site_ul=site_ul, images=images, index='site',
+                    top='site')
 
     @site_auth
     def post(self, *args, **kwargs):
@@ -793,11 +820,48 @@ class SiteHandler(AccountBaseHandler):
         self.finish()
 
 
+class SiteTemplateHandler(AccountBaseHandler):
+    def get(self, aid):
+        self.render('account/site_template.html', account=self.account, top='sub', index='site')
+
+    def post(self, *args, **kwargs):
+        aid = self.account.aid
+        params = self.get_argument('params', None)
+        if not params:
+            result = {'r': 0, 'e': u'参数不正确'}
+            self.write(result)
+            self.finish()
+            return
+        ps = simplejson.loads(params, encoding='utf-8')
+        _type = int(ps['type'])
+        title = ps['title'] if 'title' in ps else ''
+        thumb = ps['thumb'] if 'thumb' in ps else ''
+        lists = ps['lists'] if 'lists' in ps else ''
+        slug = key_util.generate_hexdigits_lower(8)
+        self.template_manager.save_template(aid, title, slug, _type, thumb)
+        for i, l in enumerate(lists):
+            l_title = l['title'] if 'title' in l else ''
+            l_link = l['link'] if 'link' in l else ''
+            l_thumb = l['thumb'] if 'thumb' in l else ''
+            self.template_manager.save_template_list(slug, l_title, l_link, l_thumb, i)
+        self.write({'r': 1})
+        self.finish()
+        return
+
+
+class SiteTemplateListHandler(AccountBaseHandler):
+
+    def get(self, aid):
+        templates = self.template_manager.list_template(aid)
+        self.render('account/site_template_list.html', account=self.account, top='sub', index='site',
+                    templates=templates)
+
+
 handlers = [
     (r'/account/([^/]+)', AccountIndexHandler),
     (r'/account/([^/]+)/fans', AccountFansHandler),
     (r'/account/([^/]+)/fans/group', FansGroupHandler),
-    (r'/account/([^/]+)/message/fans/([^/]+)', MessageHandler),
+    (r'/account/([^/]+)/message', MessageHandler),
     (r'/account/([^/]+)/auto/follow', AutoResponseHandler),
     (r'/account/([^/]+)/auto/message', AutoResponseMessageHandler),
     (r'/account/([^/]+)/menu', MenuHandler),
@@ -814,4 +878,6 @@ handlers = [
     (r'/account/([^/]+)/card/member/group', CardMemberGroupHandler),
     (r'/account/([^/]+)/impact', ImpactHandler),
     (r'/account/([^/]+)/site', SiteHandler),
+    (r'/account/([^/]+)/site/sub', SiteTemplateHandler),
+    (r'/account/([^/]+)/site/sub/list', SiteTemplateListHandler),
 ]

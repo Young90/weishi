@@ -507,3 +507,26 @@ function remove_member_group(id){
         return false;
     })
 }
+
+function response_text(){
+    var aid = $('input[name=aid]').val();
+    var fans_id = $('input[name=fans_id]').val();
+    var url = '/account/' + aid + '/message';
+    ModalManager.show_input_modal('输入回复的内容', 'textarea', function(input){
+        if (input == '') {
+            return;
+        }
+        $.ajax({
+            type: 'POST',
+            url: url,
+            data: {fans_id: fans_id, content: input},
+            success: function(data){
+                if (data.r) {
+                    ModalManager.show_success_modal('发送成功!');
+                } else {
+                    ModalManager.show_failure_modal(data.e);
+                }
+            }
+        })
+    });
+}

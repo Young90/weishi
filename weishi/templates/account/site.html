@@ -17,6 +17,7 @@
         <div class="main">
             <div class="main-inner">
                 <input type="hidden" name="aid" value="{{account.aid}}"/>
+                {% include ./site_top.html %}
                 {% if site %}
                  <div class="new-edit">
                      <div class="alert alert-success"><a href="/site/{{account.aid}}" target="_blank">点击预览官网</a></div>
@@ -53,7 +54,7 @@
                         <div class="alert alert-warning">导航名称：显示的文字例如：联系我们
                             <br>导航图标：显示在文字上方，可以到 <a href="http://fontawesome.io/icons/" target="_blank">这个链接</a>
                             查看全部可用图标，将图标后缀粘贴在此，例如：电话对应的图标为fa-phone
-                            <br>导航链接：点击后跳转的地址，地址可以从文章列表获取
+                            <br>导航链接：点击后跳转的地址，地址可以从文章列表获取，或者复制二级页面链接到此处
                         </div>
                         {% for u in site_ul %}
                         <div class="input-group edit-group links">
@@ -111,7 +112,7 @@
                         <div class="alert alert-warning">导航名称：显示的文字例如：联系我们
                             <br>导航图标：显示在文字上方，可以到 <a href="http://fontawesome.io/icons/" target="_blank">这个链接</a>
                             查看全部可用图标，将图标后缀粘贴在此，例如：电话对应的图标为fa-phone
-                            <br>导航链接：点击后跳转的地址，地址可以从文章列表获取
+                            <br>导航链接：点击后跳转的地址，地址可以从文章列表获取，或者复制二级页面链接到此处
                         </div>
                         <div class="input-group edit-group links">
                             <p class="fa fa-minus-circle rm-n"></p>

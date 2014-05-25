@@ -14,8 +14,7 @@
     <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.css')}}" media="all">
     <link rel="stylesheet" type="text/css" href="{{static_url('css/index.css')}}" media="all">
     <link rel="stylesheet" type="text/css" href="{{static_url('css/front/front.css')}}" media="all">
-    <link rel="stylesheet" type="text/css" href="http://cdn.staticfile.org/font-awesome/4.0.3/css/font-awesome.css"
-          media="all">
+    <link rel="stylesheet" type="text/css" href="http://cdn.staticfile.org/font-awesome/4.0.3/css/font-awesome.css" media="all">
 </head>
 <body onselectstart="return true;" ondragstart="return false;">
 <div class="container">
@@ -26,5 +25,35 @@
         </div>
     </div>
 </div>
+<script type="text/javascript">
+            function afterShare(msg) {
+                var openid = '{{i}}';
+                var slug = '{{article.slug}}';
+                var aid = '{{article.aid}}';
+                var share_tj = document.createElement('script');
+                share_tj.type = 'text/javascript';
+                share_tj.async = true;
+                share_tj.src = '/share?openid=' + openid + '&slug=' + slug + '&msg=' + msg + '&aid=' + aid;
+                var stj = document.getElementsByTagName('link')[0];
+                stj.parentNode.insertBefore(share_tj, stj);
+            }
+
+            document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
+                WeixinJSBridge.on('menu:share:timeline', function (argv) {
+                    WeixinJSBridge.invoke('shareTimeline', {
+                        "img_url": "",
+                        "img_width": "160",
+                        "img_height": "160",
+                        "link": window.location.href,
+                        "desc":  "",
+                        "title": "{{article.title}}"
+                    }, function (res) {
+                        afterShare(res.err_msg);
+                        _report('timeline', res.err_msg);
+
+                    });
+                });
+            }, false)
+        </script>
 </body>
 </html>

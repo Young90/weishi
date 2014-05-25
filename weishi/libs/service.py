@@ -190,18 +190,25 @@ class FansManager(Base):
 class MessageManager(Base):
     def get_message_by_openid_aid(self, aid, openid, start, end):
         """获取跟某个用户之间的消息列表"""
-        return self.db.query('select * from t_message where openid = %s and aid = %s limit %s, %s',
+        return self.db.query('select * from t_message where openid = %s and aid = %s order by id desc limit %s, %s',
                              openid, aid, int(start), int(end))
+
+    def get_message_by_aid(self, aid, start, end):
+        return self.db.query('select * from t_message where aid = %s group by openid '
+                             'order by id desc limit %s, %s', aid, int(start), int(end))
 
     def get_message_count_by_aid_openid(self, aid, openid):
         """获取公众号跟某个粉丝之间的消息数量"""
         return self.db.get('select count(*) as count from t_message where aid = %s and openid = %s',
                            aid, openid)['count']
 
+    def get_message_count_by_aid(self, aid):
+        return self.db.get('select count(distinct openid) as count from t_message where aid = %s', aid)['count']
+
     def save_message(self, content, openid, aid):
         """发送消息后保存到数据库"""
         self.db.execute('insert into t_message (type, create_time, outgoing, content, openid, aid) '
-                        'values (1, %s, 1, %s, %s, %s)', int(time.time()), content, openid, aid)
+                        'values (1, NOW(), 1, %s, %s, %s)', content, openid, aid)
 
     def receive_text_message(self, message, aid):
         """接收用户发来的文本消息，保存到数据库"""
@@ -541,6 +548,10 @@ class CardManager(Base):
         """获取会员"""
         return self.db.get('select * from t_card_member where aid = %s and id = %s', aid, _id)
 
+    def get_card_member_by_openid(self, aid, openid):
+        """根据openid获取会员卡信息"""
+        return self.db.get('select * from t_card_member where aid = %s and openid = %s', aid, openid)
+
     def new_card_member_group(self, aid, name):
         """新建会员分组"""
         return self.db.execute('insert into t_card_member_group (name, aid) values (%s, %s)', name, aid)
@@ -565,14 +576,14 @@ class CardManager(Base):
     def list_member_groups(self, aid):
         return self.db.query('select * from t_card_member_group where aid = %s', aid)
 
-    def save_card_rule(self, aid, follow, time, message):
+    def save_card_rule(self, aid, follow, time, message, share):
         """会员积分规则"""
-        self.db.execute('insert into t_card_rule (date, aid, follow, time, message) values (NOW(), %s, %s, %s, %s)',
-                        aid, follow, time, message)
+        self.db.execute('insert into t_card_rule (date, aid, follow, time, message, share) values '
+                        '(NOW(), %s, %s, %s, %s, %s)', aid, follow, time, message, share)
 
-    def update_card_rule(self, aid, follow, time, message):
-        self.db.execute('update t_card_rule set follow = %s, time = %s, message = %s where aid = %s', follow,
-                        time, message, aid)
+    def update_card_rule(self, aid, follow, time, message, share):
+        self.db.execute('update t_card_rule set follow = %s, time = %s, message = %s, share = %s where aid = %s',
+                        follow, time, message, share, aid)
 
     def get_account_card_rule(self, aid):
         return self.db.get('select * from t_card_rule where aid = %s', aid)
@@ -602,6 +613,9 @@ class CardManager(Base):
     def update_member_point_by_openid(self, openid):
         self.db.execute('update t_card_member m set m.point = (select sum(h.point) from t_card_history h '
                         'where m.openid = h.openid) where m.openid = %s', openid)
+
+    def get_history_by_openid(self, aid, openid):
+        return self.db.query('select * from t_card_history where openid = %s and aid = %s', openid, aid)
 
 
 class ImpactManager(Base):
@@ -749,3 +763,34 @@ class EventManager(Base):
     def event_history_count(self, aid, type):
         return self.db.get(
             'select count(*) as count from t_event_result where aid = %s and type = %s', aid, type)['count']
+
+
+class AnalyticsManager(Base):
+    """统计"""
+
+    def save_share_history(self, openid, slug, success, type, aid):
+        self.db.execute('insert into t_share_history (date, slug, openid, success, type, aid) values (NOW(), %s, %s, '
+                        '%s, %s, %s)', slug, openid, success, type, aid)
+
+    def list_share_history(self, aid, start, size):
+        return self.db.query('select * from t_share_history where aid = %s order by id desc limit %s, %s', aid, start,
+                             size)
+
+    def count_share_by_openid(self, aid, openid):
+        return self.db.get('select count(*) as count from t_share_history where aid = %s and openid = %s and '
+                           'success = 1', aid, openid)['count']
+
+
+class TemplateManager(Base):
+
+    def save_template(self, aid, title, slug, type, thumb):
+        self.db.execute(
+            'insert into t_template (date, aid, slug, title, type, thumb) values (NOW(), %s, %s, %s, %s, %s)',
+            aid, slug, title, type, thumb)
+
+    def save_template_list(self, slug, title, link, thumb, rank):
+        self.db.execute('insert into t_template_list (slug, title, link, thumb, rank) values (%s, %s, %s, %s, %s)',
+                        slug, title, link, thumb, rank)
+
+    def list_template(self, aid):
+        return self.db.query('select * from t_template where aid = %s order by id desc', aid)

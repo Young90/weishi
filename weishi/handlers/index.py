@@ -6,7 +6,14 @@ import urllib
 from tornado.web import RequestHandler
 from tornado.web import HTTPError
 
-from weishi.libs.service import FormManager, FansManager, CardManager, AccountManager, ImpactManager, SiteManager
+from weishi.libs.service import (
+    FormManager,
+    FansManager,
+    CardManager,
+    AccountManager,
+    ImpactManager,
+    SiteManager,
+    AnalyticsManager)
 from weishi.libs.handler import BaseHandler
 from weishi.libs import key_util
 
@@ -69,13 +76,14 @@ class CardHandler(BaseHandler):
         if not openid or not card:
             raise HTTPError(404)
         fans = self.fans_manager.get_fans_by_openid(openid)
-        account = self.account_manager.get_account_by_aid(card.aid)
         if not fans:
             pass
-            #TODO 完善获取信息
+        account = self.account_manager.get_account_by_aid(card.aid)
         card_member = self.card_manager.get_user_card_info(cid, openid)
+        rule = self.card_manager.get_account_card_rule(card.aid)
         if card_member:
-            self.render('front/card.html', member=card_member, card=card, account=account)
+            historys = self.card_manager.get_history_by_openid(card.aid, openid)
+            self.render('front/card.html', member=card_member, card=card, account=account, rule=rule, historys=historys)
             return
         if card.register == 1:
             # 自动注册
@@ -182,6 +190,47 @@ class SiteHandler(BaseHandler):
         self.render('front/site.html', site=site, site_ul=site_ul, images=images, openid=openid)
 
 
+class ShareHandler(BaseHandler):
+    analytics_manager = None
+    fans_manager = None
+    card_manager = None
+
+    def prepare(self):
+        self.analytics_manager = AnalyticsManager(self.db)
+        self.fans_manager = FansManager(self.db)
+        self.card_manager = CardManager(self.db)
+
+    def get(self):
+        openid = self.get_argument('openid', None)
+        slug = self.get_argument('slug', None)
+        aid = self.get_argument('aid', None)
+        msg = self.get_argument('msg', None)
+        success = 1
+        _type = '好友'
+        print '%s - %s - %s - %s' % (openid, slug, aid, msg)
+        if msg and 'cancel' in msg:
+            success = 0
+        if msg and 'timeline' in msg:
+            _type = '朋友圈'
+        self.analytics_manager.save_share_history(openid, slug, success, _type, aid)
+        if openid:
+            fans = self.fans_manager.get_fans_by_openid(openid)
+            if not fans:
+                return
+            aid = fans.aid
+            rule = self.card_manager.get_account_card_rule(aid)
+            if not rule or not rule.share:
+                return
+            card = self.card_manager.get_card_by_aid(aid)
+            if not card:
+                return
+            member = self.card_manager.get_user_card_info(card.cid, openid)
+            if not member:
+                return
+            self.card_manager.new_history(aid, openid, '分享文章', rule.share, member.num)
+        self.write('1')
+
+
 handlers = [
     (r'/index/test', IndexHandler),
     (r'/form/([^/]+)', FormHandler),
@@ -189,4 +238,5 @@ handlers = [
     (r'/impact/([^/]+)', ImpactHandler),
     (r'/site/([^/]+)', SiteHandler),
     (r'/geo', GeoHandler),
+    (r'/share', ShareHandler),
 ]

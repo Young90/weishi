@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>二级页面 - {{account.wei_name}}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="shortcut icon" href="{{static_url('img/favicon.ico')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.adjust.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/index.css')}}">
+    <link rel="stylesheet" type="text/css" href="http://cdn.staticfile.org/font-awesome/4.0.3/css/font-awesome.css" media="all">
+</head>
+<body>
+{% include nav.html %}
+<div class="container">
+    <div class="content">
+        <div class="main">
+            <div class="main-inner">
+                <input type="hidden" name="aid" value="{{account.aid}}"/>
+                {% include ./site_top.html %}
+                <ul class="nav nav-pills">
+                    <li class="disabled"><a href="/account/{{account.aid}}/site/sub">+新建二级页面</a></li>
+                    <li><a href="/account/{{account.aid}}/site/sub/list">所有二级页面</a></li>
+                </ul>
+
+                <div class="new-edit">
+                    <div class="new-item new-item-site">
+                        <div class="alert alert-warning">选择模板类型，查看示例：
+                            <a href="http://wsmt.sinaapp.com/article/template/797ab562" target="_blank">大头图+文字列表</a>
+                            <a href="http://wsmt.sinaapp.com/article/template/35ef8cad" target="_blank">缩略图+文字列表</a>
+                        </div>
+                        <div class="input-group edit-group">
+                            <input name="type" type="radio" value="1" checked>&nbsp;&nbsp;大头图+文字列表&nbsp;&nbsp;&nbsp;&nbsp;
+                            <input name="type" type="radio" value="2">&nbsp;&nbsp;缩略图+文字列表
+                        </div>
+                        <div class="alert alert-warning">例如：关于我们，显示在最上方</div>
+                        <div class="input-group edit-group">
+                            <span class="input-group-addon">页面标题</span>
+                            <input name="title" type="text" class="form-control" placeholder="标题字数少于10">
+                        </div>
+                        <div class="alert alert-warning">页面大图，如果不上传，则不显示，建议尺寸640x425，小于500Kb</div>
+                        <div class="btn btn-success fileinput-button">
+                            <i class="glyphicon glyphicon-plus"></i>
+                            <span>页面大图 <span class="tip">(建议图片尺寸640x360，大小控制在500Kb以内)</span></span>
+                            <input class="fileupload" type="file" name="file">
+                        </div>
+                        <div id="progress" class="progress progress-striped active">
+                            <div class="progress-bar progress-bar-success"></div>
+                        </div>
+                        <div id="files images focus" class="files main_thumb"></div>
+                        <div class="alert alert-warning">链接列表，如果选择了没有缩略图的模板，可以不上传缩略图</div>
+                        <div class="new-item ll">
+                            <input type="hidden" name="id" value="0">
+                            <div class="input-group edit-group">
+                                <span class="input-group-addon">标题</span>
+                                <input name="title" type="text" class="form-control" placeholder="标题字数要少于30">
+                            </div>
+                            <div class="input-group edit-group">
+                                <span class="input-group-addon">链接</span>
+                                <input name="link" type="text" class="form-control" placeholder="以http://开头">
+                            </div>
+                            <div class="btn btn-success fileinput-button">
+                                <i class="glyphicon glyphicon-plus"></i>
+                                <span>选择缩略图 <span class="tip">(建议图片尺寸100x100，大小控制在500Kb以内)</span></span>
+                                <input class="fileupload" type="file" name="file">
+                            </div>
+                            <div class="progress progress-striped active">
+                                <div class="progress-bar progress-bar-success"></div>
+                            </div>
+                            <div class="files images focus"></div>
+                        </div>
+                        <a href="javascript:;" onclick="add_sub_site_link(this);">+添加一个列表</a>
+                    </div>
+                </div>
+                <div class="btn btn-primary submit-btn" onclick="save_site_list(this);">
+                    <span>保 存</span>
+                </div>
+            </div>
+            </div>
+        </div>
+        {% include left_nav.html %}
+    </div>
+</div>
+<script type="text/javascript" src="http://cdn.staticfile.org/jquery/2.1.1-rc2/jquery.min.js"></script>
+<script type="text/javascript" src="http://cdn.staticfile.org/twitter-bootstrap/3.1.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="{{static_url('js/global.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/material.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/jquery.ui.widget.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/jquery.iframe-transport.js')}}"></script>
+<script type="text/javascript" src="http://cdn.staticfile.org/blueimp-file-upload/9.5.2/jquery.fileupload.min.js"></script>
+<script type="text/javascript" src="{{static_url('js/load-image.min.js')}}"></script>
+<script type="text/javascript" src="http://cdn.staticfile.org/blueimp-file-upload/9.5.2/jquery.fileupload-process.min.js"></script>
+<script type="text/javascript" src="http://cdn.staticfile.org/blueimp-file-upload/9.5.2/jquery.fileupload-image.min.js"></script>
+<script>
+    $(function () {
+      initial_upload();
+    });
+</script>
+</body>
+</html>
