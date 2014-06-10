@@ -23,8 +23,11 @@
                     <li><a href="/account/{{account.aid}}/event/lottery/results">游戏记录</a></li>
                 </ul>
                 <div class="new-edit">
-                     <div class="alert alert-warning">中奖规则：活动持续时间(T)/总奖品数(n) = 中奖间隔(t)
-                     <br>当用户抽奖时，如果前t段时间内的奖品没有抽出去，则该用户中最低等级的奖</div>
+                     <div class="alert alert-warning">
+                     中奖规则：活动持续时间(T)/总奖品数(n) = 中奖间隔(t)
+                     <br>当用户抽奖时，如果前t段时间内的奖品没有抽出去，则该用户中最低等级的奖
+                     <br>当用户抽奖时，如果前t段时间内的奖品没有抽出去，则该用户中最低等级的奖
+                     </div>
                 </div>
                 {% if not scratch %}
                 <div class="new-edit">
@@ -39,6 +42,10 @@
                     <span class="input-group-addon">结束时间</span>
                     <input readonly name="end" size="16" type="text" class="form-control">
                     <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                </div>
+                <div class="input-group input-group-lg edit-group">
+                    <span class="input-group-addon">只允许会员参与</span>
+                    <input name="member" size="16" type="checkbox" class="form-control" checked>
                 </div>
                 <div class="input-group input-group-lg edit-group">
                     <span class="input-group-addon">抽奖次数</span>
@@ -91,6 +98,14 @@
                     <span class="input-group-addon">结束时间</span>
                     <input readonly name="end" size="16" type="text" class="form-control" value="{{end}}">
                     <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                </div>
+                <div class="input-group input-group-lg edit-group">
+                    <span class="input-group-addon">只允许会员参与</span>
+                    {% if scratch.member %}
+                    <input name="member" size="16" type="checkbox" class="form-control" checked>
+                    {% else %}
+                    <input name="member" size="16" type="checkbox" class="form-control">
+                    {% end %}
                 </div>
                 <div class="input-group input-group-lg edit-group">
                     <span class="input-group-addon">抽奖次数</span>
@@ -167,6 +182,7 @@
             button.removeAttr('disabled');
             return false;
         }
+        var member = $('input[name=member]').is(':checked')?1:0;
         var times = $('input[name=times]').val();
         if (times == '' || times == 0 || isNaN(times)) {
             ModalManager.show_failure_modal('请输入正确的抽奖次数！');
@@ -205,7 +221,8 @@
             num_2: num_2,
             prize_3: prize_3,
             num_3: num_3,
-            description: description
+            description: description,
+            member: member
         }
         var url = window.location.href;
         $.ajax({

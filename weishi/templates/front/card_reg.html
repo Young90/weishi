@@ -20,6 +20,9 @@
 </head>
 <body onselectstart="return true;" ondragstart="return false;">
 <div class="container">
+    {% if m %}
+    <div class="title" style="color: #c00000">{{m}}</div>
+    {% end %}
     <div class="title">填写以下信息，注册成为{{account.wei_name}}会员</div>
     <div class="form">
         <input type="hidden" name="cid" value="{{card.cid}}">

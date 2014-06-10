@@ -1,0 +1,19 @@
+name: wsmt
+version: 1
+
+worker: tornado
+
+libraries:
+- name: tornado
+  version: "3.1.1"
+
+handlers:
+- url: /static/
+  static_path: weishi/static
+
+name: crontest
+version: 1
+cron:
+- description: cron_task
+  url: /task/card/all
+  schedule: "5 0 * * *"

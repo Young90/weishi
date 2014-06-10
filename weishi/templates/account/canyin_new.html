@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>添加菜品 - {{account.wei_name}}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="shortcut icon" href="{{static_url('img/favicon.ico')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.adjust.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/index.css')}}">
+</head>
+<body>
+{% include nav.html %}
+<div class="container">
+    <div class="content">
+        <div class="main">
+            <div class="main-inner">
+                {% include canyin_top.html %}
+                <div class="new-edit">
+                    <input name="aid" type="hidden" value="{{account.aid}}">
+                    <input name="did" type="hidden" value="{{dish.id}}">
+                    <div class="input-group input-group-lg edit-group">
+                        <span class="input-group-addon">菜品名称</span>
+                        <input name="name" type="text" class="form-control" placeholder="名称字数要少于10" value="{{dish.name}}">
+                    </div>
+
+                    <div class="input-group input-group-lg edit-group">
+                        <span class="input-group-addon">菜品分类</span>
+                        <select name="cate" class="dish">
+                            <option value="0"{% if not dish.cate_id %} selected{%end%}>请选择分类</option>
+                            {% for _c in cates %}
+                            <option value="{{_c.id}}"{% if dish.cate_id==_c.id %} selected{%end%}>{{_c.name}}</option>
+                            {% end %}
+                        </select>
+                    </div>
+
+                    <div class="input-group input-group-lg edit-group">
+                        <span class="input-group-addon">计量单位</span>
+                        <input name="unit" type="text" value="{{dish.unit}}" class="form-control" placeholder="例如，份、千克等，字数要少于10">
+                    </div>
+
+                    <div class="input-group input-group-lg edit-group">
+                        <span class="input-group-addon">正常价格</span>
+                        <input name="price" type="text" value="{{dish.price}}" class="form-control" placeholder="正常价格，填写数字，例如100，单位为元">
+                    </div>
+
+                    <div class="input-group input-group-lg edit-group">
+                        <span class="input-group-addon">简短描述</span>
+                        <textarea name="describe" type="text" class="form-control summary"  placeholder="菜品简短描述，50字以内">{{dish.description}}</textarea>
+                    </div>
+
+                    <div class="input-group input-group-lg edit-group">
+                        <span class="input-group-addon">已售数量</span>
+                        <input name="count" value="0" value="{{dish.num}}" type="number" class="form-control" placeholder="已经售出的数量">
+                    </div>
+
+                    <div class="input-group input-group-lg edit-group">
+                        <span class="input-group-addon">菜品排序</span>
+                        <input name="rank" type="number" value="{{dish.rank}}" class="form-control" placeholder="填入数字，数字越大，排序越靠前">
+                    </div>
+
+                    <div class="input-group input-group-lg edit-group">
+                        <input name="hot" type="checkbox" {%if dish.hot%}checked{%end%}>
+                        人气菜品（菜单中会标记出“人气”）
+                    </div>
+
+                    <div class="input-group input-group-lg edit-group">
+                        <input name="special" type="checkbox" {%if dish.special%}checked{%end%}>
+                        是否特价
+                        <span class="input-group-addon">特价价格</span>
+                        <input name="special_price" placeholder="填入数字，例如100，单位为元" value="{{dish.special_price}}" class="form-control" disabled/>
+                    </div>
+
+                    <div class="input-group input-group-lg edit-group">
+                        <input name="vip" type="checkbox" {%if dish.vip%}checked{%end%}>
+                        会员特价
+                        <span class="input-group-addon">会员价格</span>
+                        <input name="vip_price" placeholder="填入数字，例如100，单位为元" value="{{dish.vip_price}}" class="form-control" disabled/>
+                    </div>
+
+                    <div class="btn btn-success fileinput-button">
+                        <i class="glyphicon glyphicon-plus"></i>
+                        <span>菜品图片 <span class="tip">(建议图片尺寸640x360，大小控制在500Kb以内)</span></span>
+                        <input id="fileupload" type="file" name="file">
+                    </div>
+
+                    <div id="progress" class="progress progress-striped active">
+                        <div class="progress-bar progress-bar-success"></div>
+                    </div>
+
+                    <div id="files" class="files">
+                        {% if dish.img %}
+                        <a href="{{dish.img}}" target="_blank">
+                            <img src="{{dish.img}}?imageView2/1/w/100/h/60">
+                            <p>图片</p>
+                        </a>
+                        {% end %}
+                    </div>
+
+                    <div class="btn btn-primary submit-btn" onclick="save();">
+                        <span>保 存</span>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        {% include left_nav.html %}
+    </div>
+</div>
+<script type="text/javascript" src="{{static_url('js/jquery-1.10.2.min.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/bootstrap.min.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/global.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/material.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/jquery.ui.widget.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/jquery.iframe-transport.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/jquery.fileupload.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/load-image.min.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/jquery.fileupload-process.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/jquery.fileupload-image.js')}}"></script>
+<script>
+    $(function () {
+        var url = '/upload';
+        $('#fileupload').fileupload({
+            url: url,
+            dataType: 'json',
+            done: function (e, data) {
+                $.each(data.result.files, function (index, file) {
+                    $('.files').html('');
+                    $('.files').append('<a href="' + file.url + '" target="_blank"><img src="'
+                            + file.thumbnailUrl + '"><p>' + file.name + '</p></a>');
+                    $('#progress').removeClass('progress-striped active');
+                });
+            },
+            progressall: function (e, data) {
+                var progress = parseInt(data.loaded / data.total * 100, 10);
+                $('#progress .progress-bar').css(
+                        'width',
+                        progress + '%'
+                );
+            }
+        }).prop('disabled', !$.support.fileInput)
+                .parent().addClass($.support.fileInput ? undefined : 'disabled');
+
+        var sp = $('input[name=special]');
+        if (sp.is(':checked')) {
+            $('input[name=special_price]').removeAttr('disabled');
+        }
+        sp.change(function(){
+            if (sp.is(':checked')) {
+                $('input[name=special_price]').removeAttr('disabled');
+            } else {
+                $('input[name=special_price]').attr('disabled', 'disabled');
+            }
+        });
+        var vp = $('input[name=vip]');
+        if (vp.is(':checked')) {
+            $('input[name=vip_price]').removeAttr('disabled');
+        }
+        vp.change(function(){
+            if (vp.is(':checked')) {
+                $('input[name=vip_price]').removeAttr('disabled');
+            } else {
+                $('input[name=vip_price]').attr('disabled', 'disabled');
+            }
+        });
+    });
+
+    function save() {
+        var did = $('input[name=did]').val();
+        var name = $('input[name=name]').val();
+        if (name == '') {
+            ModalManager.show_failure_modal('输入名称！');
+            return false;
+        }
+        var cate = $('select[name=cate]').val();
+        if (cate == 0) {
+            ModalManager.show_failure_modal('请选择分类！');
+            return false;
+        }
+        var unit = $('input[name=unit]').val();
+        if (unit == '') {
+            ModalManager.show_failure_modal('请输入计量单位！');
+            return false;
+        }
+        var price = $('input[name=price]').val();
+        if (price == '') {
+            ModalManager.show_failure_modal('请输入正常价格！');
+            return false;
+        }
+        var describe = $('textarea[name=describe]').val();
+        var count = $('input[name=count]').val()==''?0:$('input[name=count]').val();
+        var rank = $('input[name=rank]').val()==''?0:$('input[name=rank]').val();
+        var hot = $('input[name=hot]').is(':checked')?1:0;
+        var special = $('input[name=special]').is(':checked')?1:0;
+        var special_price = $('input[name=special_price]').val();
+        if (special && special_price == '') {
+            ModalManager.show_failure_modal('请输入特价价格！');
+            return false;
+        }
+        var vip = $('input[name=vip]').is(':checked')?1:0;
+        var vip_price = $('input[name=vip_price]').val();
+        if (vip && vip_price == '') {
+            ModalManager.show_failure_modal('请输入会员价格！');
+            return false;
+        }
+        var files = $('#files').find('a[href]');
+        var image = '';
+        if (files.length > 0) {
+            image = $(files[0]).attr('href');
+        }
+        if (image == '') {
+            ModalManager.show_failure_modal('请上传菜品图片！');
+            return false;
+        }
+        $('.submit-btn').attr('disabled', 'disabled');
+        var params = {
+            did: did,
+            name: name,
+            cate: cate,
+            unit: unit,
+            price: price,
+            describe: describe,
+            count: count,
+            rank: rank,
+            hot: hot,
+            special: special,
+            special_price: special_price,
+            vip: vip,
+            vip_price: vip_price,
+            image: image
+        }
+        $.ajax({
+            type: 'POST',
+            url: window.location.href,
+            data: {params: JSON.stringify(params)},
+            success: function(data) {
+                $('.submit-btn').removeAttr('disabled');
+                if (data.r) {
+                    ModalManager.show_success_modal('保存成功！');
+                    setTimeout(function(){
+                        window.location.href = window.location.href.replace('/new', '');
+                    }, 1500);
+                } else {
+                    ModalManager.show_failure_modal(data.e);
+                }
+            }
+        })
+
+    }
+</script>
+</body>
+</html>

@@ -103,3 +103,15 @@ def event_auth(method):
         return method(self, *args, **kwargs)
 
     return wrapper
+
+
+def canyin_auth(method):
+    """餐饮权限"""
+
+    @functools.wraps(method)
+    def wrapper(self, *args, **kwargs):
+        if not self.account.canyin:
+            raise HTTPError(404)
+        return method(self, *args, **kwargs)
+
+    return wrapper

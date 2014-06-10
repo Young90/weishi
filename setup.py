@@ -14,6 +14,6 @@ setup(
                       "wtforms-tornado>0",
                       "xmltodict>0.8",
                       "simplejson>=3.3.1",
-                      "xlwt>=0.7.5"
+                      "xlwt>=0.7.5", 'pyDes'
     ],
 )

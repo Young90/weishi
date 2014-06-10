@@ -1,0 +1,17 @@
+<ul class="nav nav-tabs">
+    {% if top=='dish_cate' %}
+    <li class="active"><a href="/account/{{account.aid}}/canyin/cate">菜品分类</a></li>
+    {% else %}
+    <li><a href="/account/{{account.aid}}/canyin/cate">菜品分类</a></li>
+    {% end %}
+    {% if top=='dish' %}
+    <li class="active"><a href="/account/{{account.aid}}/canyin/dish">全部菜品</a></li>
+    {% else %}
+    <li><a href="/account/{{account.aid}}/canyin/dish">全部菜品</a></li>
+    {% end %}
+    {% if top=='dish_new' %}
+    <li class="active"><a href="/account/{{account.aid}}/canyin/dish/new">添加菜品</a></li>
+    {% else %}
+    <li><a href="/account/{{account.aid}}/canyin/dish/new">添加菜品</a></li>
+    {% end %}
+</ul>

@@ -16,7 +16,7 @@ from weishi.libs import wei_api
 from weishi.libs import key_util
 from weishi.libs.service import FansManager, MessageManager, ArticleManager, AccountManager, \
     MenuManager, ImageArticleManager, AutoManager, FormManager, CardManager, ImpactManager, AutoKeywordManager, \
-    SiteManager, EventManager, TemplateManager
+    SiteManager, EventManager, TemplateManager, CanyinManager
 
 
 class AccountBaseHandler(BaseHandler):
@@ -40,6 +40,7 @@ class AccountBaseHandler(BaseHandler):
     site_manager = None
     event_manager = None
     template_manager = None
+    canyin_manager = None
 
     @authenticated
     @asynchronous
@@ -58,6 +59,7 @@ class AccountBaseHandler(BaseHandler):
         self.site_manager = SiteManager(self.db)
         self.event_manager = EventManager(self.db)
         self.template_manager = TemplateManager(self.db)
+        self.canyin_manager = CanyinManager(self.db)
 
         aid = self.request.uri.split('/')[2]
         if not aid:
@@ -514,7 +516,7 @@ class CardHandler(AccountBaseHandler):
         """
         card = self.card_manager.get_card_by_aid(self.account.aid)
         if not card:
-            self.render('account/card.html', account=self.account, index='card', card=None)
+            self.render('account/card.html', account=self.account, index='card', card=None, top='card')
             return
         self.render('account/card.html', account=self.account, index='card', card=card, top='card')
         return

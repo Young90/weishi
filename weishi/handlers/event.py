@@ -1,4 +1,4 @@
-#coding:utf-8
+# coding:utf-8
 __author__ = 'houxiaohou'
 
 import time
@@ -12,7 +12,7 @@ from weishi.libs.handler import BaseHandler
 from weishi.handlers.account import AccountBaseHandler
 from weishi.libs.service import AccountManager, EventManager, FansManager, CardManager
 from weishi.libs.key_util import generate_digits
-from weishi.libs.decorators import authenticated, event_auth
+from weishi.libs.decorators import event_auth
 
 
 class EventBaseHandler(BaseHandler):
@@ -79,6 +79,7 @@ class EventAdminHandler(EventBaseHandler):
         num_1 = int(self.get_argument('num_1', 0))
         num_2 = int(self.get_argument('num_2', 0))
         num_3 = int(self.get_argument('num_3', 0))
+        member = int(self.get_argument('member', 0))
         s = time.mktime(parser.parse(start).timetuple())
         e = time.mktime(parser.parse(end).timetuple())
         if s >= e:
@@ -86,11 +87,12 @@ class EventAdminHandler(EventBaseHandler):
             self.finish()
             return
         if not event:
-            self.event_manager.save_event(s, e, int((e - s) / 1000), self.account.aid, prize_1, prize_2, prize_3,
-                                          num_1, num_2, num_3, num_1 + num_2 + num_3, 1, times, description, e_name)
+            self.event_manager.save_event(s, e, int((e - s) / 1000), self.account.aid, prize_1, prize_2, prize_3, num_1,
+                                          num_2, num_3, num_1 + num_2 + num_3, 1, times, description, e_name, member)
         else:
             self.event_manager.update_event(s, e, int((e - s) / 1000), self.account.aid, prize_1, prize_2, prize_3,
-                                            num_1, num_2, num_3, num_1 + num_2 + num_3, 1, times, description, e_name)
+                                            num_1, num_2, num_3, num_1 + num_2 + num_3, 1, times, description, e_name,
+                                            member)
         self.write({'r': 1})
         self.finish()
         return
@@ -103,16 +105,16 @@ class EventHistoryHandler(EventBaseHandler):
         page_size = 20
         total = self.event_manager.event_history_count(aid, e_name)
         total_page = math.ceil(float(total) / page_size)
-        prefix = '/account/' + aid + '/event/scratch/history'
+        prefix = '/account/' + aid + '/event/scratch/results?'
         results = self.event_manager.list_event_history(aid, int(start), page_size, e_name)
         if e_name == self.TYPE_SCRATCH:
             self.render('account/event_scratch_result.html', index='event', top='scratch', account=self.account,
-                        prefix=prefix, total=total, total_page=total_page, page_size=page_size, start=start,
+                        prefix=prefix, total=total, total_page=total_page, page_size=page_size, start=int(start),
                         results=results)
             return
         if e_name == self.TYPE_LOTTERY:
             self.render('account/event_lottery_result.html', index='event', top='lottery', account=self.account,
-                        prefix=prefix, total=total, total_page=total_page, page_size=page_size, start=start,
+                        prefix=prefix, total=total, total_page=total_page, page_size=page_size, start=int(start),
                         results=results)
 
 
@@ -137,9 +139,13 @@ class ScratchHandler(EventBaseHandler):
         if not scratch:
             raise HTTPError(404)
         openid = self.get_argument('i', None)
-        fans = self.fans_manager.get_fans_by_openid_aid(openid, aid)
+        fans = self.fans_manager.get_fans_by_openid(openid)
         if not fans:
             raise HTTPError('无效的用户')
+        member = self.card_manager.get_card_member_by_openid(aid, openid)
+        if not member and scratch.member:
+            self.redirect('/card/%s?i=%s&m=%s' % (self.card_manager.get_card_by_aid(aid).cid, openid, u'注册为会员后参与活动'))
+            return
         num = self.event_manager.get_event_num_by_openid(openid, aid, self.TYPE_SCRATCH)
         hit_num = self.event_manager.get_hit_event_num_by_openid(openid, aid, self.TYPE_SCRATCH)
         # 抽奖活动持续总时间
@@ -192,7 +198,6 @@ class ScratchHandler(EventBaseHandler):
 
 
 class EventFrontBase(BaseHandler):
-
     fans_manager = None
     account_manager = None
     card_manager = None
@@ -219,10 +224,14 @@ class LotteryHandler(EventFrontBase):
         if not scratch:
             raise HTTPError(404)
         openid = self.get_argument('i', None)
-        fans = self.fans_manager.get_fans_by_openid_aid(openid, aid)
-        num = self.event_manager.get_event_num_by_openid(openid, aid, self.TYPE_LOTTERY)
+        fans = self.fans_manager.get_fans_by_openid(openid)
         if not fans:
             raise HTTPError('无效的用户')
+        member = self.card_manager.get_card_member_by_openid(aid, openid)
+        if not member and scratch.member:
+            self.redirect('/card/%s?i=%s&m=%s' % (self.card_manager.get_card_by_aid(aid).cid, openid, u'注册为会员后参与活动'))
+            return
+        num = self.event_manager.get_event_num_by_openid(openid, aid, self.TYPE_LOTTERY)
         self.render('event/lottery.html', scratch=scratch, account=account, openid=openid, num=num)
 
     def post(self, *args, **kwargs):
@@ -292,7 +301,6 @@ class LotteryHandler(EventFrontBase):
 
 
 class EventHitPhoneHandler(EventFrontBase):
-
     def post(self, *args, **kwargs):
         """中奖用户提交手机号"""
         e_name = args[1]

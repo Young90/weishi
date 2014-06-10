@@ -1,5 +1,6 @@
-#coding:utf-8
-from weishi.handlers import admin, front, user, api, account, index, article, material, image, event, task
+# coding:utf-8
+from weishi.handlers import admin, front, user, api, account, index, article, material, image, event, \
+    task, analytics, canyin
 
 __author__ = 'young'
 
@@ -16,3 +17,5 @@ handlers.extend(material.handlers)
 handlers.extend(image.handlers)
 handlers.extend(event.handlers)
 handlers.extend(task.handlers)
+handlers.extend(analytics.handlers)
+handlers.extend(canyin.handlers)

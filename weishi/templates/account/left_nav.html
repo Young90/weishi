@@ -67,5 +67,13 @@
         {% else %}
         <li><a href="/account/{{account.aid}}/message">历史消息</a></li>
         {% end %}
+        {% if account.canyin %}
+        {% if index=='canyin' %}
+        <li class="active"><a href="/account/{{account.aid}}/canyin/cate">餐饮</a></li>
+        {% else %}
+        <li><a href="/account/{{account.aid}}/canyin/cate">餐饮</a></li>
+        {% end %}
+        {% end %}
+
     </ul>
 </div>

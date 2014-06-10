@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>菜品分类 - {{account.wei_name}}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="shortcut icon" href="{{static_url('img/favicon.ico')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.adjust.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/index.css')}}">
+</head>
+<body>
+{% include nav.html %}
+<div class="container">
+    <div class="content">
+        <div class="main">
+            <input type="hidden" value="{{account.aid}}" name="aid"/>
+
+            <div class="main-inner">
+                {% include canyin_top.html %}
+                <ul class="nav nav-pills">
+                    <li><a href="javascript:new_dish_cate();">+新建分类</a></li>
+                </ul>
+                <div class="panel panel-default">
+                    <table class="table image-article">
+                        <thead>
+                        <tr>
+                            <th>创建时间</th>
+                            <th>名称</th>
+                            <th>排序</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for d in cates %}
+                        <tr>
+                            <td class="date">{{d.date}}</td>
+                            <td>{{d.name}}</td>
+                            <td>{{d.rank}}</td>
+                            <td class="op">
+                                <a href="javascript:update('{{d.id}}', '{{d.name}}', '{{d.rank}}')">编辑</a>
+                                <a href="javascript:remove('{{d.id}}')">删除</a>
+                            </td>
+                        </tr>
+                        {% end %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% include left_nav.html %}
+    </div>
+</div>
+<div class="modal fade new">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">新建分类</h4>
+            </div>
+            <div class="modal-body" style="padding-left: 20px;padding-right: 20px;">
+                分类名称 <input class="form-control modal-input" name="name" maxlength="10" type="text" placeholder="长度在10字以内" style="margin-left: 0;"><br>
+                分类排序（数字越大排序越靠前） <input class="form-control modal-input" name="rank" maxlength="10" type="number" value="0" style="margin-left: 0;">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" onclick="save('0');">创建</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade update">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">新建分类</h4>
+            </div>
+            <div class="modal-body" style="padding-left: 20px;padding-right: 20px;">
+                分类名称 <input class="form-control modal-input" name="name" maxlength="10" type="text" placeholder="长度在10字以内" style="margin-left: 0;"><br>
+                分类排序（数字越大排序越靠前） <input class="form-control modal-input" name="rank" maxlength="10" type="number" value="0" style="margin-left: 0;">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" onclick="on_update();">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="http://cdn.staticfile.org/jquery/2.1.1-beta1/jquery.min.js"></script>
+<script src="http://cdn.staticfile.org/jquery-cookie/1.4.0/jquery.cookie.min.js"></script>
+<script src="http://cdn.staticfile.org/twitter-bootstrap/3.1.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="{{static_url('js/global.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/material.js')}}"></script>
+<script>
+    function new_dish_cate() {
+        $('.new').modal();
+    }
+
+    function save() {
+        var name = $('input[name=name]').val();
+        var rank = $('input[name=rank]').val();
+        if (name == '') {
+            return;
+        }
+        $.ajax({
+            type: 'POST',
+            url: '/account/' + $('input[name=aid]').val() + '/canyin/cate',
+            data: {name: name, rank: rank},
+            success: function (data) {
+                if (data.r) {
+                    $('.new').modal('hide');
+                    ModalManager.show_success_modal('保存成功！')
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 1500);
+                }
+            }
+        })
+    }
+
+    function remove(id) {
+        ModalManager.show_confirm_modal('删除后，分类下的菜品将没有分类，确定删除？', function (input) {
+            if (input) {
+                $.ajax({
+                    type: 'DELETE',
+                    url: '/account/' + $('input[name=aid]').val() + '/canyin/cate?id=' + id,
+                    success: function (data) {
+                        if (data.r) {
+                            ModalManager.show_success_modal('删除成功！')
+                            setTimeout(function () {
+                                window.location.reload();
+                            }, 1500);
+                        }
+                    }
+                })
+            }
+        })
+    }
+
+    function update(id, name, rank) {
+        $('.update').find('input[name=name]').val(name);
+        $('.update').find('input[name=rank]').val(rank);
+        $('.update').append('<input name="id" value="' + id + '" type="hidden" />');
+        $('.update').modal();
+    }
+
+    function on_update() {
+        var name = $('.update input[name=name]').val();
+        var rank = $('.update input[name=rank]').val();
+        var id = $('.update input[name=id]').val();
+        if (name == '') {
+            return;
+        }
+        $.ajax({
+            type: 'POST',
+            url: '/account/' + $('input[name=aid]').val() + '/canyin/cate',
+            data: {id:id, name: name, rank: rank},
+            success: function (data) {
+                if (data.r) {
+                    $('.update').modal('hide');
+                    ModalManager.show_success_modal('保存成功！')
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 1500);
+                }
+            }
+        })
+    }
+</script>
+</body>
+</html>

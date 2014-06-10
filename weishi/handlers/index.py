@@ -96,7 +96,8 @@ class CardHandler(BaseHandler):
             return
         else:
             # 返回注册卡片页面
-            self.render('front/card_reg.html', card=card, openid=openid, account=account)
+            m = self.get_argument('m', None)
+            self.render('front/card_reg.html', card=card, openid=openid, account=account, m=m)
 
     def post(self, *args, **kwargs):
         """提交领取会员卡的表单"""

@@ -1,4 +1,4 @@
-#coding:utf-8
+# coding:utf-8
 __author__ = 'young'
 
 import hashlib
@@ -99,10 +99,11 @@ class AccountManager(Base):
         """经过微信服务器验证的，将checked设为1"""
         self.db.execute('update t_account set checked = 1 where aid = %s', aid)
 
-    def change_auth(self, _id, menu, card, form, site, impact, event):
+    def change_auth(self, _id, menu, card, form, site, impact, event, canyin):
         """修改权限"""
-        self.db.execute('update t_account set menu = %s, card = %s, form = %s, site = %s, impact = %s, event = %s'
-                        ' where id = %s', menu, card, form, site, impact, event, _id)
+        self.db.execute(
+            'update t_account set menu = %s, card = %s, form = %s, site = %s, impact = %s, event = %s, canyin = %s'
+            ' where id = %s', menu, card, form, site, impact, event, canyin, _id)
 
 
 class FansManager(Base):
@@ -715,18 +716,18 @@ class EventManager(Base):
         return self.db.get('select * from t_event where aid = %s and type = %s', aid, type)
 
     def save_event(self, start, end, length, aid, prize_1, prize_2, prize_3, num_1, num_2, num_3, num_sum, active,
-                   times, description, type):
+                   times, description, _type, member):
         self.db.execute('insert into t_event (date, start, end, length, aid, prize_1, prize_2, prize_3, num_1,'
-                        ' num_2, num_3, num_sum, active, times, description, type) values (NOW(), %s, %s, %s, %s, %s, '
-                        '%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', start, end, length, aid, prize_1, prize_2, prize_3,
-                        num_1, num_2, num_3, num_sum, active, times, description, type)
+                        ' num_2, num_3, num_sum, active, times, description, type, member) values (NOW(), %s, %s, %s, '
+                        '%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', start, end, length, aid, prize_1,
+                        prize_2, prize_3, num_1, num_2, num_3, num_sum, active, times, description, _type, member)
 
     def update_event(self, start, end, length, aid, prize_1, prize_2, prize_3, num_1, num_2, num_3, num_sum, active,
-                     times, description, type):
+                     times, description, _type, member):
         self.db.execute('update t_event set start = %s, end = %s, length = %s, prize_1 = %s, prize_2 = %s, '
                         'prize_3 = %s, num_1 = %s, num_2 = %s, num_3 = %s, num_sum = %s, active = %s, times = %s, '
-                        'description = %s where aid = %s and type = %s', start, end, length, prize_1, prize_2, prize_3,
-                        num_1, num_2, num_3, num_sum, active, times, description, aid, type)
+                        'description = %s, member = %s where aid = %s and type = %s', start, end, length, prize_1,
+                        prize_2, prize_3, num_1, num_2, num_3, num_sum, active, times, description, member, aid, _type)
 
     def change_status(self, aid, active, type):
         self.db.execute('update t_event set active = %s where aid = %s and type = %s', active, aid, type)
@@ -780,9 +781,27 @@ class AnalyticsManager(Base):
         return self.db.get('select count(*) as count from t_share_history where aid = %s and openid = %s and '
                            'success = 1', aid, openid)['count']
 
+    def save_view_history(self, aid, slug, openid):
+        self.db.execute('insert into t_view_history (date, aid, slug, openid) values (NOW(), %s, %s, %s)',
+                        aid, slug, openid)
+
+    def total_view_num_today(self, aid):
+        now = datetime.now()
+        start = datetime(year=now.year, month=now.month, day=now.day, hour=0, minute=0, second=0)
+        return self.db.get('select count(*) as count from t_view_history where aid = %s and date > %s', aid, start)[
+            'count']
+
+    def total_view_num(self, aid):
+        return self.db.get('select count(*) as count from t_view_history where aid = %s', aid)['count']
+
+    def total_fans_num(self, aid):
+        return self.db.get('select count(*) as count from t_fans where aid = %s', aid)['count']
+
+    def total_fans_num_today(self, aid):
+        return self.db.get('select count(*) as count ')
+
 
 class TemplateManager(Base):
-
     def save_template(self, aid, title, slug, type, thumb):
         self.db.execute(
             'insert into t_template (date, aid, slug, title, type, thumb) values (NOW(), %s, %s, %s, %s, %s)',
@@ -794,3 +813,47 @@ class TemplateManager(Base):
 
     def list_template(self, aid):
         return self.db.query('select * from t_template where aid = %s order by id desc', aid)
+
+
+class CanyinManager(Base):
+    def save_dish(self, aid, name, price, unit, img, cate_id, special, special_price, vip, vip_price, rank, count,
+                  hot, description):
+        self.db.execute(
+            'insert into t_canyin_dish (date, aid, name, price, unit, img, cate_id, special, special_price, '
+            'vip, vip_price, rank, num, hot, description) values (NOW(), %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,'
+            ' %s, %s)', aid, name, price, unit, img, cate_id, special, special_price, vip, vip_price, rank,
+            count, hot, description)
+
+    def update_dish(self, did, aid, name, price, unit, img, cate_id, special, special_price, vip, vip_price, rank, count,
+                    hot, description):
+        self.db.execute('update t_canyin_dish set name = %s, price = %s, unit = %s, img = %s, cate_id = %s, '
+                        'special = %s, special_price = %s, vip = %s, vip_price = %s, rank = %s, num = %s, hot = %s, '
+                        'description = %s where aid = %s and id = %s', name, price, unit, img, cate_id, special,
+                        special_price, vip, vip_price, rank, count, hot, description, aid, did)
+
+    def delete_dish(self, aid, _id):
+        self.db.execute('delete from t_canyin_dish where aid = %s and id = %s', aid, _id)
+
+    def get_dish_by_id(self, aid, _id):
+        return self.db.get('select * from t_canyin_dish where aid = %s and id = %s', aid, _id)
+
+    def save_cate(self, aid, name, rank, _id):
+        if not _id:
+            self.db.execute('insert into t_canyin_cate (date, name, aid, rank) values (NOW(), %s, %s, %s)', name, aid,
+                            rank)
+        else:
+            self.db.execute('update t_canyin_cate set name = %s, rank = %s where id = %s and aid = %s', name, rank, _id,
+                            aid)
+
+    def delete_cate(self, aid, _id):
+        self.db.execute('delete from t_canyin_cate where id = %s and aid = %s', _id, aid)
+
+    def list_cate(self, aid):
+        return self.db.query('select * from t_canyin_cate where aid = %s order by rank desc', aid)
+
+    def list_dish_by_cate(self, aid, cate_id):
+        return self.db.query('select * from t_canyin_dish where cate_id = %s and aid = %s order by rank desc', cate_id,
+                             aid)
+
+    def list_all_dish(self, aid):
+        return self.db.query('select * from t_canyin_dish where aid = %s order by rank desc', aid)

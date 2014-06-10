@@ -57,7 +57,8 @@ function change_auth(e, id) {
     var impact = $(p).find('input[name=impact]').is(':checked') ?1:0;
     var menu = $(p).find('input[name=menu]').is(':checked') ?1:0;
     var event = $(p).find('input[name=event]').is(':checked') ?1:0;
-    var ps = {form: form, site:site, card:card, impact:impact, menu:menu, event:event, id:id};
+    var canyin = $(p).find('input[name=canyin]').is(':checked') ?1:0;
+    var ps = {form: form, site:site, card:card, impact:impact, menu:menu, event:event, canyin:canyin, id:id};
     $.ajax({
         url: '/admin/auth',
         type: 'POST',
