@@ -1,4 +1,4 @@
-function submit_reg_form(n, m, a) {
+function submit_reg_form(n, m, a, s, b) {
     var button = $('#card-save-btn');
     button.attr('disabled', 'disabled');
     var name = '';
@@ -33,12 +33,32 @@ function submit_reg_form(n, m, a) {
             return
         }
     }
+    var sex = '';
+    if (s == 1) {
+        sex = $('input[name="sex"]:checked').val();
+        if (sex == '') {
+            button.removeAttr('disabled');
+            ModalManager.show_failure_modal('还没选择性别呢！');
+            return
+        }
+    }
+    var birthday = '';
+    if (b == 1) {
+        birthday = $('input[name="birthday"]').val();
+        if (birthday == '') {
+            button.removeAttr('disabled');
+            ModalManager.show_failure_modal('还没选择性别呢！');
+            return
+        }
+    }
     var cid = $('input[name="cid"]').val();
     var openid = $('input[name="openid"]').val();
     var data = {
         'name': name,
         'mobile': mobile,
         'address': address,
+        'birthday': birthday,
+        'sex': sex,
         'openid': openid
     }
     $.ajax({

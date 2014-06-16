@@ -66,3 +66,10 @@ ul {padding: 0 !important;}
 .list_font li:nth-of-type(6n) div:first-child { background: #ff8b00; }
 .p_point {padding: 10px 0 10px;}
 .p_history{padding: 0 10px 10px 10px !important;}
+.sex{height:50px;line-height: 50px;padding-left: 10px;font-size: 18px;}
+.sex span {padding-left: 10px;padding-right: 40px;}
+.birthday {margin-top: 10px;}
+.birthday span {margin-right: 20px;font-size: 18px;}
+.birthday input{display: inline;width: 70%;line-height: 45px;}
+#card-save-btn{margin-top: 20px;line-height: 45px;padding: 0;}
+#card-save-btn span{padding: 0;}

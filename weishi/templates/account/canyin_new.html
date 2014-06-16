@@ -71,13 +71,6 @@
                         <input name="special_price" placeholder="填入数字，例如100，单位为元" value="{{dish.special_price}}" class="form-control" disabled/>
                     </div>
 
-                    <div class="input-group input-group-lg edit-group">
-                        <input name="vip" type="checkbox" {%if dish.vip%}checked{%end%}>
-                        会员特价
-                        <span class="input-group-addon">会员价格</span>
-                        <input name="vip_price" placeholder="填入数字，例如100，单位为元" value="{{dish.vip_price}}" class="form-control" disabled/>
-                    </div>
-
                     <div class="btn btn-success fileinput-button">
                         <i class="glyphicon glyphicon-plus"></i>
                         <span>菜品图片 <span class="tip">(建议图片尺寸640x360，大小控制在500Kb以内)</span></span>
@@ -197,12 +190,6 @@
             ModalManager.show_failure_modal('请输入特价价格！');
             return false;
         }
-        var vip = $('input[name=vip]').is(':checked')?1:0;
-        var vip_price = $('input[name=vip_price]').val();
-        if (vip && vip_price == '') {
-            ModalManager.show_failure_modal('请输入会员价格！');
-            return false;
-        }
         var files = $('#files').find('a[href]');
         var image = '';
         if (files.length > 0) {
@@ -225,8 +212,6 @@
             hot: hot,
             special: special,
             special_price: special_price,
-            vip: vip,
-            vip_price: vip_price,
             image: image
         }
         $.ajax({

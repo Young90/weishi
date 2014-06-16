@@ -93,6 +93,8 @@ $('#card-save-btn').on('click', function () {
     var name = $('input[name="name"]').is(':checked') ? 1 : 0;
     var mobile = $('input[name="mobile"]').is(':checked') ? 1 : 0;
     var address = $('input[name="address"]').is(':checked') ? 1 : 0;
+    var sex = $('input[name="sex"]').is(':checked') ? 1 : 0;
+    var birthday = $('input[name="birthday"]').is(':checked') ? 1 : 0;
     var phone = $('input[name="phone"]').val();
     var about = $('textarea[name="about"]').val();
     var thumb = $('.thumb>a').attr('href');
@@ -105,6 +107,8 @@ $('#card-save-btn').on('click', function () {
         'mobile': mobile,
         'address': address,
         'phone': phone,
+        'sex': sex,
+        'birthday': birthday,
         'about': about
     }
     $.ajax({

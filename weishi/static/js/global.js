@@ -78,17 +78,20 @@ var ModalManager = {
         });
     },
 
-    show_input_modal: function (message, type, callback) {
+    show_input_modal: function (message, type, callback, value) {
+        if (!value) {
+            value = '';
+        }
         var html = '<div id="input-modal" class="modal fade">' +
             '<div class="modal-dialog modal-sm">' +
             '<div class="modal-content">' +
             '<div class="modal-header"><h5 class="modal-title" style="color: #444"></h5></div>' +
             '<div class="modal-body">';
         if (type == 'input') {
-            html += '<input class="form-control modal-input" name="input">';
+            html += '<input class="form-control modal-input" name="input" value="' + value + '">';
         }
         if (type == 'textarea') {
-            html += '<textarea class="form-control modal-input-textarea" name="input"></textarea>';
+            html += '<textarea class="form-control modal-input-textarea" name="input">' + value + '</textarea>';
         }
         html += '<div class="modal-footer">' +
             '<button type="button" class="btn btn-default" id="confirm-modal-cancel">取消</button>' +

@@ -90,13 +90,15 @@ function remove_main_menu(obj) {
 }
 
 function show_input_text_dialog(obj) {
+    var container = $(obj).parents('.op').parent();
+    var value = $(container).data('value');
     ModalManager.show_input_modal('输入要回复的文本信息', 'textarea', function (input) {
-        var container = $(obj).parents('.op').parent();
+
         var result = $(container).find('.result');
         $(container).attr('data-type', 'text');
         $(container).attr('data-value', input);
         $(result).html('文本：' + input);
-    });
+    }, value);
 }
 
 function show_input_single_dialog(obj) {

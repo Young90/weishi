@@ -59,6 +59,8 @@
                         <input type="checkbox" name="name" value="1"> 填写姓名&nbsp;&nbsp;&nbsp;
                         <input type="checkbox" name="mobile" value="1"> 填写手机号&nbsp;&nbsp;&nbsp;
                         <input type="checkbox" name="address" value="1"> 填写地址&nbsp;&nbsp;&nbsp;
+                        <input type="checkbox" name="sex" value="1"> 选择性别&nbsp;&nbsp;&nbsp;
+                        <input type="checkbox" name="birthday" value="1"> 填写生日&nbsp;&nbsp;&nbsp;
                     </div>
                     <div class="input-group card-create">
                         商家电话<span style="font-size: 14px;">（区号后面的横线注意使用英文的横线 -）</span> :
@@ -118,6 +120,16 @@
                         <input type="checkbox" name="address" value="1" checked> 填写地址&nbsp;&nbsp;&nbsp;
                         {% else %}
                         <input type="checkbox" name="address" value="1"> 填写地址&nbsp;&nbsp;&nbsp;
+                        {% end %}
+                        {% if card.sex %}
+                        <input type="checkbox" name="sex" value="1" checked> 选择性别&nbsp;&nbsp;&nbsp;
+                        {% else %}
+                        <input type="checkbox" name="sex" value="1"> 选择性别&nbsp;&nbsp;&nbsp;
+                        {% end %}
+                        {% if card.birthday %}
+                        <input type="checkbox" name="birthday" value="1" checked> 填写生日&nbsp;&nbsp;&nbsp;
+                        {% else %}
+                        <input type="checkbox" name="birthday" value="1"> 填写生日&nbsp;&nbsp;&nbsp;
                         {% end %}
                     </div>
                     <div class="input-group card-create">

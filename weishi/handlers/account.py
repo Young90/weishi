@@ -1,4 +1,4 @@
-#coding:utf-8
+# coding:utf-8
 __author__ = 'young'
 
 import math
@@ -529,6 +529,8 @@ class CardHandler(AccountBaseHandler):
         name = self.get_argument('name', 0)
         mobile = self.get_argument('mobile', 0)
         address = self.get_argument('address', 0)
+        sex = self.get_argument('sex', 0)
+        birthday = self.get_argument('birthday', 0)
         phone = self.get_argument('phone', None)
         about = self.get_argument('about', None)
         thumb = self.get_argument('thumb', None)
@@ -536,14 +538,16 @@ class CardHandler(AccountBaseHandler):
         if not card:
             # 如果还没创建，则创建
             cid = key_util.generate_hexdigits_lower(8)
-            self.card_manager.save_card(self.account.aid, cid, register, name, mobile, address, phone, about, cover)
+            self.card_manager.save_card(self.account.aid, cid, register, name, mobile, address, phone, about, cover,
+                                        int(sex), int(birthday))
             card = self.card_manager.get_card_by_aid(self.account.aid)
             self.image_article_manager.save_single_image_article('会员卡', '点击查看会员卡',
                                                                  'http://www.wsmt.cn/card/' + card.cid, thumb,
                                                                  self.account.aid)
         else:
             # 如果已经存在，则更新信息
-            self.card_manager.update_card(card.cid, register, name, mobile, address, phone, about, cover)
+            self.card_manager.update_card(card.cid, register, name, mobile, address, phone, about, cover,
+                                          int(sex), int(birthday))
         result = {'r': 1}
         self.write(result)
         self.finish()
@@ -852,7 +856,6 @@ class SiteTemplateHandler(AccountBaseHandler):
 
 
 class SiteTemplateListHandler(AccountBaseHandler):
-
     def get(self, aid):
         templates = self.template_manager.list_template(aid)
         self.render('account/site_template_list.html', account=self.account, top='sub', index='site',

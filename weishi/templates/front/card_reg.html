@@ -36,8 +36,19 @@
         {% if card.mobile %}
         <input type="tel" name="mobile" class="form-control" placeholder="手机，方便联系到您"><br>
         {% end %}
+        {% if card.sex %}
+        <div class="sex">
+        <input type="radio" name="sex" value="男" checked><span>男</span>
+        <input type="radio" name="sex" value="女"><span>女</span>
+        </div>
+        {% end %}
+        {% if card.birthday %}
+        <div class="birthday">
+        <span>生日</span><input type="date" name="birthday" class="form-control">
+        </div>
+        {% end %}
     </div>
-    <div id="card-save-btn" class="btn btn-primary submit-btn" onclick="javascript:submit_reg_form('{{card.name}}','{{card.mobile}}','{{card.address}}');">
+    <div id="card-save-btn" class="btn btn-primary submit-btn" onclick="javascript:submit_reg_form('{{card.name}}','{{card.mobile}}','{{card.address}}', '{{card.sex}}', '{{card.birthday}}');">
         <span>提 交</span>
     </div>
     <div class="info-container">

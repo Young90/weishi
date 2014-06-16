@@ -1,3 +1,4 @@
+html, body{height: 100%;min-height: 100%;}
 body, article, section, h1, h2, hgroup, p, a, ul, ol, li, em, div, small, span, footer, canvas, figure, figcaption, input {
     margin: 0;
     padding: 0;
@@ -626,6 +627,7 @@ figure[hidden] {
     -webkit-text-size-adjust: none;
 }
 #page_allMenu .center {
+    height: 100%;
     width: 100%;
     overflow-y: scroll;
     -webkit-overflow-scrolling: touch;
@@ -1286,4 +1288,3 @@ figure[hidden] {
 #page_allMenu .footLeft {right: 0;left: auto;width: auto;}
 #page_allMenu section article dl dd em.fixBig {position: absolute;right: 30px;top: -15px;font-size: 18px;color: #ccc;display: block;width: 30px;height: 15px;line-height: 15px;text-align: center;background-color: #fff;border-radius: 5px;padding: 3px;z-index: 5;}
 #page_allMenu section article dl dd em.fake {display: none;}
-#page_allMenu section article, #pInfo {min-height: 100%;}

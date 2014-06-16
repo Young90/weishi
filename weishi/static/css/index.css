@@ -95,7 +95,7 @@ span.add-on {min-width: 110px;}
 .edit-menu {margin-top: 10px;}
 .add-main {font-size: 18px;padding-bottom: 10px;border-bottom: 1px solid #ccc;}
 .input-container {height: 45px;margin-top: 10px;}
-.input-container span.result {width: 300px;padding-left: 10px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;}
+.input-container span.result {width: 300px;padding-left: 10px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;display: block;}
 .menu-item input.main {width: 240px;}
 .menu-item .op {width: 600px;}
 .menu-item span.action {padding-left: 10px;font-size: 13px;}

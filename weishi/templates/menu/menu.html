@@ -10,40 +10,36 @@
     <link rel="stylesheet" type="text/css" href="{{static_url('css/menu/dialog.css')}}">
     <script src="{{static_url('js/menu/common.js')}}"></script>
     <script src="{{static_url('js/menu/dialog.js')}}"></script>
+    <script src="http://cdn.staticfile.org/jquery/2.1.1-rc2/jquery.min.js"></script>
 <body id="page_allMenu" screen_capture_injected="true">
 <script type="text/javascript">
 </script>
 <div class="center">
-    <nav id="navBar" style="height: 783px;">
+    <nav id="navBar">
         <dl>
-            <dd categoryid="1874244175" class="active">有头有脸<span style="display: block;">2</span></dd>
-            <dd categoryid="1874244175" class="active">有头有脸<span style="display: block;">2</span></dd>
-            <dd categoryid="1874244175" class="active">有头有脸<span style="display: block;">2</span></dd>
-            <dd categoryid="1874244175" class="active">有头有脸<span style="display: block;">2</span></dd>
-            <dd categoryid="1874244175" class="active">有头有脸<span style="display: block;">2</span></dd>
-            <dd categoryid="1874244175" class="active">有头有脸<span style="display: block;">2</span></dd>
-            <dd categoryid="1874244175" class="active">有头有脸<span style="display: block;">2</span></dd>
+            {% for _i, _c in enumerate(cates) %}
+            <dd categoryid="{{_c.id}}"{% if _i==0 %} class="active"{%else%} class="null"{% end %}>{{_c.name}}<span></span></dd>
+            {% end %}
         </dl>
     </nav>
-    <section id="infoSection" style="height: 783px;">
+    <section id="infoSection">
         <article>
             <div id="pInfo">
-                <dl shopinfo="" dunitname="份" dsubcount="168" dishid="3635192438" dname="洞庭霸王鱼头" dtaste="" ddescribe="会员价158元／份" dprice="168" dishot="2" dspecialprice="0" disspecial="1">
-                    <dt><h3>洞庭霸王鱼头</h3></dt>
-                    <dd><a href="javascript:void(0)" class="dataIn"><img src="./全部菜品_files/0" alt="" title=""><span></span></a></dd>
-                    <dd><em>168元/份</em></dd>
-                    <dd class="dpNum">168人点过</dd>
-                    <dd class="btn">
-                    <button class="minus" style="display: inline-block;"><strong></strong></button>
-                    <i style="display: inline-block;">1</i>
-                    <button class="add"><strong></strong></button>
-                    <em class="fixBig fake"></em></dd>
-                </dl>
+                {% for _d in dish %}
+                <dl dunitname="{{_d.unit}}" dsubcount="{{_d.num}}" dishid="{{_d.id}}" dname="{{_d.name}}" dtaste="" ddescribe="{{_d.description}}"
+                    dprice="{{_d.price}}" dishot="{{_d.hot}}" dspecialprice="{{_d.special}}" disspecial="{{_d.special}}">
+                    <dt><h3>{{_d.name}}</h3></dt>
+                    <dd>
+                        <a href="javascript:void(0)" class="dataIn"><img src="{{_d.img}}" alt="" title=""><span></span></a></dd><dd><em>{{_d.price}}/{{_d.unit}}</em>
+                    </dd>
+                    <dd class="dpNum">{{_d.num}}人点过</dd>
+                    <dd class="btn"><button class="minus" style="display: none;"><strong></strong></button><i style="display: none;">{% if nums[_d.id] %}{{nums[_d.id]}}{% end %}</i><button class="add"><strong></strong></button><em class="fixBig fake"></em></dd></dl>
+                {% end %}
            </div>
         </article>
     </section>
     <footer class="footFix footLeft">
-        <button class="btn_change" onclick="location.href=/">我的菜单</button>
+        <button class="btn_change" onclick="location.href='/module/canyin/{{aid}}/dish/my?i={{i}}'">我的菜单</button>
     </footer>
 </div>
 <script>
@@ -179,69 +175,9 @@
             }
         });
     }, false)
-
-
-    function placeOrder(orderId, cardid) {
-
-        params = {
-            'ticket': ticket,
-            ticketSource: ticketSource,
-            action: 'placeOrder',
-            orderId: orderId,
-            code: code,
-            qrcode: qrcode
-        };
-
-        MLoading.show('加载中');
-        setTimeout(function () {
-            MLoading.hide();
-        }, 3000);
-        _doAjax('/weixin/' + cardid + '/showDishOrder', 'POST', params, function (ret) {
-            MLoading.hide();
-            if (ret['code'] == 100) {
-                location.href = location.origin + '/weixin/' + cardid + '/dishWaimaiCardPay?action=payByCard&ticket=' + ticket + '&qrcode=' + qrcode + '&orderId=' + orderId + '#wechat_webview_type=1';
-            } else if (ret['code'] != 0) {
-                alert(ret['message']);
-                return;
-            }
-
-            isWeixin5 = 1;
-            // 微信支付
-            if (isWeixin5) {
-                var weixinPay = ret.result.weixinPay;
-                var requestData = {};
-                requestData.appId = weixinPay.appId; //公众号名称,由商户传入
-                requestData.timeStamp = weixinPay.timeStamp + ''; //时间戳 这里随意使用了一个值
-                requestData.nonceStr = weixinPay.nonceStr; //随机串
-                requestData.package = weixinPay.package; // 扩展字段,由商户传入
-                requestData.signType = weixinPay.signType; //微信签名方式:sha1
-                requestData.paySign = weixinPay.paySign; //微信签名
-                // 下单成功 => 微信支付
-                WeixinJSBridge.invoke('getBrandWCPayRequest', requestData, function (d) {
-                    // 支付回调
-                    // alert(d.err_msg);
-                    if (d.err_msg == 'get_brand_wcpay_request:ok') {
-                        location.href = location.origin + '/weixin/' + cardid + '/listDishOrder?ticket=' + ticket + '&qrcode=' + qrcode + '&code=' + code + '#wechat_webview_type=1';
-                        // 支付成功
-                    } else if (d.err_msg == 'get_brand_wcpay_request:cancel') {
-                        // 取消支付
-                    } else {
-                        // 支付失败
-                    }
-                });
-
-            }
-        });
-    }
-
 </script>
 <script type="text/javascript">
-
 var aid = '{{aid}}';
-var view_const_dish_SPECIAL_PRICE_YES = '2';
-var view_const_dish_SPECIAL_PRICE_VIP = '3';
-var view_const_dish_HOT_YES = '2';
-
 function setHeight() {
     var cHeight;
     cHeight = document.documentElement.clientHeight;
@@ -262,38 +198,41 @@ function doSelect() {
             this.className = "active";
             var div = document.getElementById("pInfo");
             div.innerHTML = '';
-            var params = {aid: aid, cate_id: this.getAttribute('categoryId'),'ticket': ticket};
-            _doAjax('/module/dish/list', 'GET', params, function (ret) {
-                var dishList = ret['result']['data'];
-                var categoryId = ret['result']['cate_id'];
+            var params = {aid: aid, cate: this.getAttribute('categoryId'),'i': '{{i}}'};
+            _doAjax('/module/canyin/{{aid}}/dish', 'POST', params, function (ret) {
+                var dishList = ret['results'];
+                var categoryId = ret['cate'];
 
                 var str = '';
                 var rnd = Math.random();
                 for (key in dishList) {
                     var dish = dishList[key];
 
-                    if (dish.dIsSpecial == view_const_dish_SPECIAL_PRICE_YES) {
-                        var priceHtml = "<em class='sale'><b>特价</b>" + dish['dSpecialPrice'] + "元/" + dish['dUnitName'] + "<br/><del>" + dish['dPrice'] + "元/" + dish['dUnitName'] + "</del></em>";
-                    } else if (dish.dIsSpecial == view_const_dish_SPECIAL_PRICE_VIP) {
-                        var priceHtml = "<em><b class='vip'>会员</b>" + dish['dSpecialPrice'] + "元/" + dish['dUnitName'] + "<br/><del>" + dish['dPrice'] + "元/" + dish['dUnitName'] + "</del></em>";
-                    } else {
-                        var priceHtml = "<em>" + dish['dPrice'] + "元/" + dish['dUnitName'] + "</em>";
+                    if (dish.special == 1) {
+                        var priceHtml = "<em class='sale'><b>特价</b>" + dish['special_price'] + "元/" + dish['unit']
+                                + "<br/><del>" + dish['price'] + "元/" + dish['unit'] + "</del></em>";
+                    }  else {
+                        var priceHtml = "<em>" + dish['price'] + "元/" + dish['unit'] + "</em>";
                     }
 
-                    if (dish.dIsHot == view_const_dish_HOT_YES) {
+                    if (dish.hot == 1) {
                         var hotHtml = '<span></span>';
                     } else {
                         var hotHtml = '';
                     }
-
-                    if (dish['dSubCount']) {
-                        var dSubCountHtml = dish['dSubCount'] + '人点过';
+                    if (dish['num']) {
+                        var dSubCountHtml = dish['num'] + '人点过';
                     } else {
                         var dSubCountHtml = '';
                     }
-
-                    var attrList = " dUnitName='" + dish['dUnitName'] + "' dSubCount='" + dish['dSubCount'] + "' dishid='" + dish['dishid'] + "' dName='" + dish['dName'] + "' dTaste='" + dish['dTaste'] + "' dDescribe='" + dish['dDescribe'] + "' dPrice='" + dish['dPrice'] + "' dIsHot='" + dish['dIsHot'] + "' dSpecialPrice='" + dish['dSpecialPrice'] + "' dIsSpecial='" + dish['dIsSpecial'] + "' ";
-                    str += "<dl shopInfo='" + dish['allShopInfo'] + "' " + attrList + "'><dt><h3>" + dish['dName'] + "</h3></dt><dd><a href='javascript:void(0)' class='dataIn'><img src='" + dish['dPicture'] + "?rnd=" + rnd + "' alt='' title='' />" + hotHtml + "</a></dd><dd>" + priceHtml + "</dd><dd class='dpNum'>" + dSubCountHtml + "</dd><dd class='btn'><button class='minus'><strong></strong></button><i>" + dish['o2uNum'] + "</i><button class='add'><strong></strong></button><em class='fixBig fake'></em></dd></dl>";
+                    var attrList = " dUnitName='" + dish['unit'] + "' dSubCount='" + dish['num'] + "' dishid='"
+                            + dish['id'] + "' dName='" + dish['name'] + "' dDescribe='" + dish['description']
+                            + "' dPrice='" + dish['price'] + "' dIsHot='" + dish['hot'] + "' dSpecialPrice='"
+                            + dish['special_price'] + "' dIsSpecial='" + dish['special'] + "' ";
+                    str += "<dl" + attrList + "'><dt><h3>" + dish['name'] + "</h3></dt><dd><a href='javascript:void(0)' class='dataIn'><img src='"
+                            + dish['img'] + "?rnd=" + rnd + "' alt='' title='' />" + hotHtml + "</a></dd><dd>" + priceHtml + "</dd><dd class='dpNum'>"
+                            + dSubCountHtml + "</dd><dd class='btn'><button class='minus'><strong></strong></button><i>" +
+                            + dish['o2u_num'] +"</i><button class='add'><strong></strong></button><em class='fixBig fake'></em></dd></dl>";
                 }
 
                 if (_q('.active').getAttribute('categoryId') == categoryId) {
@@ -486,7 +425,7 @@ function doSelectBtn() {
                     beforeRemoveDish = false;
                 }
             } else {
-                ajaxDishReset(dishid, countNumText, function () {
+                ajaxDishRemove(dishid, countNumText, function () {
                 }, function () {
 
                     _self.parentNode.children[1].innerHTML = originalNum;
@@ -499,44 +438,16 @@ function doSelectBtn() {
 
     function ajaxDishReset(dishid, o2uNum, successCallback, errorCallback) {
 
-        var params = {
-            'dishid': dishid,
-            'qrcode': qrcode,
-            'ticket': ticket,
-            'o2uNum': o2uNum,
-            'code': code
-        };
-
-        _doAjax('/weixin/dish/menu?action=update&type=reset', 'POST', params, function (ret) {
-            if (ret['code'] != 0) {
-
-                errorCallback();
-                alert(ret['message']);
-                return;
-            } else {
-                successCallback();
-            }
+        var params = {action: 'add',dish_id: dishid, i: '{{i}}'};
+        _doAjax('/module/canyin/{{aid}}/dish/update', 'POST', params, function (ret) {
+            successCallback();
         });
-    } // ajaxDishReset
+    }
 
     function ajaxDishRemove(dishid, successCallback, errorCallback) {
-
-        var params = {
-            'dishid': dishid,
-            'qrcode': qrcode,
-            'code': code,
-            'ticket': ticket,
-        };
-
-        _doAjax('/weixin/dish/menu?action=remove', 'POST', params, function (ret) {
-            if (ret['code'] != 0) {
-
-                errorCallback();
-                alert(ret['message']);
-                return;
-            } else {
-                successCallback();
-            }
+        var params = {action: 'remove',dish_id: dishid, i: '{{i}}'};
+        _doAjax('/module/canyin/{{aid}}/dish/update', 'POST', params, function (ret) {
+            successCallback();
         });
     } // ajaxDishRemove
 } // doSelectBtn
@@ -622,13 +533,12 @@ function popPic(imgUrl, title, price, isSpecial, specialPrice, people, teast, as
             _assess = assess;
 
     var hotHtml = '';
-    if (isHot == view_const_dish_HOT_YES) {
+    if (isHot == 1) {
         hotHtml = '<b></b>';
     }
     _tmpHtml = "<div class='content'>" + hotHtml + "<img src='" + imgUrl + "' alt='' title=''><h2>" + _title;
 
-    if (isSpecial == view_const_dish_SPECIAL_PRICE_YES
-            || isSpecial == view_const_dish_SPECIAL_PRICE_VIP) {
+    if (isSpecial == 1) {
         _tmpHtml += "<i>" + specialPrice + "</i><del>" + _price + "</del>";
     } else {
         _tmpHtml += "<i>" + _price + "</i>";
@@ -654,26 +564,15 @@ function popPic(imgUrl, title, price, isSpecial, specialPrice, people, teast, as
 
 // 获取各个分类被选中菜品的数量
 function getDishNumOfCategory() {
-
-    var params = {
-        'qrcode': qrcode,
-        'code': code,
-        'ticket': ticket
-    };
-
-    _doAjax('/module/dish/list', 'POST', params, function (ret) {
-        if (ret['code'] != 0) {
-            return;
-        }
-
-        for (var i in ret['result']['data']) {
-
+    var params = {'i': '{{i}}'};
+    _doAjax('/module/canyin/{{aid}}/cate_num', 'POST', params, function (ret) {
+        for(var i in ret['result']['data']) {
             var val = ret['result']['data'][i];
             if (val > 0) {
-                _q('[categoryId="' + i + '"] span').innerHTML = val;
-                _q('[categoryId="' + i + '"] span').style.display = 'block';
+                $('dd[categoryid="'+ i +'"] span').html(val);
+                $('dd[categoryid="'+ i +'"] span').css('display','block');
             } else {
-                _q('[categoryId="' + i + '"] span').style.display = 'none';
+                $('dd[categoryid="'+ i +'"] span').css('display','none');
             }
         }
     });
@@ -686,22 +585,15 @@ _onPageLoaded(function () {
     showPicInfo();
 
     if (_isIOS) {
-        _q("#page_allMenu section article").style.overflowY = "scroll";
-        _q("#page_allMenu section article").style.minHeight = "85%";
-        _q("#page_allMenu section article").style.marginBottom = "15px";
+        $("#page_allMenu section article").css("overflowY", "scroll");
+        $("#page_allMenu section article").css("minHeight", "85%");
+        $("#page_allMenu section article").css("marginBottom", "15px");
     }
-
     getDishNumOfCategory();
-    //setInterval(function(){
-    //                getDishNumOfCategory();
-    //            }, 5000);
 })
 window.addEventListener('orientationchange', function () {
     setHeight();
 })
-
 </script>
-
-
 </body>
 </html>

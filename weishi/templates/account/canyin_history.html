@@ -17,48 +17,30 @@
             <input type="hidden" name="aid" value="{{account.aid}}"/>
             <div class="main-inner">
                 {% include canyin_top.html %}
-                <ul class="nav nav-pills">
-                    <li{% if not cate_id %} class="disabled"{% end %}><a href="/account/{{account.aid}}/canyin/dish">全部菜品</a></li>
-                     {% for _c in cates.values() %}
-                     {% if int(cate_id) == _c.id %}
-                    <li class="disabled"><a href="/account/{{account.aid}}/canyin/dish?cate_id={{_c.id}}">{{_c.name}}</a></li>
-                     {% else %}
-                     <li><a href="/account/{{account.aid}}/canyin/dish?cate_id={{_c.id}}">{{_c.name}}</a></li>
-                     {% end %}
-                     {% end %}
-                </ul>
                 <div class="panel panel-default">
                         <table class="table image-article">
                             <thead>
                             <tr>
                                 <th>创建时间</th>
-                                <th>名称</th>
-                                <th>分类</th>
-                                <th>价格</th>
-                                <th>单位</th>
-                                <th>描述</th>
-                                <th>特价</th>
-                                <th>特价价格</th>
-                                <th>人气</th>
-                                <th>操作</th>
+                                <th>用户信息</th>
+                                <th>菜品名称</th>
+                                <th>点餐数量</th>
                             </tr>
                             </thead>
                             <tbody>
                             {% for d in dish %}
                             <tr>
-                                <td>{{d.date}}</td>
-                                <td>{{d.name}}</td>
-                                <td>{{cates[str(d.cate_id)].name}}</td>
-                                <td>{{d.price}}</td>
-                                <td>{{d.unit}}</td>
-                                <td>{{d.description}}</td>
-                                <td>{% if d.special %}是{% else %}否{% end %}</td>
-                                <td>{{d.special_price}}</td>
-                                <td>{% if d.hot %}是{% else %}否{% end %}</td>
-                                <td class="op">
-                                    <a href="/account/{{account.aid}}/canyin/dish/new?id={{d.id}}">编辑</a>
-                                    <a href="javascript:;" onclick="remove_dish('{{d.id}}');">删除</a>
+                                <td class="date">{{d.date}}</td>
+                                <td>
+                                    {% if fans[d.openid] %}
+                                    <img src="{{fans[d.openid].avatar}}" alt="" width="40" height="40"/>
+                                        {{fans[d.openid].nickname}}
+                                    {% else %}
+                                        {{d.openid}}
+                                    {% end %}
                                 </td>
+                                <td>{{ds[d.dish_id].name}}</td>
+                                <td>{{d.num}}</td>
                             </tr>
                             {% end %}
                             </tbody>

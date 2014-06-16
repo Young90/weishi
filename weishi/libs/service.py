@@ -499,23 +499,24 @@ class FormManager(Base):
 class CardManager(Base):
     """"会员卡管理"""
 
-    def save_card(self, aid, cid, register, name, mobile, address, phone, about, cover):
+    def save_card(self, aid, cid, register, name, mobile, address, phone, about, cover, sex, birthday):
         """公众号创建会员卡"""
         self.db.execute(
-            'insert into t_card (date, aid, cid, register, name, mobile, address, phone, about, cover) '
-            'values (NOW(), %s, %s, %s, %s, %s, %s, %s, %s, %s)', aid, cid, register, name, mobile, address, phone,
-            about, cover)
+            'insert into t_card (date, aid, cid, register, name, mobile, address, phone, about, cover, sex, birthday) '
+            'values (NOW(), %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', aid, cid, register, name, mobile, address,
+            phone, about, cover, sex, birthday)
 
-    def update_card(self, cid, register, name, mobile, address, phone, about, cover):
+    def update_card(self, cid, register, name, mobile, address, phone, about, cover, sex, birthday):
         """公众号创建会员卡"""
-        self.db.execute('update t_card set register = %s, name = %s, mobile = %s, address = %s, '
-                        'phone = %s, about = %s, cover = %s where cid = %s', register, name, mobile, address, phone,
-                        about, cover, cid)
+        self.db.execute('update t_card set register = %s, name = %s, mobile = %s, address = %s, phone = %s, about = %s,'
+                        ' cover = %s, sex = %s, birthday = %s where cid = %s', register, name, mobile, address, phone,
+                        about, cover, sex, birthday, cid)
 
-    def save_member(self, aid, cid, num, openid, name, mobile, address):
+    def save_member(self, aid, cid, num, openid, name, mobile, address, sex, birthday):
         """保存用户的会员卡信息"""
-        self.db.execute('insert into t_card_member (date, aid, cid, num, openid, name, mobile, address) '
-                        'values (NOW(), %s, %s, %s, %s, %s, %s, %s)', aid, cid, num, openid, name, mobile, address)
+        self.db.execute('insert into t_card_member (date, aid, cid, num, openid, name, mobile, address, sex, birthday) '
+                        'values (NOW(), %s, %s, %s, %s, %s, %s, %s, %s, %s)', aid, cid, num, openid, name, mobile,
+                        address, sex, birthday)
 
     def get_user_card_info(self, cid, openid):
         """用户是否有会员卡"""
@@ -677,14 +678,15 @@ class AutoKeywordManager(Base):
 
     def get_auto_by_word(self, aid, word):
         """获取记录"""
-        _list = self.db.query('select * from t_auto_keyword where aid = %s and word = %s and wild = 0', aid, word)
+        _list = self.db.query('select * from t_auto_keyword where aid = %s and word = %s and wild = 0 order by rand()',
+                              aid, word)
         if _list:
             return _list[0]
         return None
 
     def list_auto_by_wild(self, aid):
         """获取所有模糊匹配的回复列表"""
-        _list = self.db.query('select * from t_auto_keyword where aid = %s and wild = 1 order by id desc', aid)
+        _list = self.db.query('select * from t_auto_keyword where aid = %s and wild = 1 order by rand()', aid)
         return _list
 
 
@@ -816,20 +818,18 @@ class TemplateManager(Base):
 
 
 class CanyinManager(Base):
-    def save_dish(self, aid, name, price, unit, img, cate_id, special, special_price, vip, vip_price, rank, count,
-                  hot, description):
+    def save_dish(self, aid, name, price, unit, img, cate_id, special, special_price, rank, count, hot, description):
         self.db.execute(
             'insert into t_canyin_dish (date, aid, name, price, unit, img, cate_id, special, special_price, '
-            'vip, vip_price, rank, num, hot, description) values (NOW(), %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,'
-            ' %s, %s)', aid, name, price, unit, img, cate_id, special, special_price, vip, vip_price, rank,
-            count, hot, description)
+            'rank, num, hot, description) values (NOW(), %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,'
+            ' %s, %s)', aid, name, price, unit, img, cate_id, special, special_price, rank, count, hot, description)
 
-    def update_dish(self, did, aid, name, price, unit, img, cate_id, special, special_price, vip, vip_price, rank, count,
+    def update_dish(self, did, aid, name, price, unit, img, cate_id, special, special_price, rank, count,
                     hot, description):
         self.db.execute('update t_canyin_dish set name = %s, price = %s, unit = %s, img = %s, cate_id = %s, '
-                        'special = %s, special_price = %s, vip = %s, vip_price = %s, rank = %s, num = %s, hot = %s, '
+                        'special = %s, special_price = %s, rank = %s, num = %s, hot = %s, '
                         'description = %s where aid = %s and id = %s', name, price, unit, img, cate_id, special,
-                        special_price, vip, vip_price, rank, count, hot, description, aid, did)
+                        special_price, rank, count, hot, description, aid, did)
 
     def delete_dish(self, aid, _id):
         self.db.execute('delete from t_canyin_dish where aid = %s and id = %s', aid, _id)
@@ -857,3 +857,46 @@ class CanyinManager(Base):
 
     def list_all_dish(self, aid):
         return self.db.query('select * from t_canyin_dish where aid = %s order by rank desc', aid)
+
+    def have_in(self, aid, dish_id, openid):
+        return self.db.get('select count(*) as count from t_canyin_my where aid = %s and dish_id = %s and openid = %s',
+                           aid, dish_id, openid)['count']
+
+    def add_to_my(self, aid, openid, dish_id, cate_id):
+        self.db.execute('insert into t_canyin_my (date, aid, openid, cate_id, dish_id, num) values '
+                        '(NOW(), %s, %s, %s, %s, 1)', aid, openid, cate_id, dish_id)
+
+    def increase_my_dish_num(self, dish_id):
+        self.db.execute('update t_canyin_my set num = num + 1 where dish_id = %s', dish_id)
+
+    def increase_dish_ordered_num(self, aid, dish_id):
+        self.db.execute('update t_canyin_dish set num = num + 1 where id = %s and aid = %s', dish_id, aid)
+
+    def decrease_dish_ordered_num(self, aid, dish_id):
+        self.db.execute('update t_canyin_dish set num = num - 1 where id = %s and aid = %s', dish_id, aid)
+
+    def list_my(self, openid, aid):
+        return self.db.query('select * from t_canyin_my where openid = %s and aid = %s', openid, aid)
+
+    def get_my_dish_by_dish_id(self, aid, openid, dish_id):
+        return self.db.get('select * from t_canyin_my where aid = %s and openid = %s and dish_id = %s', aid, openid,
+                           dish_id)
+
+    def remove_my_dish(self, _id, openid):
+        return self.db.execute('delete from t_canyin_my where openid = %s and dish_id = %s', openid, _id)
+
+    def decrease_my_dish_num(self, openid, _id):
+        self.db.execute('update t_canyin_my set num = num - 1 where openid = %s and dish_id = %s', openid, _id)
+
+    def count_my_by_cate(self, aid, openid, cate_id):
+        return self.db.get('select count(*) as count from t_canyin_my where aid = %s and openid = %s and cate_id = %s',
+                           aid, openid, cate_id)['count']
+
+    def remove_all_my_dish(self, aid, openid):
+        self.db.execute('delete from t_canyin_my where aid = %s and openid = %s', aid, openid)
+
+    def history_count(self, aid):
+        return self.db.get('select count(*) as count from t_canyin_my where aid = %s', aid)['count']
+
+    def history_list(self, aid, start, size):
+        return self.db.query('select * from t_canyin_my where aid = %s order by id desc limit %s, %s', aid, start, size)

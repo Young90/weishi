@@ -102,9 +102,11 @@ class CardHandler(BaseHandler):
     def post(self, *args, **kwargs):
         """提交领取会员卡的表单"""
         result = {'r': 0}
-        openid = self.get_argument('openid', '')
-        mobile = self.get_argument('mobile', '')
-        address = self.get_argument('address', '')
+        openid = self.get_argument('openid', None)
+        mobile = self.get_argument('mobile', None)
+        address = self.get_argument('address', None)
+        sex = self.get_argument('sex', None)
+        birthday = self.get_argument('birthday', None)
         name = self.get_argument('name', '')
         if not openid:
             result['error'] = '出了点错误，重新注册吧~'
@@ -123,10 +125,18 @@ class CardHandler(BaseHandler):
             result['error'] = '地址一定要填哦~'
             self.write(result)
             return
+        if card.sex and not sex:
+            result['error'] = '性别一定要选哦~'
+            self.write(result)
+            return
+        if card.birthday and not birthday:
+            result['error'] = '生日一定要填哦~'
+            self.write(result)
+            return
         card_id = card.id
         num = key_util.generate_digits_starts_with(str(card_id), 7)
         num = str(card_id) + num
-        self.card_manager.save_member(card.aid, card.cid, num, openid, name, mobile, address)
+        self.card_manager.save_member(card.aid, card.cid, num, openid, name, mobile, address, sex, birthday)
         result['r'] = 1
         result['openid'] = openid
         self.write(result)
