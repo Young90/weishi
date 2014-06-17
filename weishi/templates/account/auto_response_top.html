@@ -1,0 +1,17 @@
+<ul class="nav nav-tabs">
+    {% if top == 'follow' %}
+    <li class="active"><a href="/account/{{account.aid}}/auto/follow">关注时回复</a></li>
+    {% else %}
+    <li><a href="/account/{{account.aid}}/auto/follow">关注时回复</a></li>
+    {% end %}
+    {% if top == 'message' %}
+    <li class="active"><a href="/account/{{account.aid}}/auto/message">关键字回复</a></li>
+    {% else %}
+    <li><a href="/account/{{account.aid}}/auto/message">关键字回复</a></li>
+    {% end %}
+    {% if top == 'image' %}
+    <li class="active"><a href="/account/{{account.aid}}/auto/image">图片消息回复</a></li>
+    {% else %}
+    <li><a href="/account/{{account.aid}}/auto/image">图片消息回复</a></li>
+    {% end %}
+</ul>

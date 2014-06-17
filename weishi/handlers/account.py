@@ -245,7 +245,7 @@ class MenuHandler(AccountBaseHandler):
                     p = {'name': item.name, 'type': 'link', 'value': item.url}
                 menu.append(p)
             else:
-                #如果有二级菜单，遍历所有的子菜单
+                # 如果有二级菜单，遍历所有的子菜单
                 sub_menus = self.menu_manager.get_sub_menu_list(aid, item.id)
                 p = {'name': item.name, 'type': 'button'}
                 sub_buttons = []
@@ -277,9 +277,9 @@ class MenuHandler(AccountBaseHandler):
             self.finish()
             return
         params = simplejson.loads(params, encoding='utf-8')
-        #先清空已保存的菜单记录
+        # 先清空已保存的菜单记录
         self.menu_manager.truncate_account_menu(aid)
-        #清空菜单相关的自动回复
+        # 清空菜单相关的自动回复
         self.auto_manager.truncate_account_menu_auto(aid)
         for param in params:
             name = param['name']
@@ -359,7 +359,7 @@ class AutoResponseHandler(AccountBaseHandler):
     def get(self, aid):
         """查看已经设置的自动回复信息"""
         auto = self.auto_manager.get_follow_auto(aid)
-        self.render('account/auto_response_follow.html', account=self.account, auto=auto, index='auto')
+        self.render('account/auto_response_follow.html', account=self.account, auto=auto, index='auto', top='follow')
 
     def post(self, *args, **kwargs):
         """修改自动回复信息"""
@@ -382,6 +382,52 @@ class AutoResponseHandler(AccountBaseHandler):
         self.finish()
 
 
+class AutoImageResponseHandler(AccountBaseHandler):
+    def get(self, aid):
+        """图片消息回复"""
+        auto = self.auto_manager.get_image_auto(aid)
+        self.render('account/auto_response_image.html', account=self.account, index='auto', top='image', auto=auto)
+
+    def post(self, *args, **kwargs):
+        """设置图片消息"""
+        on = int(self.get_argument('on', 1))
+        content = self.get_argument('content', None)
+        num = self.get_argument('num', 0)
+        auto = self.auto_manager.get_image_auto(self.account.aid)
+        print on
+        if not on:
+            self.auto_manager.remove_image_auto(self.account.aid)
+        if auto:
+            # 更新信息
+            self.auto_manager.update_image_auto(self.account.aid, content, int(num))
+        else:
+            self.auto_manager.save_image_auto(self.account.aid, content, int(num))
+        self.write({'r': 1})
+        self.finish()
+
+
+class AutoImageHistoryHandler(AccountBaseHandler):
+    def get(self, aid):
+        try:
+            start = int(self.get_argument('start', 0))
+        except ValueError:
+            start = 0
+        page_size = 20
+        total = self.auto_manager.count_code_response(self.account.aid)
+        total_page = math.ceil(float(total) / page_size)
+        code_list = self.auto_manager.list_code_response(aid, start, page_size)
+        prefix = '/account/%s/auto/image/history?' % aid
+        fans = {}
+        for _c in code_list:
+            try:
+                fans[_c.openid]
+            except Exception:
+                fans[_c.openid] = self.fans_manager.get_fans_by_openid(_c.openid)
+        self.render('account/auto_response_image_history.html', account=self.account, start=start, page_size=page_size,
+                    total=total, total_page=total_page, code_list=code_list, prefix=prefix, fans=fans, index='auto',
+                    top='image')
+
+
 class AutoResponseMessageHandler(AccountBaseHandler):
     """自动回复设置"""
 
@@ -389,7 +435,8 @@ class AutoResponseMessageHandler(AccountBaseHandler):
         """获取列表"""
         auto_list = self.auto_keyword_manager.list_auto(self.account.aid)
         print auto_list
-        self.render('account/auto_response_message.html', account=self.account, index='auto', auto_list=auto_list)
+        self.render('account/auto_response_message.html', account=self.account, index='auto', top='message',
+                    auto_list=auto_list)
 
     def post(self, *args, **kwargs):
         """创建关键词自动回复"""
@@ -869,6 +916,8 @@ handlers = [
     (r'/account/([^/]+)/message', MessageHandler),
     (r'/account/([^/]+)/auto/follow', AutoResponseHandler),
     (r'/account/([^/]+)/auto/message', AutoResponseMessageHandler),
+    (r'/account/([^/]+)/auto/image', AutoImageResponseHandler),
+    (r'/account/([^/]+)/auto/image/history', AutoImageHistoryHandler),
     (r'/account/([^/]+)/menu', MenuHandler),
     (r'/account/([^/]+)/image/upload', UploadImageHandler),
     (r'/account/([^/]+)/image/list', ImageListHandler),

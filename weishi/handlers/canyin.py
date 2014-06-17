@@ -39,7 +39,7 @@ class MenuHandler(CanyinFrontHandler):
                 nums[d.id] = h.num
             else:
                 nums[d.id] = 0
-        self.render('menu/menu.html', aid=aid, cates=cates, dish=dish, nums=nums, i=i)
+        self.render('menu/menu.html', aid=aid, cates=cates, dish=dish, nums=nums, i=i, account=account)
 
 
 class DishHandler(CanyinFrontHandler):
@@ -79,7 +79,7 @@ class MyDishHandler(CanyinFrontHandler):
         for m in my_list:
             d = self.canyin_manager.get_dish_by_id(aid, m.dish_id)
             dish[m.dish_id] = d
-        self.render('menu/my.html', aid=aid, i=i, dish=dish, my_list=my_list)
+        self.render('menu/my.html', aid=aid, i=i, dish=dish, my_list=my_list, account=account)
 
 
 class RemoveMyDishHandler(CanyinFrontHandler):
@@ -90,6 +90,30 @@ class RemoveMyDishHandler(CanyinFrontHandler):
             raise HTTPError(404)
         self.canyin_manager.remove_all_my_dish(aid, i)
         self.redirect('/module/canyin/' + aid + '?i=' + i)
+
+
+class MyShareHandler(CanyinFrontHandler):
+
+    def get(self, aid):
+        f = self.get_argument('f')
+        account = self.account_manager.get_account_by_aid(aid)
+        if not account:
+            raise HTTPError(404)
+        my_list = self.canyin_manager.list_my(f, aid)
+        dish = {}
+        total = 0
+        for m in my_list:
+            d = self.canyin_manager.get_dish_by_id(aid, m.dish_id)
+            dish[m.dish_id] = d
+            num = m.num
+            total += num * float(d.special_price) if d.special else num * float(d.price)
+        self.render('menu/my_share.html', aid=aid, dish=dish, my_list=my_list, total=int(total), account=account)
+
+
+class AutoChooseHandler(CanyinFrontHandler):
+
+    def get(self, aid):
+        self.render('menu/auto_choose.html', aid=aid)
 
 
 class CateNumHandler(CanyinFrontHandler):
@@ -281,6 +305,9 @@ handlers = [
     (r'/module/canyin/([^/]+)/dish/update', UpdateDishHandler),
     (r'/module/canyin/([^/]+)/dish/my', MyDishHandler),
     (r'/module/canyin/([^/]+)/dish/my/remove', RemoveMyDishHandler),
+    (r'/module/canyin/([^/]+)/dish/my/share', MyShareHandler),
+    (r'/module/canyin/([^/]+)/dish/auto_choose', AutoChooseHandler),
+    (r'/module/canyin/([^/]+)/dish/choose', AutoChooseHandler),
     (r'/account/([^/]+)/canyin/cate', CanyinCateHandler),
     (r'/account/([^/]+)/canyin/dish', CanyinDishHandler),
     (r'/account/([^/]+)/canyin/dish/new', CanyinNewDishHandler),

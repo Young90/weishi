@@ -15,10 +15,7 @@
     <div class="content">
         <div class="main">
             <div class="main-inner">
-                <ul class="nav nav-tabs">
-                    <li><a href="/account/{{account.aid}}/auto/follow">关注时回复</a></li>
-                    <li class="active"><a href="/account/{{account.aid}}/auto/message">关键字回复</a></li>
-                </ul>
+                {% include auto_response_top.html %}
                 <div class="new-edit menu">
                     <div class="alert alert-danger" style="margin-top: 10px;">
                         完全匹配选中后，用户发来的消息必须完全符合才会回复<br>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>图片消息回复 - {{account.wei_name}}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="shortcut icon" href="{{static_url('img/favicon.ico')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.adjust.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/index.css')}}">
+</head>
+<body>
+{% include nav.html %}
+<div class="container">
+    <div class="content">
+        <div class="main">
+            <div class="main-inner">
+                {% include auto_response_top.html %}
+                <ul class="nav nav-pills">
+                    <li class="disabled"><a href="/account/{{account.aid}}/auto/image">设置</a></li>
+                    <li><a href="/account/{{account.aid}}/auto/image/history">历史记录</a></li>
+                </ul>
+                <div class="new-edit">
+                <div class="alert alert-warning" style="margin-top: 10px;">
+                    当用户发送图片消息后，根据模板回复随机码<br><br>
+                    随机码可以通过已经写好的模板回复，例子如下：<br><br>
+                    你获得优先购买资格，您的验证码为#code#<br><br>
+                    用#code#占位符来代替实际验证码
+                </div>
+                <div class="input-group input-group-lg edit-group">
+                    <span class="input-group-addon">回复验证码</span>
+                    <input name="on" type="checkbox" class="form-control" {% if auto %}checked{% end %}>
+                </div>
+                <div class="input-group input-group-lg edit-group">
+                    <span class="input-group-addon">取得验证码回复内容</span>
+                    <textarea name="content" type="text" class="form-control summary"  placeholder="使用#code#占位符来代替实际验证码">{% if auto %}{{auto.re_content.split('&&')[0]}}{% end %}</textarea>
+                </div>
+                <div class="input-group input-group-lg edit-group">
+                    <span class="input-group-addon">已经发放完毕回复内容</span>
+                    <textarea name="passed" type="text" class="form-control summary"  placeholder="">{% if auto %}{{auto.re_content.split('&&')[1]}}{% end %}</textarea>
+                </div>
+                <div class="input-group input-group-lg edit-group">
+                    <span class="input-group-addon">已经领取过回复内容</span>
+                    <textarea name="already" type="text" class="form-control summary"  placeholder="">{% if auto %}{{auto.re_content.split('&&')[2]}}{% end %}</textarea>
+                </div>
+                <div class="alert alert-warning" style="margin-top: 10px;">
+                    验证码数量限制（每天）
+                </div>
+                 <div class="input-group input-group-lg edit-group">
+                    <span class="input-group-addon">数量限制</span>
+                    <input name="limit" type="number" {% if auto %}value="{{auto.num}}"{% else %}value="0"{% end %} class="form-control" placeholder="为0则无限制">
+                </div>
+                <div class="input-group input-group-lg" style="margin-top: 10px;">
+                <div>
+                    <div class="btn btn-primary submit-btn" onclick="save();">
+                    <span>保 存</span>
+                    </div>
+                </div>
+                </div>
+            </div>
+            </div>
+        </div>
+        {% include left_nav.html %}
+    </div>
+</div>
+{% include _js.html %}
+<script>
+
+    function save() {
+        var on = $('input[name=on]').is(':checked')?1:0;
+        var content = $('textarea[name=content]').val();
+        var passed = $('textarea[name=passed]').val();
+        var already = $('textarea[name=already]').val();
+        var num = $('input[name=limit]').val();
+        if (on && (content == '' || passed == '' || already == '')) {
+            ModalManager.show_confirm_modal('请输入回复的内容！');
+            return;
+        }
+        if (on && content.indexOf('#code#') < 0) {
+            ModalManager.show_confirm_modal('请输入#code#作为验证码的占位符！');
+            return;
+        }
+        $.ajax({
+            type: 'POST',
+            url: window.location.href,
+            data: {on:on, content:content+"&&"+passed+"&&"+already, num:num},
+            success: function(data) {
+                if (data.r) {
+                    ModalManager.show_success_modal('保存成功！');
+                    setTimeout(function(){
+                        window.location.reload();
+                    }, 1500)
+                } else {
+                    ModalManager.show_failure_modal(data.e);
+                }
+            }
+        })
+    }
+
+</script>
+</body>
+</html>

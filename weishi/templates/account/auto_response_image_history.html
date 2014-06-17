@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>图片消息回复历史 - {{account.wei_name}}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="shortcut icon" href="{{static_url('img/favicon.ico')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.adjust.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/index.css')}}">
+</head>
+<body>
+{% include nav.html %}
+<div class="container">
+    <div class="content">
+        <div class="main">
+            <div class="main-inner">
+                {% include auto_response_top.html %}
+                <ul class="nav nav-pills">
+                    <li><a href="/account/{{account.aid}}/auto/image">设置</a></li>
+                    <li class="disabled"><a href="/account/{{account.aid}}/auto/image/history">历史记录</a></li>
+                </ul>
+                <div class="panel panel-default">
+                        <table class="table image-article">
+                            <thead>
+                            <tr>
+                                <th>创建时间</th>
+                                <th>用户信息</th>
+                                <th>验证码</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for _d in code_list %}
+                            <tr>
+                                <td class="date">{{_d.date}}</td>
+                                <td>
+                                    {% if fans[_d.openid] %}
+                                    <img src="{{fans[_d.openid].avatar}}" alt="" width="40" height="40"/>
+                                        {{fans[_d.openid].nickname}}
+                                    {% else %}
+                                        {{_d.openid}}
+                                    {% end %}
+                                </td>
+                                <td>{{_d.code}}</td>
+                            </tr>
+                            {% end %}
+                            </tbody>
+                        </table>
+                    {% include pagination.html %}
+                    </div>
+            </div>
+            </div>
+        </div>
+        {% include left_nav.html %}
+    </div>
+</div>
+{% include _js.html %}
+</body>
+</html>

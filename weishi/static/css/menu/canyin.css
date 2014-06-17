@@ -78,7 +78,7 @@ figure[hidden] {
     z-index: 99;
 }
 #page_count {
-    background: url('../images/wei_canyin/pagecount_bottom_bk.jpg') repeat-x 50% bottom;
+    background: url('../../img/menu/pagecount_bottom_bk.jpg') repeat-x 50% bottom;
     -webkit-background-size: 100% 161px;
     background-size: 100% 161px;
     padding-bottom: 35px;
@@ -89,7 +89,7 @@ figure[hidden] {
 }
 #page_count .main {
     padding-top: 35px;
-    background: url('../images/wei_canyin/pagecount_main_bk.jpg') no-repeat 50% 35px;
+    background: url('../../img/menu/pagecount_main_bk.jpg') no-repeat 50% 35px;
     -webkit-background-size: 173px 173px;
     background-size: 173px 173px;
 }
@@ -906,11 +906,11 @@ figure[hidden] {
     background-size: 22px 22px;
 }
 #page_allMenu section article dl .btn button.minus:active strong {
-    background: url("../../img/typebtn1.png") no-repeat;
+    background: url("../../img/menu/typebtn1.png") no-repeat;
     background-size: 22px 22px;
 }
 #page_allMenu section article dl .btn button.add:active strong {
-    background: url("../../img/typebtn2.png") no-repeat;
+    background: url("../../img/menu/typebtn2.png") no-repeat;
     background-size: 22px 22px;
 }
 #page_allMenu section article dl .btn i {

@@ -1,8 +1,9 @@
 # coding:utf-8
+from weishi.libs import time_util
+
 __author__ = 'young'
 
 import hashlib
-import time
 import datetime
 from weishi.libs.const import Role
 
@@ -437,6 +438,22 @@ class AutoManager(Base):
         """获取账号设置的关注自动回复信息"""
         return self.db.get('select * from t_auto where aid = %s and re_time = %s', aid, 'follow')
 
+    def get_image_auto(self, aid):
+        """获取针对图片的自动回复"""
+        return self.db.get('select * from t_auto where aid = %s and re_time = %s', aid, 'image')
+
+    def update_image_auto(self, aid, content, num):
+        """更新图片消息自动回复"""
+        self.db.execute('update t_auto set re_content = %s, num = %s where aid = %s and re_time = %s', content,
+                        num, aid, 'image')
+
+    def remove_image_auto(self, aid):
+        self.db.execute('delete from t_auto where aid = %s and re_time = %s', aid, 'image')
+
+    def save_image_auto(self, aid, content, num):
+        self.db.execute('insert into t_auto (date, aid, re_content, re_time, num, type) values (NOW(), %s, %s, %s, %s'
+                        ', %s)', aid, content, 'image', num, 'code')
+
     def save_text_auto(self, aid, content):
         """保存文本回复信息"""
         self.db.execute('insert into t_auto (date, aid, type, re_time, re_content) values (NOW(), %s, %s, %s, %s)',
@@ -469,6 +486,23 @@ class AutoManager(Base):
     def remove_follow_auto_message(self, aid):
         """删除已经保存的关注自动回复"""
         self.db.execute('delete from t_auto where aid = %s and re_time = %s', aid, 'follow')
+
+    def save_code_response(self, openid, aid, code):
+        self.db.execute('insert into t_code (date, aid, openid, code, type) values (NOW(), %s, %s, %s, %s)', aid,
+                        openid, code, 'image')
+
+    def list_code_response(self, aid, start, size):
+        return self.db.query('select * from t_code where aid = %s order by id desc limit %s, %s', aid, start, size)
+
+    def count_code_response(self, aid):
+        return self.db.get('select count(*) as count from t_code where aid = %s', aid)['count']
+
+    def today_code_num(self, aid):
+        return self.db.get('select count(*) as count from t_code where aid = %s and date >= %s', aid,
+                           time_util.today_start_date())['count']
+
+    def has_code(self, aid, openid):
+        return self.db.get('select count(*) as count from t_code where aid = %s and openid = %s', aid, openid)['count']
 
 
 class FormManager(Base):
@@ -788,10 +822,8 @@ class AnalyticsManager(Base):
                         aid, slug, openid)
 
     def total_view_num_today(self, aid):
-        now = datetime.now()
-        start = datetime(year=now.year, month=now.month, day=now.day, hour=0, minute=0, second=0)
-        return self.db.get('select count(*) as count from t_view_history where aid = %s and date > %s', aid, start)[
-            'count']
+        return self.db.get('select count(*) as count from t_view_history where aid = %s and date > %s', aid,
+                           time_util.today_start_date())['count']
 
     def total_view_num(self, aid):
         return self.db.get('select count(*) as count from t_view_history where aid = %s', aid)['count']

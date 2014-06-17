@@ -1,10 +1,10 @@
-#coding:utf-8
+# coding:utf-8
 __author__ = 'Young'
 
 from weishi.libs import wei_api
 from weishi.libs.service import ImageArticleManager, FansManager, AutoManager, MessageManager, CardManager, \
     AutoKeywordManager
-from weishi.libs import message_util
+from weishi.libs import message_util, key_util
 
 
 class Message():
@@ -33,7 +33,7 @@ class Message():
         if msg_type == 'text':
             return self._process_text_message(account, message, path)
         if msg_type == 'image':
-            return self._process_image_message(account.aid, message)
+            return self._process_image_message(account, message, path)
         if msg_type == 'voice':
             return self._process_voice_message(account.aid, message)
         if msg_type == 'video':
@@ -95,9 +95,23 @@ class Message():
                 print article_list
                 return message_util.image_article_group_to_message(article_list, message, path, account.wei_account)
 
-    def _process_image_message(self, aid, message):
+    def _process_image_message(self, account, message, path):
         """接收用户发送的图片消息"""
+        aid = account.aid
+        openid = message['FromUserName']
         self.message_manager.receive_image_message(message, aid)
+        auto = self.auto_manager.get_image_auto(aid)
+        if auto:
+            # 回复验证码
+            code = key_util.generate_digits(8)
+            if self.auto_manager.has_code(aid, openid):
+                content = auto.re_content.split('&&')[2]
+            elif self.auto_manager.count_code_response(aid) >= auto.num:
+                content = auto.re_content.split('&&')[1]
+            else:
+                content = auto.re_content.split('&&')[0].replace('#code#', code)
+                self.auto_manager.save_code_response(openid, aid, code)
+            return message_util.text_response_to_message(content, message, path, account.wei_account)
 
     def _process_voice_message(self, aid, message):
         """接收用户发送的语音消息"""
