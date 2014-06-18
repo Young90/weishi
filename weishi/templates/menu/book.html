@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh-CN" slick-uniqueid="3"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+<meta name="format-detection" content="telephone=no">
+<title>预订</title>
+<link rel="stylesheet" type="text/css" href="{{static_url('css/menu/canyin.css')}}">
+<link rel="stylesheet" type="text/css" href="{{static_url('css/menu/dialog.css')}}">
+<script src="{{static_url('js/menu/common.js')}}"></script>
+<script src="{{static_url('js/menu/dialog.js')}}"></script>
+<body id="page_order" screen_capture_injected="true">
+
+    {% for _s in stores %}
+    <section>
+        <article>
+            <span><img src="{{_s.image}}" ></span>
+            <h1>{{_s.name}}</h1>
+            <p>{{_s.address}}</p>
+        </article>
+        <ul>
+            <li style="width: 49%;"><a href="tel:{{_s.phone}}" class="order">预订</a></li>
+            <li style="width: 49%;"><a href="{{_s.map}}" class="gps">导航</a></li>
+        </ul>
+    </section>
+{% end %}
+</body>
+</html>

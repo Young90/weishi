@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-CN" slick-uniqueid="3"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+<meta name="format-detection" content="telephone=no">
+<title>智能点菜</title>
+<link rel="stylesheet" type="text/css" href="{{static_url('css/menu/canyin.css')}}">
+<link rel="stylesheet" type="text/css" href="{{static_url('css/menu/dialog.css')}}">
+<script src="{{static_url('js/menu/common.js')}}"></script>
+<script src="{{static_url('js/menu/dialog.js')}}"></script>
+<body id="page_intelOrder" class="intelPage" screen_capture_injected="true">
+<div class="center">
+	<header>
+		<span class="pCount">共{{num}}人用餐<a href="/module/canyin/{{aid}}/dish/auto_choose?i={{i}}">重选人数</a></span>
+        <label><i>共计：</i><b class="duiqi">{{menu.total}}元</b></label>
+	</header>
+	<section>
+        {% for _d in ds %}
+        <article>
+            <h2>{{_d.name}}</h2>
+            <dl dunitname="{{_d.unit}}" dsubcount="{{_d.num}}" dishid="{{_d.id}}" dname="{{_d.name}}" dtaste="" ddescribe="{{_d.description}}"
+                    dprice="{{_d.price}}" dishot="{{_d.hot}}" dspecialprice="{{_d.special}}" disspecial="{{_d.special}}" dpicture="{{_d.img}}">
+            <dt><h3>{{_d.name}}</h3></dt>
+            <dd><a href="javascript:void(0)" class="dataIn"><img src="{{_d.img}}" alt="12" title=""></a></dd>
+            <dd><em>{% if _d.special %}{{_d.special_price}}{% else %}{{_d.price}}{% end %}元/{{_d.unit}}</em></dd>
+            <dd class="dpNum">{{_d.num}}人点过</dd>
+            <dd class="dpFen">×1</dd>
+			</dl>
+        </article>
+        {% end %}
+    </section>
+	<footer class="footFix">
+		<a id="addToMenu" class="btn_add" href="/module/canyin/{{aid}}/dish/menu?i={{i}}&mid={{menu.id}}">加入菜单</a>
+		<a class="btn_change" href="{{change_link}}" onclick="showDish()">换一桌</a>
+	</footer>
+</div>
+<script type="text/javascript">
+var isMenuFilled = '1';
+
+//点击促发弹层事件
+function showPicInfo(){
+
+    var links = _qAll(".dataIn"), i=0;
+    for(i;i<links.length;i++){
+        links[i].onclick=function(event){
+
+            event.stopPropagation();
+
+            // dl
+            var parentDl = this.parentNode.parentNode;
+
+            popPic(parentDl.getAttribute('dpicture'),
+                    parentDl.getAttribute('dname'),
+                    parentDl.getAttribute('dprice') + '元/' + parentDl.getAttribute('dunitName'),
+                    parentDl.getAttribute('dIsSpecial'),
+                    parentDl.getAttribute('dSpecialPrice') + '元/' + parentDl.getAttribute('dunitName'),
+                    parentDl.getAttribute('dsubCount'),
+                    parentDl.getAttribute('dtaste'),
+                    parentDl.getAttribute('ddescribe'),
+                    parentDl.getAttribute('dishot')
+                    );
+        }
+    }
+}
+
+    //后台可自行扩展参数
+    //调用自定义弹层
+    function popPic(imgUrl,title,price, isSpecial, specialPrice, people,teast,assess,isHot){
+        var _title = title,
+            _price = price,
+            _people = people,
+            _teast = teast,
+            _assess = assess;
+
+        var hotHtml = '';
+        if (isHot == 1) {
+            hotHtml = '<b></b>';
+        }
+            _tmpHtml = "<div class='content'>"+hotHtml+"<img src='"+imgUrl+"' alt='' title=''><h2>"+_title;
+
+             if (isSpecial == 1) {
+                 _tmpHtml += "<i>"+specialPrice+"</i><del>"+_price+"</del>";
+             } else {
+                 _tmpHtml += "<i>"+_price+"</i>";
+             }
+
+            if (_people) {
+                _tmpHtml += "<span>"+_people+"人点过</span>";
+            }
+            _tmpHtml += "</h2>";
+
+            if (_teast) {
+                _tmpHtml += "<h3>口味："+_teast+"</h3>";
+            }
+
+            if (_assess) {
+                _tmpHtml += "<p>"+_assess+"</p>";
+            }
+
+            _tmpHtml += '</div>';
+            MDialog.popupCustom(_tmpHtml,true, function(){}, true);
+    }
+
+window.onload = function(){
+    showPicInfo();
+}
+function showDish() {
+    MLoading.show('努力配菜中...');
+    setTimeout(function(){MLoading.hide();},1500);
+}
+
+_q('#addToMenu').onclick = function() {
+
+    var self = this;
+    if (isMenuFilled) {
+        MDialog.confirm(
+            '', '加入菜单前是否需要清空您上一次的菜单？', null,
+            '清空', function(){
+                window.location.href = self.getAttribute('href') +  '&clear=1';
+            }, null,
+            '不清空', function() {
+                window.location.href = self.getAttribute('href') + 'clear=0';
+            }, null,
+            null, true, true
+        );
+    }
+    return false;
+};
+
+</script>
+
+</body></html>

@@ -932,3 +932,39 @@ class CanyinManager(Base):
 
     def history_list(self, aid, start, size):
         return self.db.query('select * from t_canyin_my where aid = %s order by id desc limit %s, %s', aid, start, size)
+
+    def list_menu(self, aid):
+        return self.db.query('select * from t_canyin_menu where aid = %s order by id desc', aid)
+
+    def save_menu(self, aid, name, num, dish, total):
+        self.db.execute('insert into t_canyin_menu (date, aid, name, num, dish_list, total) '
+                        'values (NOW(), %s, %s, %s, %s, %s)', aid, name, num, dish, total)
+
+    def list_menu_num(self, aid):
+        return self.db.query('select distinct(num) from t_canyin_menu where aid = %s', aid)
+
+    def list_menu_by_num(self, aid, num):
+        return self.db.query('select * from t_canyin_menu where aid = %s and num = %s order by id desc', aid, num)
+
+    def get_menu_by_id(self, aid, mid):
+        return self.db.get('select * from t_canyin_menu where id = %s and aid = %s', mid, aid)
+
+    def delete_menu(self, aid, mid):
+        self.db.execute('delete from t_canyin_menu where id = %s and aid = %s', mid, aid)
+
+    def list_store(self, aid):
+        return self.db.query('select * from t_canyin_store where aid = %s order by rank desc', aid)
+
+    def save_store(self, aid, name, image, address, mp, phone, rank):
+        self.db.execute('insert into t_canyin_store (date, aid, name, image, address, map, phone, rank) values (NOW(),'
+                        ' %s, %s, %s, %s, %s, %s, %s)', aid, name, image, address, mp, phone, rank)
+
+    def update_store(self, _id, aid, name, image, address, mp, phone, rank):
+        self.db.execute('update t_canyin_store set name = %s, image = %s, address = %s, map = %s, phone = %s, rank = '
+                        '%s where aid = %s and id = %s', name, image, address, mp, phone, rank, aid, _id)
+
+    def delete_store(self, _id, aid):
+        self.db.execute('delete from t_canyin_store where aid = %s and id = %s', aid, _id)
+
+    def get_store_by_id(self, _id, aid):
+        return self.db.get('select * from t_canyin_store where aid = %s and id = %s', aid, _id)

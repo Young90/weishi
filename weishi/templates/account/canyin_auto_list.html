@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>全部菜品 - {{account.wei_name}}</title>
+    <title>菜单列表 - {{account.wei_name}}</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="shortcut icon" href="{{static_url('img/favicon.ico')}}">
@@ -18,48 +18,29 @@
             <div class="main-inner">
                 {% include canyin_top.html %}
                 <ul class="nav nav-pills">
-                    <li{% if not cate_id %} class="disabled"{% end %}><a href="/account/{{account.aid}}/canyin/dish">全部菜品</a></li>
-                     {% for _c in cates.values() %}
-                     {% if int(cate_id) == _c.id %}
-                    <li class="disabled"><a href="/account/{{account.aid}}/canyin/dish?cate_id={{_c.id}}">{{_c.name}}</a></li>
-                     {% else %}
-                     <li><a href="/account/{{account.aid}}/canyin/dish?cate_id={{_c.id}}">{{_c.name}}</a></li>
-                     {% end %}
-                     {% end %}
+                    <li class="disabled"><a href="/account/{{account.aid}}/canyin/dish/auto">所有菜谱</a></li>
+                    <li><a href="/account/{{account.aid}}/canyin/dish/auto/new">+新建菜谱</a></li>
                 </ul>
                 <div class="panel panel-default">
                         <table class="table image-article">
                             <thead>
                             <tr>
-                                <th>id</th>
                                 <th>创建时间</th>
                                 <th>名称</th>
-                                <th>分类</th>
-                                <th>价格</th>
-                                <th>单位</th>
-                                <th>描述</th>
-                                <th>特价</th>
-                                <th>特价价格</th>
-                                <th>人气</th>
+                                <th>人数</th>
+                                <th>总价</th>
                                 <th>操作</th>
                             </tr>
                             </thead>
                             <tbody>
-                            {% for d in dish %}
+                            {% for _m in menu %}
                             <tr>
-                                <td>{{d.id}}</td>
-                                <td>{{d.date}}</td>
-                                <td>{{d.name}}</td>
-                                <td>{{cates[str(d.cate_id)].name}}</td>
-                                <td>{{d.price}}</td>
-                                <td>{{d.unit}}</td>
-                                <td>{{d.description}}</td>
-                                <td>{% if d.special %}是{% else %}否{% end %}</td>
-                                <td>{{d.special_price}}</td>
-                                <td>{% if d.hot %}是{% else %}否{% end %}</td>
+                                <td class="date">{{_m.date}}</td>
+                                <td class="">{{_m.name}}</td>
+                                <td class="">{{_m.num}}</td>
+                                <td class="">{{_m.total}}</td>
                                 <td class="op">
-                                    <a href="/account/{{account.aid}}/canyin/dish/new?id={{d.id}}">编辑</a>
-                                    <a href="javascript:;" onclick="remove_dish('{{d.id}}');">删除</a>
+                                    <a href="javascript:;" onclick="remove_dish('{{_m.id}}');">删除</a>
                                 </td>
                             </tr>
                             {% end %}
@@ -79,12 +60,12 @@
 <script>
 
     function remove_dish(id) {
-        ModalManager.show_confirm_modal('确定删除该菜品吗？', function(input) {
+        ModalManager.show_confirm_modal('确定删除该菜单吗？', function(input) {
             if (input) {
                 var aid = $('input[name=aid]').val();
                 $.ajax({
                     type: 'DELETE',
-                    url: '/account/' + aid + '/canyin/dish?id=' + id,
+                    url: window.location.href + '?id=' + id,
                     success: function(data) {
                         if (data.r) {
                             ModalManager.show_success_modal('删除成功！');

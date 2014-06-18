@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>添加菜单 - {{account.wei_name}}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="shortcut icon" href="{{static_url('img/favicon.ico')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.adjust.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/index.css')}}">
+</head>
+<body>
+{% include nav.html %}
+<div class="container">
+    <div class="content">
+        <div class="main">
+            <div class="main-inner">
+                {% include canyin_top.html %}
+                <div class="new-edit">
+                    <input name="aid" type="hidden" value="{{account.aid}}">
+                    <div class="input-group input-group-lg edit-group">
+                        <span class="input-group-addon">菜单名称</span>
+                        <input name="name" type="text" class="form-control" placeholder="只用于标示，名称字数要少于10" >
+                    </div>
+
+                    <div class="input-group input-group-lg edit-group">
+                        <span class="input-group-addon">就餐人数</span>
+                        <input name="num" type="number" class="form-control" placeholder="输入建议的就餐人数" >
+                    </div>
+
+                    <div class="input-group input-group-lg edit-group">
+                        <span class="input-group-addon">包含的菜品id</span>
+                        <textarea name="dish" type="text" class="form-control summary"  placeholder="填入菜品数字id，用逗号隔开，可以在全部菜品中查看id"></textarea>
+                    </div>
+
+                    <div class="btn btn-primary submit-btn" onclick="save();">
+                        <span>保 存</span>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        {% include left_nav.html %}
+    </div>
+</div>
+<script type="text/javascript" src="{{static_url('js/jquery-1.10.2.min.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/bootstrap.min.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/global.js')}}"></script>
+<script>
+
+    function save() {
+        var name = $('input[name=name]').val();
+        if (name == '') {
+            ModalManager.show_failure_modal('输入名称！');
+            return false;
+        }
+        var num = $('input[name=num]').val();
+        if (num == '') {
+            ModalManager.show_failure_modal('输入人数！');
+            return false;
+        }
+        var dish = $('textarea[name=dish]').val();
+        if (dish == '') {
+            ModalManager.show_failure_modal('输入菜品id！');
+            return false;
+        }
+        $.ajax({
+            type: 'POST',
+            url: window.location.href,
+            data: {num: num, name: name, dish: dish.replace(new RegExp('，', 'g'), ',')},
+            success: function(data) {
+                if (data.r) {
+                    ModalManager.show_success_modal('保存成功！');
+                    setTimeout(function(){
+                        window.location.href = window.location.href.replace('/new', '');
+                    }, 1500);
+                } else {
+                    ModalManager.show_failure_modal(data.e);
+                }
+            }
+        })
+
+    }
+</script>
+</body>
+</html>

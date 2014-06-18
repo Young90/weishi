@@ -1,8 +1,9 @@
 <div class="alert alert-warning" style="margin-top: 10px;">
 请新建单条图文消息，根据回复内容来设置对应链接地址，并在自定义菜单中回复该条图文消息：<br>
 <br>全部菜品： http://wsmt.sinaapp.com/module/canyin/{{account.aid}}
-<br>智能点餐： http://wsmt.sinaapp.com/module/canyin/{{account.aid}}
+<br>智能点餐： http://wsmt.sinaapp.com/module/canyin/{{account.aid}}/dish/auto_choose
 <br>我的菜单： http://wsmt.sinaapp.com/module/canyin/{{account.aid}}/dish/my
+<br><br>餐厅订座（可以作为链接设置在菜单中）： http://wsmt.sinaapp.com/module/canyin/{{account.aid}}/book
 </div>
 <ul class="nav nav-tabs">
     {% if top=='dish_cate' %}
@@ -24,5 +25,15 @@
     <li class="active"><a href="/account/{{account.aid}}/canyin/dish/history">点单记录</a></li>
     {% else %}
     <li><a href="/account/{{account.aid}}/canyin/dish/history">点单记录</a></li>
+    {% end %}
+    {% if top=='auto' %}
+    <li class="active"><a href="/account/{{account.aid}}/canyin/dish/auto">智能菜单</a></li>
+    {% else %}
+    <li><a href="/account/{{account.aid}}/canyin/dish/auto">智能菜单</a></li>
+    {% end %}
+    {% if top=='book' %}
+    <li class="active"><a href="/account/{{account.aid}}/canyin/book">门店预定</a></li>
+    {% else %}
+    <li><a href="/account/{{account.aid}}/canyin/book">门店预定</a></li>
     {% end %}
 </ul>

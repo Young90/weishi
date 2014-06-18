@@ -1,266 +1,183 @@
 <!DOCTYPE html>
-<html lang="zh-CN" slick-uniqueid="3"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-<meta name="format-detection" content="telephone=no">
-<title>智能点菜</title>
-<link rel="stylesheet" type="text/css" href="{{static_url('css/menu/canyin.css')}}">
-<link rel="stylesheet" type="text/css" href="{{static_url('css/menu/dialog.css')}}">
-<script src="{{static_url('js/menu/common.js')}}"></script>
-<script src="{{static_url('js/menu/dialog.js')}}"></script>
-<script src="http://cdn.staticfile.org/jquery/2.1.1-rc2/jquery.min.js"></script>
+<html lang="zh-CN" slick-uniqueid="3">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta name="format-detection" content="telephone=no">
+    <title>智能点菜</title>
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/menu/canyin.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/menu/dialog.css')}}">
+    <script src="{{static_url('js/menu/common.js')}}"></script>
+    <script src="{{static_url('js/menu/dialog.js')}}"></script>
+    <script src="http://cdn.staticfile.org/jquery/2.1.1-rc2/jquery.min.js"></script>
 <body id="page_count" style="height: 736px;" screen_capture_injected="true">
 
 <div class="center main">
-	<section>
-		<ol style="width: 530px;"><li class="sider left">-1</li><li class="curr">4</li><li class="right">6</li><li class="">8</li><li class="sider">-1</li></ol>
-	</section>
+    <section>
+        <ol></ol>
+    </section>
 </div>
 
 <div class="notice">
-	<b>请选择您的用餐人数</b>
-	<!--<p>通过左右滑动来选择您的用餐人数，选择<br/>完成后点击点菜按钮即可</p>-->
+    <b>请选择您的用餐人数</b>
 </div>
 
 <div class="center">
-	<a class="order" href="./智能点菜_files/智能点菜.html" onclick="return doSelected()" id="order" style="margin-top: 80px;"><span>开始点菜</span></a>
+    <a class="order" href="#" onclick="return doSelected()" id="order" style="margin-top: 80px;"><span>开始点菜</span></a>
 </div>
-
 <script>
-window.shareData = {"appid":"wx578dbd8b9c6f29f6","imgUrl":"http:\/\/imgcache.life.qq.com\/www\/misc\/images\/weixin_shop_logo\/3676816631_share_150_150.png","timeLineLink":"http:\/\/life.qq.com\/qr\/t13623777902026#wechat_redirect","tTitle":"\u5173\u6ce8\u53ef\u83b7\u5f97\u300c\u6d1e\u5ead\u571f\u83dc\u9986\u300d\u5fae\u751f\u6d3b\u4f1a\u5458\u5361","tContent":"\u6d1e\u5ead\u571f\u83dc\u9986","sendFriendLink":"http:\/\/life.qq.com\/qr\/f13623777902026#wechat_redirect","fTitle":"\u6d1e\u5ead\u571f\u83dc\u9986","fContent":"\u5173\u6ce8\u53ef\u83b7\u5f97\u300c\u6d1e\u5ead\u571f\u83dc\u9986\u300d\u5fae\u751f\u6d3b\u4f1a\u5458\u5361","wContent":"#\u5fae\u4fe1\u626b\u63cf\u4e8c\u7ef4\u7801#\u6211\u521a\u5728\u6d1e\u5ead\u571f\u83dc\u9986\u626b\u63cf\u4e8c\u7ef4\u7801\uff0c\u8f7b\u677e\u83b7\u5f97\u5fae\u751f\u6d3b\u4f1a\u5458\u5361\uff0c\u5f97\u52303676816631\uff0c\u9177\u70ab\u53c8\u597d\u73a9\uff01","wLink":null};
-var ticket = '020a35bfdfeabe27250621c0c2cebb52',
-    code = '020a35bfdfeabe27250621c0c2cebb52',
-    ticketSource = '',
-    wticket = '4741f5324057dff1818b73c96305da11',
-    qrcode = 'q1394523693587';
+    var cardid = "3676816631";
 
-    var pageName = pageName ? pageName : '';
+    var nums = new Array();
 
+    {% for _n in nums %}
+    nums.push({{_n}});
+    {% end %}
 
-// 分享
-function shareFriend(appid, imgUrl, sendFriendLink, fContent, fTitle) {
-    WeixinJSBridge.invoke('sendAppMessage',{
-                            "appid":appid,
-                            "img_url":imgUrl,
-                            "img_width":"640",
-                            "img_height":"640",
-                            "link":sendFriendLink,
-                            "desc":fContent,
-                            "title":fTitle
-                            }, function(res) {
-                            _report('send_msg', res.err_msg);
-                            })
-}
-function shareTimeline(imgUrl, timeLineLink, tContent, tTitle) {
-    WeixinJSBridge.invoke('shareTimeline',{
-                            "img_url":imgUrl,
-                            "img_width":"640",
-                            "img_height":"640",
-                            "link":timeLineLink,
-                            "desc": tContent,
-                            "title": tTitle
-                            }, function(res) {
-                            _report('timeline', res.err_msg);
-                            });
-}
-function shareWeibo(wContent, wLink) {
-    WeixinJSBridge.invoke('shareWeibo',{
-                            "content":wContent,
-                            "url":wLink,
-                            }, function(res) {
-                            _report('weibo', res.err_msg);
-                            });
-}
-// 当微信内置浏览器完成内部初始化后会触发WeixinJSBridgeReady事件。
-document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
+    var _selectedCount = 0; //选择好的人数会同步到这个变量里
 
-        // 发送给好友
-        WeixinJSBridge.on('menu:share:appmessage', function(argv){
-            if (pageName == 'menuFilled') {
-
-                var params = {
-                    'qrcode' : qrcode,
-                    'ticket' : ticket,
-                    'ticketSource' : ticketSource
-                };
-
-                MLoading.show('加载中');
-                setTimeout(function(){MLoading.hide();},3000);
-                _doAjax('/weixin/dish/share', 'POST', params, function(ret){
-                    MLoading.hide();
-                    if (ret['code'] != 0) {
-                        alert(ret['message']);
-                        return;
+    function SliderChooser(config) {
+        var container = _q(config.containerContext),
+                inner = _q(config.innerContext, container),
+                nums = config.nums, itemW = config.itemWidth,
+                curr = 1,
+                w = container.clientWidth,
+                drag_start = {time: 0, left: 0, top: 0, x: 0, y: 0, lx: 0, ly: 0}, drag_end = {left: 0},
+                directionLocked = null, time = function () {
+                    return (new Date).getTime();
+                }, getP = function (e) {
+                    var t = e.touches[0], c = e.currentTarget.parentNode, r = c.parentNode.getClientRects()[0];
+                    return { x: t.pageX - r.left, y: t.pageY - r.top, px: t.pageX, py: t.pageY, cx: t.clientX, cy: t.clientY, sx: t.screenX, sy: t.screenY };
+                }, getLeft = function (dom) {
+                    return parseFloat(/\((\-?[\.\d]+)px/.exec(dom.style[_vendor + 'Transform'])[1]);
+                }, setCurr = function (idx) {
+                    curr = idx;
+                    _forEach(_qAll(config.itemContext, inner), function (li, liIdx) {
+                        _removeClass(li, config.currentStyleClass);
+                        if (idx == liIdx) {
+                            _addClass(li, config.currentStyleClass);
+                        }
+                    });
+                }, doTransition = function (value, tweenMode) {
+                    var d = tweenMode ? /*as idx*/-value * itemW : value, s = tweenMode ? 6.18 * 4 * .01 : 0;
+                    inner.style[_vendor + 'TransitionDuration'] = s + 's';
+                    inner.style[_vendor + 'Transform'] = _trnOpen + d + 'px,0' + _trnClose;
+                }, e_ts = function (e) /*touchstart*/ {
+                    if (!_touchSupport) e.preventDefault();
+                    directionLocked = null;
+                    var p1 = getP(e), p2 = { x: drag_end.left * 1, y: inner.getClientRects()[0].top };
+                    drag_start = { time: time(), left: p2.x, top: p2.y, x: parseInt(p2.x - p1.x), y: parseInt(p2.y - p1.y), lx: e.touches[0].clientX, ly: e.touches[0].clientY, point: p1 };
+                    e.currentTarget.addEventListener("touchmove", e_tm);
+                    e.currentTarget.addEventListener("touchend", e_te);
+                    e.currentTarget.addEventListener("touchcancel", e_te);
+                }, e_tm = function (e) /*touchmove*/ {
+                    if (!_touchSupport) e.preventDefault();
+                    var p = getP(e), c = e.currentTarget.parentNode, v = drag_start.x + p.x;
+                    /*横纵拖动互不干扰*/
+                    var absDistX, absDistY, deltaX = e.touches[0].pageX - drag_start.point.px, deltaY = e.touches[0].pageY - drag_start.point.py;
+                    if (directionLocked === "y") {
+                        return
+                    } else {
+                        if (directionLocked === "x") {
+                            e.preventDefault()
+                        } else {
+                            absDistX = Math.abs(deltaX);
+                            absDistY = Math.abs(deltaY);
+                            if (absDistX < 4) {
+                                return
+                            }
+                            if (absDistY > absDistX * 0.58) {
+                                directionLocked = "y";
+                                return
+                            } else {
+                                e.preventDefault();
+                                directionLocked = "x";
+                            }
+                        }
                     }
-                    var result = ret['result']['data'];
-
-                    shareFriend(result.appid, result.img_url, result.link, result.desc, result.title);
-                });
-
-            } else {
-                shareFriend(window.shareData.appid, window.shareData.imgUrl, window.shareData.sendFriendLink, window.shareData.fContent, window.shareData.fTitle);
-            }
-        });
-
-        // 分享到朋友圈
-        WeixinJSBridge.on('menu:share:timeline', function(argv){
-            if (pageName == 'menuFilled') {
-
-                var params = {
-                    'qrcode' : qrcode,
-                    'ticket' : ticket,
-                    'ticketSource' : ticketSource
-                };
-
-                MLoading.show('加载中');
-                setTimeout(function(){MLoading.hide();},3000);
-                _doAjax('/weixin/dish/share', 'POST', params, function(ret){
-                    MLoading.hide();
-                    if (ret['code'] != 0) {
-                        alert(ret['message']);
-                        return;
+                    doTransition(v);
+                    if (MData(c, 'touching') === undefined || MData(c, 'touching') * 1 != 1) MData(c, 'touching', 1);
+                }, e_te = function (e) /*touchend*/ {
+                    if (!_touchSupport)    e.preventDefault();
+                    e.currentTarget.removeEventListener("touchmove", e_tm);
+                    e.currentTarget.removeEventListener("touchend", e_te);
+                    e.currentTarget.removeEventListener("touchcancel", e_te);
+                    var c = e.currentTarget.parentNode;
+                    MData(c, 'touching', 0);
+                    try {
+                        drag_end.left = getLeft(c);
+                    } catch (ex) {
                     }
-                    var result = ret['result']['data'];
-
-                    shareTimeline(result.img_url, result.link, result.desc, result.title);
-                });
-
-            } else {
-
-                shareTimeline(window.shareData.imgUrl, window.shareData.timeLineLink, window.shareData.tContent, window.shareData.tTitle);
-            }
-        });
-
-        // 分享到微博
-        WeixinJSBridge.on('menu:share:weibo', function(argv){
-            if (pageName == 'menuFilled') {
-
-                var params = {
-                    'qrcode' : qrcode,
-                    'ticket' : ticket,
-                    'ticketSource' : ticketSource
-                };
-
-                MLoading.show('加载中');
-                setTimeout(function(){MLoading.hide();},3000);
-                _doAjax('/weixin/dish/share', 'POST', params, function(ret){
-                    MLoading.hide();
-                    if (ret['code'] != 0) {
-                        alert(ret['message']);
-                        return;
+                    var idx = curr, p2 = { x: drag_end.left, y: c.getClientRects()[0].top }, tTime = time() - drag_start.time, tDis = p2.x - drag_start.left, shortDis = Math.abs(tDis) < 5, longTime = tTime > 300;
+                    if (!longTime && !shortDis) { /*快速拖动*/
+                        if (tDis < 0) /*left*/ idx++; else /*right*/ idx--;
+                    } else { /*一般拖动*/
+                        if (Math.abs(tDis) > .5 * itemW) {
+                            var d1 = Math.abs(Math.round(tDis / itemW));
+                            if (tDis < 0) idx += d1; else idx -= d1;
+                        }
                     }
-                    var result = ret['result']['data'];
-
-                    shareWeibo(result.title, result.link);
-                });
-
-            } else {
-
-                shareWeibo(window.shareData.wContent, window.shareData.wLink);
-            }
-        });
-     }, false)
-
-
-     function placeOrder(orderId, cardid) {
-
-        params = {
-            'ticket' : ticket,
-            ticketSource : ticketSource,
-            action : 'placeOrder',
-            orderId : orderId,
-            code : code,
-            qrcode : qrcode
-        };
-
-        MLoading.show('加载中');
-        setTimeout(function(){MLoading.hide();},3000);
-        _doAjax('/weixin/'+cardid+'/showDishOrder', 'POST', params, function(ret) {
-            MLoading.hide();
-            if (ret['code'] == 100) {
-                location.href = location.origin + '/weixin/'+cardid+'/dishWaimaiCardPay?action=payByCard&ticket=' + ticket + '&qrcode=' + qrcode + '&orderId='+orderId+'#wechat_webview_type=1';
-            } else if (ret['code'] != 0) {
-                alert(ret['message']);
+                    if (idx < 1) idx = 1;
+                    if (idx >= nums.length - 2) idx = nums.length - 2;
+                    doTransition(idx - 1, true);
+                    drag_end.left = getLeft(c);
+                    setCurr(idx);
+                    if ('callback' in config && !!config.callback) {
+                        config.callback.call(null, curr - 1);
+                    }
+                };
+        nums.unshift(-1);
+        nums.push(-1);
+        _forEach(nums, function (n, idx, arr) {
+            inner.insertAdjacentHTML('beforeEnd', '<' + config.itemContext + '>' + n + '</' + config.itemContext + '>');
+            var li = _q(config.itemContext + ':last-of-type', inner);
+            if (idx == 0 || idx == arr.length - 1) {
+                _addClass(li, 'sider');
                 return;
             }
-
-            isWeixin5=1;
-            // 微信支付
-            if (isWeixin5) {
-                    var weixinPay = ret.result.weixinPay;
-                    var requestData = {};
-                    requestData.appId = weixinPay.appId; //公众号名称,由商户传入
-                    requestData.timeStamp = weixinPay.timeStamp + ''; //时间戳 这里随意使用了一个值
-                    requestData.nonceStr = weixinPay.nonceStr; //随机串
-                    requestData.package = weixinPay.package; // 扩展字段,由商户传入
-                    requestData.signType = weixinPay.signType; //微信签名方式:sha1
-                    requestData.paySign = weixinPay.paySign; //微信签名
-                    // 下单成功 => 微信支付
-                    WeixinJSBridge.invoke('getBrandWCPayRequest', requestData, function(d){
-                                          // 支付回调
-                                          // alert(d.err_msg);
-                                          if (d.err_msg == 'get_brand_wcpay_request:ok') {
-                                               location.href = location.origin + '/weixin/'+cardid+'/listDishOrder?ticket=' + ticket + '&qrcode=' + qrcode + '&code=' + code + '#wechat_webview_type=1';
-                                            // 支付成功
-                                          } else if(d.err_msg == 'get_brand_wcpay_request:cancel') {
-                                            // 取消支付
-                                          } else {
-                                            // 支付失败
-                                          }
-                                      });
-
-            }
+            li.addEventListener("touchstart", e_ts);
+            li = null;
         });
-     }
+        inner.style.width = itemW * nums.length + 'px';
+        setCurr(1);
+    }
+    ;
+    function scCallback(currIdx) {
+        _forEach(_qAll('section li'), function (li) {
+            _removeClass(li, 'left');
+            _removeClass(li, 'right');
+        });
+        var l = _q('section li:nth-of-type(' + (currIdx + 1) + ')'),
+                r = _q('section li:nth-of-type(' + (currIdx + 3) + ')');
+        _addClass(l, 'left');
+        _addClass(r, 'right');
+        l = null;
+        r = null;
+        _selectedCount = parseInt(_q('section li:nth-of-type(' + (currIdx + 2) + ')').innerHTML);
+    }
+    _onPageLoaded(function () {
+        _q('body').scrollTop = -1;
+        window.scrollTo(0, -1);
+        _q('body').style.height = window.innerHeight + 'px';
+        var obtn = _q('.order');
+        obtn.style.marginTop = '80px'; //(window.innerHeight - 280 - 75) + 'px';
 
-</script><script>
-var cardid = "3676816631";
-
-var nums = new Array() ;
-
-    nums.push(4);
-    nums.push(6);
-    nums.push(8);
-
-var _selectedCount = 0; //选择好的人数会同步到这个变量里
-
-function SliderChooser(config){ var container = _q(config.containerContext), inner = _q(config.innerContext, container), nums = config.nums, itemW = config.itemWidth, curr = 1, w = container.clientWidth, drag_start = {time: 0, left: 0, top: 0, x: 0, y: 0, lx: 0, ly: 0}, drag_end = {left: 0}, directionLocked = null, time = function(){ return (new Date).getTime(); }, getP = function(e){ var t = e.touches[0], c = e.currentTarget.parentNode, r = c.parentNode.getClientRects()[0]; return { x: t.pageX-r.left, y: t.pageY-r.top, px: t.pageX, py: t.pageY, cx: t.clientX, cy: t.clientY, sx: t.screenX, sy: t.screenY }; }, getLeft = function(dom){ return parseFloat( /\((\-?[\.\d]+)px/.exec( dom.style[_vendor + 'Transform'] )[1] ); }, setCurr = function(idx) { curr = idx; _forEach(_qAll(config.itemContext, inner), function(li, liIdx){ _removeClass(li, config.currentStyleClass); if (idx == liIdx){ _addClass(li, config.currentStyleClass); } }); }, doTransition = function(value, tweenMode) { var d = tweenMode? /*as idx*/-value*itemW : value, s = tweenMode ? 6.18 * 4 * .01 : 0; inner.style[_vendor + 'TransitionDuration'] = s + 's'; inner.style[_vendor + 'Transform'] = _trnOpen + d + 'px,0' + _trnClose; }, e_ts = function(e) /*touchstart*/ { if (!_touchSupport) e.preventDefault(); directionLocked = null; var p1 = getP(e), p2 = { x: drag_end.left*1, y: inner.getClientRects()[0].top }; drag_start = { time: time(), left: p2.x, top: p2.y, x: parseInt(p2.x - p1.x), y: parseInt(p2.y - p1.y), lx: e.touches[0].clientX, ly: e.touches[0].clientY, point: p1 }; e.currentTarget.addEventListener("touchmove", e_tm); e.currentTarget.addEventListener("touchend", e_te); e.currentTarget.addEventListener("touchcancel", e_te); }, e_tm = function(e) /*touchmove*/ { if (!_touchSupport) e.preventDefault(); var p = getP(e), c = e.currentTarget.parentNode, v = drag_start.x + p.x; /*横纵拖动互不干扰*/ var absDistX, absDistY, deltaX = e.touches[0].pageX - drag_start.point.px, deltaY = e.touches[0].pageY - drag_start.point.py; if (directionLocked === "y") { return } else { if (directionLocked === "x") { e.preventDefault() } else { absDistX = Math.abs(deltaX); absDistY = Math.abs(deltaY); if (absDistX < 4) { return } if (absDistY > absDistX * 0.58) { directionLocked = "y"; return } else { e.preventDefault(); directionLocked = "x"; } } } doTransition( v ); if (MData(c, 'touching') === undefined || MData(c, 'touching')*1 != 1) MData(c, 'touching', 1); }, e_te = function(e) /*touchend*/ { if (!_touchSupport)	e.preventDefault(); e.currentTarget.removeEventListener("touchmove", e_tm); e.currentTarget.removeEventListener("touchend", e_te); e.currentTarget.removeEventListener("touchcancel", e_te); var c = e.currentTarget.parentNode; MData(c, 'touching', 0); try{ drag_end.left = getLeft(c); }catch(ex){} var idx = curr, p2 = { x: drag_end.left, y: c.getClientRects()[0].top }, tTime = time() - drag_start.time, tDis = p2.x - drag_start.left, shortDis = Math.abs(tDis)<5, longTime = tTime > 300; if (!longTime && !shortDis){ /*快速拖动*/ if (tDis < 0) /*left*/ idx++; else /*right*/ idx--; }else{ /*一般拖动*/ if ( Math.abs(tDis) > .5*itemW ){ var d1 = Math.abs(Math.round(tDis/itemW)); if( tDis < 0 ) idx += d1; else idx -= d1; } } if (idx<1) idx = 1; if (idx>=nums.length-2) idx = nums.length-2; doTransition(idx-1, true); drag_end.left = getLeft(c); setCurr(idx); if ('callback' in config && !!config.callback){ config.callback.call(null, curr-1); } }; nums.unshift(-1); nums.push(-1); _forEach(nums, function(n,idx,arr){ inner.insertAdjacentHTML('beforeEnd', '<'+config.itemContext+'>'+n+'</'+config.itemContext+'>'); var li = _q(config.itemContext+':last-of-type', inner); if (idx==0 || idx == arr.length-1){ _addClass(li, 'sider'); return; } li.addEventListener("touchstart", e_ts); li = null; }); inner.style.width = itemW * nums.length + 'px'; setCurr(1); };
-function scCallback(currIdx){
-	_forEach(_qAll('section li'), function(li){
-		_removeClass(li, 'left');
-		_removeClass(li, 'right');
-	});
-	var l = _q('section li:nth-of-type('+(currIdx+1)+')'),
-		r = _q('section li:nth-of-type('+(currIdx+3)+')');
-	_addClass(l, 'left');
-	_addClass(r, 'right');
-	l = null;
-	r = null;
-	_selectedCount = parseInt(_q('section li:nth-of-type('+(currIdx+2)+')').innerHTML);
-}
-_onPageLoaded(function(){
-    _q('body').scrollTop = -1;
-    window.scrollTo(0,-1);
-    _q('body').style.height = window.innerHeight + 'px';
-    var obtn = _q('.order');
-    obtn.style.marginTop = '80px'; //(window.innerHeight - 280 - 75) + 'px';
-
-	SliderChooser({
-		nums: nums,
-		containerContext: 'section',
-		innerContext: 'ol',
-		itemContext: 'li',
-		itemWidth: 106,
-		currentStyleClass: 'curr',
-		callback: scCallback
-	});
-	scCallback(0);
-});
-function doSelected() {
-        document.getElementById('order').href = '/weixin/dish/dish?cardid=' + cardid + '&num=' + _selectedCount + '&qrcode=' + qrcode + '&ticket=' + ticket + "&from=weixin.dish.selectNumber#wechat_webview_type=1";
-}
+        SliderChooser({
+            nums: nums,
+            containerContext: 'section',
+            innerContext: 'ol',
+            itemContext: 'li',
+            itemWidth: 106,
+            currentStyleClass: 'curr',
+            callback: scCallback
+        });
+        scCallback(0);
+    });
+    function doSelected() {
+        document.getElementById('order').href = '/module/canyin/{{aid}}/dish/choose?num=' + _selectedCount + '&i={{i}}';
+    }
 
 </script>
-<!--script src="http://imgcache.life.qq.com/www/misc/scripts/wei_webapp_copyright_v1.7.1.js?v=1.0.0"></script-->
-
-</body></html>
+</body>
+</html>

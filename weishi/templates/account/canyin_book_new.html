@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>添加门店 - {{account.wei_name}}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="shortcut icon" href="{{static_url('img/favicon.ico')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/bootstrap.adjust.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('css/index.css')}}">
+</head>
+<body>
+{% include nav.html %}
+<div class="container">
+    <div class="content">
+        <div class="main">
+            <div class="main-inner">
+                {% include canyin_top.html %}
+                <div class="new-edit">
+                    <input name="aid" type="hidden" value="{{account.aid}}">
+                    <input name="sid" type="hidden" value="{{store.id}}">
+                    <div class="input-group input-group-lg edit-group">
+                        <span class="input-group-addon">门店名称</span>
+                        <input name="name" type="text" class="form-control" placeholder="输入门店名称" value="{{store.name}}">
+                    </div>
+
+                    <div class="input-group input-group-lg edit-group">
+                        <span class="input-group-addon">门店电话</span>
+                        <input name="phone" type="text" value="{{store.phone}}" class="form-control" placeholder="输入门店地址电话，不允许有中文字符">
+                    </div>
+
+                    <div class="input-group input-group-lg edit-group">
+                        <span class="input-group-addon">门店地址</span>
+                        <input name="address" type="text" value="{{store.address}}" class="form-control" placeholder="输入门店地址">
+                    </div>
+
+                    <div class="input-group input-group-lg edit-group">
+                        <span class="input-group-addon">地图地址</span>
+                        <textarea name="map" type="text" class="form-control summary"  placeholder="门店的地图地址">{{store.map}}</textarea>
+                    </div>
+
+                    <div class="input-group input-group-lg edit-group">
+                        <span class="input-group-addon">门店排序</span>
+                        <input name="rank" type="number" value="{{store.rank}}" class="form-control" placeholder="填入数字，数字越大，排序越靠前">
+                    </div>
+
+                    <div class="btn btn-success fileinput-button">
+                        <i class="glyphicon glyphicon-plus"></i>
+                        <span>门店图片 <span class="tip">(建议图片尺寸640x360，大小控制在500Kb以内)</span></span>
+                        <input id="fileupload" type="file" name="file">
+                    </div>
+
+                    <div id="progress" class="progress progress-striped active">
+                        <div class="progress-bar progress-bar-success"></div>
+                    </div>
+
+                    <div id="files" class="files">
+                        {% if store.image %}
+                        <a href="{{store.image}}" target="_blank">
+                            <img src="{{store.image}}?imageView2/1/w/100/h/60">
+                            <p>图片</p>
+                        </a>
+                        {% end %}
+                    </div>
+
+                    <div class="btn btn-primary submit-btn" onclick="save();">
+                        <span>保 存</span>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        {% include left_nav.html %}
+    </div>
+</div>
+<script type="text/javascript" src="{{static_url('js/jquery-1.10.2.min.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/bootstrap.min.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/global.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/material.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/jquery.ui.widget.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/jquery.iframe-transport.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/jquery.fileupload.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/load-image.min.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/jquery.fileupload-process.js')}}"></script>
+<script type="text/javascript" src="{{static_url('js/jquery.fileupload-image.js')}}"></script>
+<script>
+    $(function () {
+        var url = '/upload';
+        $('#fileupload').fileupload({
+            url: url,
+            dataType: 'json',
+            done: function (e, data) {
+                $.each(data.result.files, function (index, file) {
+                    $('.files').html('');
+                    $('.files').append('<a href="' + file.url + '" target="_blank"><img src="'
+                            + file.thumbnailUrl + '"><p>' + file.name + '</p></a>');
+                    $('#progress').removeClass('progress-striped active');
+                });
+            },
+            progressall: function (e, data) {
+                var progress = parseInt(data.loaded / data.total * 100, 10);
+                $('#progress .progress-bar').css(
+                        'width',
+                        progress + '%'
+                );
+            }
+        }).prop('disabled', !$.support.fileInput)
+                .parent().addClass($.support.fileInput ? undefined : 'disabled');
+
+        var sp = $('input[name=special]');
+        if (sp.is(':checked')) {
+            $('input[name=special_price]').removeAttr('disabled');
+        }
+        sp.change(function(){
+            if (sp.is(':checked')) {
+                $('input[name=special_price]').removeAttr('disabled');
+            } else {
+                $('input[name=special_price]').attr('disabled', 'disabled');
+            }
+        });
+        var vp = $('input[name=vip]');
+        if (vp.is(':checked')) {
+            $('input[name=vip_price]').removeAttr('disabled');
+        }
+        vp.change(function(){
+            if (vp.is(':checked')) {
+                $('input[name=vip_price]').removeAttr('disabled');
+            } else {
+                $('input[name=vip_price]').attr('disabled', 'disabled');
+            }
+        });
+    });
+
+    function save() {
+        var sid = $('input[name=sid]').val();
+        var name = $('input[name=name]').val();
+        if (name == '') {
+            ModalManager.show_failure_modal('输入名称！');
+            return false;
+        }
+        var phone = $('input[name=phone]').val();
+        if (phone == '') {
+            ModalManager.show_failure_modal('请输入电话！');
+            return false;
+        }
+        var address = $('input[name=address]').val();
+        if (address == '') {
+            ModalManager.show_failure_modal('请输入门店地址！');
+            return false;
+        }
+        var map = $('textarea[name=map]').val();
+        if (map == '') {
+            ModalManager.show_failure_modal('请输入地图地址！');
+            return false;
+        }
+        var rank = $('input[name=rank]').val()==''?0:$('input[name=rank]').val();
+        var files = $('#files').find('a[href]');
+        var image = '';
+        if (files.length > 0) {
+            image = $(files[0]).attr('href');
+        }
+        if (image == '') {
+            ModalManager.show_failure_modal('请上传门店图片！');
+            return false;
+        }
+        $('.submit-btn').attr('disabled', 'disabled');
+        var params = {
+            sid: sid,
+            name: name,
+            phone: phone,
+            address: address,
+            map: map,
+            rank: rank,
+            image: image
+
+        }
+        $.ajax({
+            type: 'POST',
+            url: window.location.href,
+            data: params,
+            success: function(data) {
+                $('.submit-btn').removeAttr('disabled');
+                if (data.r) {
+                    ModalManager.show_success_modal('保存成功！');
+                    setTimeout(function(){
+                        window.location.href = window.location.href.replace('/new', '');
+                    }, 1500);
+                } else {
+                    ModalManager.show_failure_modal(data.e);
+                }
+            }
+        })
+
+    }
+</script>
+</body>
+</html>
