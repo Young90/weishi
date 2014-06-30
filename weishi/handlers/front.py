@@ -1,7 +1,6 @@
 #coding:utf-8
 __author__ = 'young'
 
-import string
 from weishi.libs.handler import BaseHandler
 from weishi.libs.decorators import authenticated
 from weishi.form.front_from import AccountForm
@@ -54,24 +53,23 @@ class AccountsHandler(FrontBaseHandler):
             r = {'r': 0, 'error': error}
             self.write(r)
             return
+        url = ''
         try:
             if self.request.files['avatar']:
                 file_body = self.request.files['avatar'][0]['body']
                 url = upload(file_body, Image.FOLDER_AVATAR)
         except KeyError:
-            url = None
-        print url
+            url = ''
         aid = key_util.generate_hexdigits_lower(8)
         token = key_util.generate_hexdigits_lower(8)
         account = self.account_manager.get_account_by_aid(aid)
 
         while account:
-            aid = key_util(8, string.hexdigits)
+            aid = key_util.generate_hexdigits_lower(8)
             account = self.account_manager.get_account_by_aid(aid)
 
         self.account_manager.create_account(f.data['wei_id'], f.data['wei_name'], f.data['wei_account'], token, aid,
                                             url, self.current_user.id)
-
         r = {'r': 1, 'aid': aid}
         self.write(r)
 

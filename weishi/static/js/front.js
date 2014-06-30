@@ -47,7 +47,7 @@ function submit_reg_form(n, m, a, s, b) {
         birthday = $('input[name="birthday"]').val();
         if (birthday == '') {
             button.removeAttr('disabled');
-            ModalManager.show_failure_modal('还没选择性别呢！');
+            ModalManager.show_failure_modal('还没填写生日呢！');
             return
         }
     }

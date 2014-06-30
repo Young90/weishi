@@ -11,6 +11,9 @@ handlers:
 - url: /static/
   static_path: weishi/static
 
+- url: /tc_verify.txt
+  static_path: weishi/static/txt/tc_verify.txt
+
 name: crontest
 version: 1
 cron:

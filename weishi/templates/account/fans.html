@@ -17,7 +17,9 @@
             <div class="main-inner">
                 <input type="hidden" name="aid" value="{{account.aid}}"/>
                 <div class="alert alert-warning">
-                    受微信接口限制，订阅号不能获取粉丝详细信息，如果您的账号是订阅号，只能显示粉丝id
+                    受微信接口限制，订阅号不能获取粉丝详细信息，如果您的账号是订阅号，只能显示粉丝id <br>
+                    由于微信服务器等不可控因素，粉丝信息可能获取不成功，只会显示粉丝id，最终粉丝数量和粉丝信息以微信后台为准<br>
+                    可以通过点击下面的“同步粉丝信息”按钮，获取最新粉丝信息（仅限服务号）
                 </div>
                  <ul class="nav nav-pills">
                     <li{% if not group_id %} class="disabled"{% end %}><a href="/account/{{account.aid}}/fans">所有粉丝</a></li>
@@ -32,7 +34,7 @@
                 </ul>
                 <div class="fans">
                     <div class="panel panel-default">
-                        <div class="panel-heading">粉丝列表（总数：{{total}}） {% if group_id %}<a class="rm group" href="javascript:;" onclick="remove_group('{{group_id}}');">移除该分组</a>{% end %} </div>
+                        <div class="panel-heading">粉丝列表（总数：{{total}}） <a href="javascript:update_fans();">同步粉丝信息</a>{% if group_id %}<a class="rm group" href="javascript:;" onclick="remove_group('{{group_id}}');">移除该分组</a>{% end %} </div>
                         <table class="table fans">
                             <thead>
                             <tr>
@@ -85,5 +87,11 @@
     </div>
 </div>
 {% include _js.html %}
+<script>
+
+    function update_fans() {
+    }
+
+</script>
 </body>
 </html>

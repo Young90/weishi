@@ -90,7 +90,7 @@ def sync_fans_list(account, *callback):
     print 'wei_api.py sync_fans_list end...'
     if callback:
         method = callback[0]
-        method(users, account.aid, openid)
+        method(users, account.aid)
 
 
 @gen.coroutine

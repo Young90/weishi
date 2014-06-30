@@ -29,6 +29,11 @@
                     </div>
 
                     <div class="input-group input-group-lg edit-group">
+                        <span class="input-group-addon">套餐总价</span>
+                        <input name="total" type="number" class="form-control" placeholder="如果想自动计算总价，则填入0" >
+                    </div>
+
+                    <div class="input-group input-group-lg edit-group">
                         <span class="input-group-addon">包含的菜品id</span>
                         <textarea name="dish" type="text" class="form-control summary"  placeholder="填入菜品数字id，用逗号隔开，可以在全部菜品中查看id"></textarea>
                     </div>
@@ -59,6 +64,10 @@
             ModalManager.show_failure_modal('输入人数！');
             return false;
         }
+        var total = $('input[name=total]').val();
+        if (total == '') {
+            total = 0;
+        }
         var dish = $('textarea[name=dish]').val();
         if (dish == '') {
             ModalManager.show_failure_modal('输入菜品id！');
@@ -67,7 +76,7 @@
         $.ajax({
             type: 'POST',
             url: window.location.href,
-            data: {num: num, name: name, dish: dish.replace(new RegExp('，', 'g'), ',')},
+            data: {num: num, name: name, total:total, dish: dish.replace(new RegExp('，', 'g'), ',')},
             success: function(data) {
                 if (data.r) {
                     ModalManager.show_success_modal('保存成功！');

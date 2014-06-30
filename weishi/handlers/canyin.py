@@ -388,14 +388,15 @@ class AutoNewDishHandler(AccountBaseHandler):
     @canyin_auth
     def post(self, *args, **kwargs):
         num = self.get_argument('num', 0)
+        total = int(self.get_argument('total', 0))
         name = self.get_argument('name', None)
         dish = self.get_argument('dish', None)
         dish = str(dish).replace(' ', '').replace('，', ',')
-        total = 0
-        for _d in dish.split(','):
-            d = self.canyin_manager.get_dish_by_id(self.account.aid, int(_d))
-            if d:
-                total += int(d.special_price) if d.special else int(d.price)
+        if not total:
+            for _d in dish.split(','):
+                d = self.canyin_manager.get_dish_by_id(self.account.aid, int(_d))
+                if d:
+                    total += int(d.special_price) if d.special else int(d.price)
         self.canyin_manager.save_menu(self.account.aid, name, int(num), dish, total)
         self.write({'r': 1})
         self.finish()

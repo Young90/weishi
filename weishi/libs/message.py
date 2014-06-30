@@ -138,6 +138,8 @@ class Message():
         openid = message['FromUserName']
         wei_api.get_user_info(account, openid, self._add_single_fan)
         auto = self.auto_manager.get_follow_auto(account.aid)
+        if not auto:
+            return
         if auto.type == 'text':
             return message_util.text_response_to_message(auto.re_content, message, path, account.wei_account)
         if auto.type == 'single':

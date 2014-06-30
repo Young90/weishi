@@ -126,6 +126,13 @@ class AccountFansHandler(AccountBaseHandler):
         return
 
 
+class SyncFansHandler(AccountBaseHandler):
+    def get(self, aid):
+        wei_api.sync_fans_list(self.account, )
+        self.write({'r': 1})
+        self.finish()
+
+
 class FansGroupHandler(AccountBaseHandler):
     def delete(self, aid):
         """移除粉丝分组"""

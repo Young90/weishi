@@ -161,15 +161,17 @@ class FansManager(Base):
 
     def save_single_fans(self, user, aid):
         """添加单个粉丝用户信息"""
+        print '----------save_single_fans-------------------------%s' % user['openid']
         self.db.execute('insert into t_fans (date, openid, nickname, sex, country, province, city, avatar, '
-                        'subscribe_time, language, aid) values (NOW(), %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
-                        user['openid'], user['nickname'], user['sex'], user['country'], user['province'],
+                        'subscribe_time, language, status, aid) values (NOW(), %s, %s, %s, %s, %s, %s, %s, %s, %s,1, '
+                        '%s)', user['openid'], user['nickname'], user['sex'], user['country'], user['province'],
                         user['city'], user['headimgurl'], datetime.datetime.fromtimestamp(int(user['subscribe_time'])),
                         user['language'], aid)
 
     def save_single_fans_without_info(self, aid, openid):
-        self.db.execute('insert into t_fans (date, openid, nickname, subscribe_time, aid) values (NOW(), %s, %s, '
-                        'NOW(), %s)', openid, openid, aid)
+        print '-----------save_single_fans_without_info------------%s' % openid
+        self.db.execute('insert into t_fans (date, openid, nickname, subscribe_time, status, aid) values (NOW(), %s, '
+                        '%s, NOW(),1, %s)', openid, openid, aid)
 
     def save_fans(self, users, aid):
         """将粉丝插入数据库"""
@@ -185,6 +187,7 @@ class FansManager(Base):
 
     def re_subscribe_fans(self, openid, aid):
         """粉丝重新关注，更新状态"""
+        print '--------------------re_subscribe_fans----------------%s' % openid
         self.db.execute('update t_fans set status = 1, date = %s, subscribe_time = %s where openid = %s and aid = %s',
                         datetime.datetime.now(), datetime.datetime.now(), openid, aid)
 
